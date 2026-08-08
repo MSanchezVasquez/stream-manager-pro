@@ -22,9 +22,6 @@ import {
   User,
 } from "firebase/auth";
 
-// 1. ELIMINAMOS la importación del JSON antiguo
-// import firebaseConfig from '../../firebase-applet-config.json';
-
 import {
   INITIAL_CLIENTS,
   INITIAL_SUPPLIERS,

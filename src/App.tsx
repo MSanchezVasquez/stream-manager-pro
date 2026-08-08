@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
-import { ThemeProvider } from "./context/ThemeContext";
-import { AuthProvider, useAuth } from "./context/AuthContext";
-import { DataProvider, useData } from "./context/DataContext";
+import { useAuthStore } from "./store/authStore";
+import { useDataStore } from "./store/dataStore";
+
 import { Navbar } from "./components/Navbar";
 import { Sidebar } from "./components/Sidebar";
 import { OverviewCards } from "./components/Dashboard/OverviewCards";
@@ -17,14 +17,27 @@ import { AuthScreen } from "./components/Auth/AuthScreen";
 import { FullScreenAppLoader } from "./components/common/LoadingSpinners";
 import { UserProfile } from "./components/Profiles/UserProfile";
 import gsap from "gsap";
+import { ThemeController } from "./components/ThemeController";
 
 function MainApp() {
-  const { user, loading: authLoading } = useAuth();
-  const { loading: dataLoading } = useData();
+  const { user, loading: authLoading, initAuth } = useAuthStore();
+  const { loading: dataLoading, subscribeToData } = useDataStore();
   const [activeTab, setActiveTab] = useState<string>("dashboard");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [isClientModalOpen, setIsClientModalOpen] = useState<boolean>(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
+
+  // 1. Inicializar Autenticación al montar la app
+  useEffect(() => {
+    const unsubAuth = initAuth();
+    return () => unsubAuth();
+  }, [initAuth]);
+
+  // 2. Inicializar Datos cuando cambia el usuario
+  useEffect(() => {
+    const unsubData = subscribeToData(user?.uid || null);
+    return () => unsubData();
+  }, [user?.uid, subscribeToData]);
 
   const mainContentRef = useRef<HTMLDivElement>(null);
 
@@ -160,12 +173,8 @@ function MainApp() {
 
 export default function App() {
   return (
-    <ThemeProvider>
-      <AuthProvider>
-        <DataProvider>
-          <MainApp />
-        </DataProvider>
-      </AuthProvider>
-    </ThemeProvider>
+    <ThemeController>
+      <MainApp />
+    </ThemeController>
   );
 }
