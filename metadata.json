@@ -1,0 +1,6 @@
+{
+  "name": "Gestor de Cuentas Streaming",
+  "description": "Aplicación para gestionar cuentas de streaming, clientes activos e inactivos, proveedores y perfiles libres.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
