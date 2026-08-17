@@ -12,6 +12,8 @@ import {
   Download,
   Upload,
   Zap,
+  Share2,
+  MoreVertical,
 } from "lucide-react";
 
 export const UserProfile: React.FC = () => {
@@ -62,12 +64,12 @@ export const UserProfile: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* COLUMNA IZQUIERDA: Información del Usuario */}
         <div className="lg:col-span-3 space-y-6">
-          <div className="bg-white dark:bg-[#16161C] border border-slate-200 dark:border-[#2D2D33] rounded-3xl p-6 flex flex-col items-center text-center shadow-sm">
-            <p className="text-xs font-medium text-slate-500 dark:text-[#94949E] mb-4">
-              Se unió el {creationDate}
+          <div className="relative overflow-hidden rounded-3xl p-6 shadow-sm bg-gradient-to-br from-[#374df5] to-indigo-700 text-white">
+            <p className="text-xs font-medium text-white/70 text-right mb-6">
+              Fecha en la que se unió: {creationDate}
             </p>
 
-            <div className="w-24 h-24 rounded-full bg-indigo-500/10 border-4 border-[#374df5]/30 flex items-center justify-center overflow-hidden mb-4 shadow-lg">
+            <div className="w-24 h-24 mx-auto rounded-full bg-white/10 flex items-center justify-center overflow-hidden mb-6 shadow-lg">
               {user.photoURL ? (
                 <img
                   src={user.photoURL}
@@ -76,7 +78,7 @@ export const UserProfile: React.FC = () => {
                   referrerPolicy="no-referrer"
                 />
               ) : (
-                <span className="text-3xl font-black text-[#374df5]">
+                <span className="text-3xl font-black text-white">
                   {user.displayName
                     ? user.displayName.charAt(0).toUpperCase()
                     : user.email?.charAt(0).toUpperCase()}
@@ -84,18 +86,40 @@ export const UserProfile: React.FC = () => {
               )}
             </div>
 
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-1">
-              {user.displayName || "Usuario Streaming"}
-            </h3>
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <h3 className="text-lg font-bold text-white truncate">
+                  {user.displayName || "Usuario Streaming"}
+                </h3>
+                <div className="flex items-center gap-1.5 text-xs text-white/70 mt-1">
+                  <Mail className="w-3.5 h-3.5 shrink-0" />
+                  <span className="truncate max-w-[130px]">{user.email}</span>
+                </div>
+              </div>
 
-            <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-[#94949E] bg-slate-100 dark:bg-[#1A1A22] px-3 py-1.5 rounded-full mt-2">
-              <Mail className="w-3.5 h-3.5" />
-              <span className="truncate max-w-[160px]">{user.email}</span>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  className="px-3.5 py-1.5 rounded-full border border-white/30 hover:bg-white/10 text-xs font-semibold text-white transition-colors"
+                >
+                  Editar
+                </button>
+                <button
+                  type="button"
+                  title="Compartir perfil"
+                  className="p-2 rounded-full border border-white/30 hover:bg-white/10 text-white transition-colors"
+                >
+                  <Share2 className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  title="Más opciones"
+                  className="p-2 rounded-full border border-white/30 hover:bg-white/10 text-white transition-colors"
+                >
+                  <MoreVertical className="w-4 h-4" />
+                </button>
+              </div>
             </div>
-
-            <button className="w-full mt-6 py-2.5 rounded-xl border border-slate-200 dark:border-[#2D2D33] hover:bg-slate-50 dark:hover:bg-[#1A1A22] text-sm font-semibold text-slate-700 dark:text-white transition-colors">
-              Editar Perfil
-            </button>
           </div>
         </div>
 

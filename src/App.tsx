@@ -80,12 +80,14 @@ function MainApp() {
       {/* Main Container */}
       <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col md:flex-row gap-8 items-start">
-          {/* Navigation Sidebar */}
-          <Sidebar
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-            onOpenAddClientModal={() => setIsClientModalOpen(true)}
-          />
+          {/* Navigation Sidebar (oculto en la pestaña Perfil) */}
+          {activeTab !== "profile" && (
+            <Sidebar
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              onOpenAddClientModal={() => setIsClientModalOpen(true)}
+            />
+          )}
 
           {/* Tab Views */}
           <div ref={mainContentRef} className="flex-1 min-w-0">
