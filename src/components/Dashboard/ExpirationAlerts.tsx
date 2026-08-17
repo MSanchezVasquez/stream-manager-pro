@@ -1,15 +1,27 @@
-import React, { useState } from 'react';
-import { useData } from '../../context/DataContext';
-import { formatCutDateStatus, getDaysRemaining, getPlatformConfig, getPlatformBadgeProps } from '../../utils/platformHelpers';
-import { PlatformIcon } from '../common/PlatformIcon';
-import { AlertCircle, Calendar, MessageSquare, ShieldAlert, Tv, Search } from 'lucide-react';
-import { WhatsAppModal } from '../WhatsAppModal';
-import { ClientSubscription } from '../../types';
+import React, { useState } from "react";
+import { useDataStore } from "../../store/dataStore";
+import {
+  formatCutDateStatus,
+  getDaysRemaining,
+  getPlatformConfig,
+  getPlatformBadgeProps,
+} from "../../utils/platformHelpers";
+import { PlatformIcon } from "../common/PlatformIcon";
+import {
+  AlertCircle,
+  Calendar,
+  MessageSquare,
+  ShieldAlert,
+  Tv,
+  Search,
+} from "lucide-react";
+import { WhatsAppModal } from "../WhatsAppModal";
+import { ClientSubscription } from "../../types";
 
 export const ExpirationAlerts: React.FC = () => {
-  const { clients } = useData();
-  const [filter, setFilter] = useState<'all' | 'warning' | 'expired'>('all');
-  const [search, setSearch] = useState('');
+  const { clients } = useDataStore();
+  const [filter, setFilter] = useState<"all" | "warning" | "expired">("all");
+  const [search, setSearch] = useState("");
 
   // Selected subscription for WhatsApp
   const [selectedSub, setSelectedSub] = useState<{
@@ -27,9 +39,9 @@ export const ExpirationAlerts: React.FC = () => {
   }[] = [];
 
   clients.forEach((client) => {
-    if (client.status === 'active') {
+    if (client.status === "active") {
       client.subscriptions.forEach((sub) => {
-        if (sub.status === 'active') {
+        if (sub.status === "active") {
           const days = getDaysRemaining(sub.cutDate);
           if (days <= 7) {
             allAlertItems.push({
@@ -37,7 +49,7 @@ export const ExpirationAlerts: React.FC = () => {
               clientId: client.id,
               phone: client.phone,
               sub,
-              days
+              days,
             });
           }
         }
@@ -52,12 +64,13 @@ export const ExpirationAlerts: React.FC = () => {
     const matchesSearch =
       item.clientName.toLowerCase().includes(search.toLowerCase()) ||
       item.sub.serviceName.toLowerCase().includes(search.toLowerCase()) ||
-      (item.sub.email && item.sub.email.toLowerCase().includes(search.toLowerCase()));
+      (item.sub.email &&
+        item.sub.email.toLowerCase().includes(search.toLowerCase()));
 
     if (!matchesSearch) return false;
 
-    if (filter === 'expired') return item.days < 0;
-    if (filter === 'warning') return item.days >= 0 && item.days <= 5;
+    if (filter === "expired") return item.days < 0;
+    if (filter === "warning") return item.days >= 0 && item.days <= 5;
     return true;
   });
 
@@ -88,31 +101,31 @@ export const ExpirationAlerts: React.FC = () => {
           </div>
 
           <button
-            onClick={() => setFilter('all')}
+            onClick={() => setFilter("all")}
             className={`px-3 py-1 rounded-xl text-xs font-semibold transition-all ${
-              filter === 'all'
-                ? 'bg-indigo-600 text-white'
-                : 'bg-slate-100 dark:bg-[#1A1A1E] text-slate-600 dark:text-[#94949E] border border-transparent dark:border-[#2D2D33]'
+              filter === "all"
+                ? "bg-indigo-600 text-white"
+                : "bg-slate-100 dark:bg-[#1A1A1E] text-slate-600 dark:text-[#94949E] border border-transparent dark:border-[#2D2D33]"
             }`}
           >
             Todos ({allAlertItems.length})
           </button>
           <button
-            onClick={() => setFilter('warning')}
+            onClick={() => setFilter("warning")}
             className={`px-3 py-1 rounded-xl text-xs font-semibold transition-all ${
-              filter === 'warning'
-                ? 'bg-amber-500 text-white'
-                : 'bg-slate-100 dark:bg-[#1A1A1E] text-slate-600 dark:text-[#94949E] border border-transparent dark:border-[#2D2D33]'
+              filter === "warning"
+                ? "bg-amber-500 text-white"
+                : "bg-slate-100 dark:bg-[#1A1A1E] text-slate-600 dark:text-[#94949E] border border-transparent dark:border-[#2D2D33]"
             }`}
           >
             Por Vencer
           </button>
           <button
-            onClick={() => setFilter('expired')}
+            onClick={() => setFilter("expired")}
             className={`px-3 py-1 rounded-xl text-xs font-semibold transition-all ${
-              filter === 'expired'
-                ? 'bg-red-600 text-white'
-                : 'bg-slate-100 dark:bg-[#1A1A1E] text-slate-600 dark:text-[#94949E] border border-transparent dark:border-[#2D2D33]'
+              filter === "expired"
+                ? "bg-red-600 text-white"
+                : "bg-slate-100 dark:bg-[#1A1A1E] text-slate-600 dark:text-[#94949E] border border-transparent dark:border-[#2D2D33]"
             }`}
           >
             Vencidos
@@ -148,10 +161,15 @@ export const ExpirationAlerts: React.FC = () => {
                       className={badgeProps.className}
                       style={badgeProps.style}
                     >
-                      <PlatformIcon platform={item.sub.serviceName} className="w-3.5 h-3.5 shrink-0" />
+                      <PlatformIcon
+                        platform={item.sub.serviceName}
+                        className="w-3.5 h-3.5 shrink-0"
+                      />
                       <span>{item.sub.serviceName}</span>
                     </span>
-                    <span className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${statusInfo.badge}`}>
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${statusInfo.badge}`}
+                    >
                       {statusInfo.label}
                     </span>
                   </div>
@@ -163,7 +181,12 @@ export const ExpirationAlerts: React.FC = () => {
                   <div className="text-xs text-slate-500 dark:text-slate-400 space-y-1">
                     <div className="flex items-center gap-1.5">
                       <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                      <span>Corte: <strong className="text-slate-700 dark:text-slate-200">{item.sub.cutDate}</strong></span>
+                      <span>
+                        Corte:{" "}
+                        <strong className="text-slate-700 dark:text-slate-200">
+                          {item.sub.cutDate}
+                        </strong>
+                      </span>
                     </div>
                     {item.sub.email && (
                       <div className="truncate text-slate-600 dark:text-slate-300 font-mono text-[11px]">
@@ -172,7 +195,10 @@ export const ExpirationAlerts: React.FC = () => {
                     )}
                     {item.sub.profileName && (
                       <div className="text-[11px]">
-                        Perfil: <span className="font-medium text-slate-800 dark:text-slate-200">{item.sub.profileName}</span>
+                        Perfil:{" "}
+                        <span className="font-medium text-slate-800 dark:text-slate-200">
+                          {item.sub.profileName}
+                        </span>
                         {item.sub.pin && ` (PIN: ${item.sub.pin})`}
                       </div>
                     )}
@@ -180,7 +206,9 @@ export const ExpirationAlerts: React.FC = () => {
                 </div>
 
                 <button
-                  onClick={() => setSelectedSub({ sub: item.sub, phone: item.phone })}
+                  onClick={() =>
+                    setSelectedSub({ sub: item.sub, phone: item.phone })
+                  }
                   className="w-full py-1.5 px-3 rounded-xl bg-emerald-600/10 hover:bg-emerald-600 text-emerald-600 dark:text-emerald-400 hover:text-white border border-emerald-500/20 text-xs font-semibold transition-all flex items-center justify-center gap-2 group"
                 >
                   <MessageSquare className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />

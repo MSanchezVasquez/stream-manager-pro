@@ -12,9 +12,9 @@ import {
 import { AppLogo } from "./AppLogo";
 import { ProfilePopover } from "./Auth/ProfilePopover";
 import { LogoutConfirmModal } from "./Auth/LogoutConfirmModal";
-import { useTheme } from "../context/ThemeContext";
-import { useAuth } from "../context/AuthContext";
-import { useData } from "../context/DataContext";
+import { useThemeStore } from "../store/themeStore";
+import { useAuthStore } from "../store/authStore";
+import { useDataStore } from "../store/dataStore";
 import gsap from "gsap";
 
 interface NavbarProps {
@@ -32,9 +32,9 @@ export const Navbar: React.FC<NavbarProps> = ({
   setActiveTab,
   onOpenAuthModal,
 }) => {
-  const { theme, toggleTheme } = useTheme();
-  const { user, logout } = useAuth();
-  const { clients } = useData();
+  const { themeMode: theme, toggleTheme } = useThemeStore();
+  const { user, logout } = useAuthStore();
+  const clients = useDataStore((state) => state.clients);
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);

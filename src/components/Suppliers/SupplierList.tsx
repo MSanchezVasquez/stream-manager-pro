@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
-import { useData } from '../../context/DataContext';
-import { getPlatformConfig, getPlatformBadgeProps } from '../../utils/platformHelpers';
-import { PlatformIcon } from '../common/PlatformIcon';
-import { CircularSpinner } from '../common/LoadingSpinners';
+import React, { useState } from "react";
+import { useDataStore } from "../../store/dataStore";
+import {
+  getPlatformConfig,
+  getPlatformBadgeProps,
+} from "../../utils/platformHelpers";
+import { PlatformIcon } from "../common/PlatformIcon";
+import { CircularSpinner } from "../common/LoadingSpinners";
 import {
   Truck,
   Tv,
@@ -19,30 +22,41 @@ import {
   Search,
   Eye,
   EyeOff,
-  X
-} from 'lucide-react';
-import { Supplier, SupplierAccount } from '../../types';
-import { SupplierModal } from './SupplierModal';
+  X,
+} from "lucide-react";
+import { Supplier, SupplierAccount } from "../../types";
+import { SupplierModal } from "./SupplierModal";
 
 export const SupplierList: React.FC = () => {
-  const { suppliers, saveSupplier, deleteSupplier } = useData();
+  const { suppliers, saveSupplier, deleteSupplier } = useDataStore();
 
-  const [search, setSearch] = useState('');
-  const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null);
-  const [accountToEdit, setAccountToEdit] = useState<SupplierAccount | null>(null);
+  const [search, setSearch] = useState("");
+  const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(
+    null,
+  );
+  const [accountToEdit, setAccountToEdit] = useState<SupplierAccount | null>(
+    null,
+  );
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [showPasswords, setShowPasswords] = useState<Record<string, boolean>>({});
+  const [showPasswords, setShowPasswords] = useState<Record<string, boolean>>(
+    {},
+  );
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
   // New Supplier Inline Form state
   const [isNewSupplierFormOpen, setIsNewSupplierFormOpen] = useState(false);
-  const [newSupplierName, setNewSupplierName] = useState('');
+  const [newSupplierName, setNewSupplierName] = useState("");
 
   // Delete Supplier Confirmation Modal state
-  const [supplierToDelete, setSupplierToDelete] = useState<Supplier | null>(null);
+  const [supplierToDelete, setSupplierToDelete] = useState<Supplier | null>(
+    null,
+  );
 
   // Delete Account Confirmation Modal state
-  const [accountToDelete, setAccountToDelete] = useState<{ supplier: Supplier; accountId: string } | null>(null);
+  const [accountToDelete, setAccountToDelete] = useState<{
+    supplier: Supplier;
+    accountId: string;
+  } | null>(null);
 
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -60,8 +74,13 @@ export const SupplierList: React.FC = () => {
     if (!accountToDelete) return;
     setIsDeleting(true);
     try {
-      const updatedAccounts = accountToDelete.supplier.accounts.filter((a) => a.id !== accountToDelete.accountId);
-      await saveSupplier({ ...accountToDelete.supplier, accounts: updatedAccounts });
+      const updatedAccounts = accountToDelete.supplier.accounts.filter(
+        (a) => a.id !== accountToDelete.accountId,
+      );
+      await saveSupplier({
+        ...accountToDelete.supplier,
+        accounts: updatedAccounts,
+      });
       setAccountToDelete(null);
     } finally {
       setIsDeleting(false);
@@ -86,10 +105,10 @@ export const SupplierList: React.FC = () => {
     const newSup: Supplier = {
       id: `sup-${Date.now()}`,
       name: newSupplierName.trim(),
-      accounts: []
+      accounts: [],
     };
     await saveSupplier(newSup);
-    setNewSupplierName('');
+    setNewSupplierName("");
     setIsNewSupplierFormOpen(false);
   };
 
@@ -128,7 +147,7 @@ export const SupplierList: React.FC = () => {
             className="px-3.5 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-md shadow-purple-600/20 transition-all shrink-0 cursor-pointer"
           >
             <Plus className="w-4 h-4" />
-            <span>{isNewSupplierFormOpen ? 'Cerrar' : 'Nuevo Proveedor'}</span>
+            <span>{isNewSupplierFormOpen ? "Cerrar" : "Nuevo Proveedor"}</span>
           </button>
         </div>
       </div>
@@ -159,7 +178,7 @@ export const SupplierList: React.FC = () => {
               type="button"
               onClick={() => {
                 setIsNewSupplierFormOpen(false);
-                setNewSupplierName('');
+                setNewSupplierName("");
               }}
               className="px-3.5 py-2 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1F1F24] text-xs font-semibold transition-colors cursor-pointer"
             >
@@ -256,7 +275,10 @@ export const SupplierList: React.FC = () => {
                             className={badgeProps.className}
                             style={badgeProps.style}
                           >
-                            <PlatformIcon platform={acc.serviceName} className="w-3.5 h-3.5 shrink-0" />
+                            <PlatformIcon
+                              platform={acc.serviceName}
+                              className="w-3.5 h-3.5 shrink-0"
+                            />
                             <span>{acc.serviceName}</span>
                           </span>
 
@@ -272,7 +294,12 @@ export const SupplierList: React.FC = () => {
                               <Edit2 className="w-3.5 h-3.5" />
                             </button>
                             <button
-                              onClick={() => setAccountToDelete({ supplier, accountId: acc.id })}
+                              onClick={() =>
+                                setAccountToDelete({
+                                  supplier,
+                                  accountId: acc.id,
+                                })
+                              }
                               className="p-1 text-slate-400 hover:text-red-500 cursor-pointer"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
@@ -289,7 +316,9 @@ export const SupplierList: React.FC = () => {
                             </span>
                           </div>
                           <button
-                            onClick={() => copyToClipboard(acc.email, `semail-${acc.id}`)}
+                            onClick={() =>
+                              copyToClipboard(acc.email, `semail-${acc.id}`)
+                            }
                             className="text-slate-400 hover:text-indigo-500 p-0.5 shrink-0 cursor-pointer"
                           >
                             {copiedField === `semail-${acc.id}` ? (
@@ -305,7 +334,7 @@ export const SupplierList: React.FC = () => {
                           <div className="flex items-center gap-1.5 truncate">
                             <Key className="w-3.5 h-3.5 text-[#94949E] shrink-0" />
                             <span className="font-mono text-[11px] text-slate-800 dark:text-[#E4E4E7] truncate">
-                              {isPassVisible ? acc.password : '••••••••••••'}
+                              {isPassVisible ? acc.password : "••••••••••••"}
                             </span>
                           </div>
                           <div className="flex items-center gap-1 shrink-0">
@@ -320,7 +349,9 @@ export const SupplierList: React.FC = () => {
                               )}
                             </button>
                             <button
-                              onClick={() => copyToClipboard(acc.password, `spass-${acc.id}`)}
+                              onClick={() =>
+                                copyToClipboard(acc.password, `spass-${acc.id}`)
+                              }
                               className="text-slate-400 hover:text-indigo-500 p-0.5 cursor-pointer"
                             >
                               {copiedField === `spass-${acc.id}` ? (
@@ -337,14 +368,24 @@ export const SupplierList: React.FC = () => {
                           {acc.expirationDate && (
                             <div className="flex items-center gap-1.5">
                               <Calendar className="w-3.5 h-3.5 text-amber-500" />
-                              <span>Expira: <strong className="text-slate-800 dark:text-slate-200">{acc.expirationDate}</strong></span>
+                              <span>
+                                Expira:{" "}
+                                <strong className="text-slate-800 dark:text-slate-200">
+                                  {acc.expirationDate}
+                                </strong>
+                              </span>
                             </div>
                           )}
 
                           {acc.browser && (
                             <div className="flex items-center gap-1.5">
                               <Compass className="w-3.5 h-3.5 text-sky-500" />
-                              <span>Navegador: <strong className="text-slate-800 dark:text-slate-200">{acc.browser}</strong></span>
+                              <span>
+                                Navegador:{" "}
+                                <strong className="text-slate-800 dark:text-slate-200">
+                                  {acc.browser}
+                                </strong>
+                              </span>
                             </div>
                           )}
 
@@ -391,7 +432,11 @@ export const SupplierList: React.FC = () => {
               ¿Eliminar Proveedor?
             </h3>
             <p className="text-xs text-center text-slate-500 dark:text-[#94949E] mb-6">
-              ¿Deseas borrar al proveedor <strong className="text-slate-800 dark:text-white font-semibold">{supplierToDelete.name}</strong> y todas sus cuentas asociadas?
+              ¿Deseas borrar al proveedor{" "}
+              <strong className="text-slate-800 dark:text-white font-semibold">
+                {supplierToDelete.name}
+              </strong>{" "}
+              y todas sus cuentas asociadas?
             </p>
             <div className="flex items-center gap-3">
               <button
@@ -408,7 +453,9 @@ export const SupplierList: React.FC = () => {
                 onClick={confirmDeleteSupplier}
                 className="flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-semibold text-xs shadow-md shadow-red-600/20 transition-all flex items-center justify-center gap-2"
               >
-                {isDeleting && <CircularSpinner size={16} className="text-white" />}
+                {isDeleting && (
+                  <CircularSpinner size={16} className="text-white" />
+                )}
                 Eliminar
               </button>
             </div>
@@ -444,7 +491,9 @@ export const SupplierList: React.FC = () => {
                 onClick={confirmDeleteAccount}
                 className="flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-semibold text-xs shadow-md shadow-red-600/20 transition-all flex items-center justify-center gap-2"
               >
-                {isDeleting && <CircularSpinner size={16} className="text-white" />}
+                {isDeleting && (
+                  <CircularSpinner size={16} className="text-white" />
+                )}
                 Eliminar
               </button>
             </div>
@@ -454,4 +503,3 @@ export const SupplierList: React.FC = () => {
     </div>
   );
 };
-

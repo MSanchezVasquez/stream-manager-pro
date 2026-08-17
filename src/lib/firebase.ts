@@ -22,14 +22,6 @@ import {
   User,
 } from "firebase/auth";
 
-import {
-  INITIAL_CLIENTS,
-  INITIAL_SUPPLIERS,
-  INITIAL_FREE_PROFILES,
-  INITIAL_QUICK_LINKS,
-} from "../data/initialData";
-import { Client, Supplier, FreeProfile, QuickLink } from "../types";
-
 // 2. AGREGAMOS la nueva configuración apuntando a tu .env
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,

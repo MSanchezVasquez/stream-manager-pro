@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
-import { useAuth } from "../../context/AuthContext";
-import { useData } from "../../context/DataContext";
+import { useAuthStore } from "../../store/authStore";
+import { useDataStore } from "../../store/dataStore";
 import {
   ShieldCheck,
   Calendar,
@@ -15,9 +15,9 @@ import {
 } from "lucide-react";
 
 export const UserProfile: React.FC = () => {
-  const { user } = useAuth();
+  const { user } = useAuthStore();
   const { clients, suppliers, freeProfiles, exportDataJSON, importDataJSON } =
-    useData();
+    useDataStore();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 

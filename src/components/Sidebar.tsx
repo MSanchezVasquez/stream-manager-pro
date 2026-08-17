@@ -9,7 +9,8 @@ import {
   ExternalLink,
   PlusCircle,
 } from "lucide-react";
-import { useData } from "../context/DataContext";
+
+import { useDataStore } from "../store/dataStore";
 
 interface SidebarProps {
   activeTab: string;
@@ -22,7 +23,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   setActiveTab,
   onOpenAddClientModal,
 }) => {
-  const { clients, suppliers, freeProfiles } = useData();
+  const { clients, suppliers, freeProfiles } = useDataStore();
 
   // SOLUCIÓN: Memorizar los cálculos pesados
   const { activeClientsCount, inactiveClientsCount } = useMemo(() => {

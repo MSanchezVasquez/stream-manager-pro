@@ -1,9 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
-import { X, Plus, Trash2, Tv, User, Calendar, Key, Mail, Shield, Smartphone } from 'lucide-react';
-import { Client, ClientSubscription, StreamingPlatform } from '../../types';
-import { useData } from '../../context/DataContext';
-import { CircularSpinner } from '../common/LoadingSpinners';
+import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
+import {
+  X,
+  Plus,
+  Trash2,
+  Tv,
+  User,
+  Calendar,
+  Key,
+  Mail,
+  Shield,
+  Smartphone,
+} from "lucide-react";
+import { Client, ClientSubscription, StreamingPlatform } from "../../types";
+import { useDataStore } from "../../store/dataStore";
+import { CircularSpinner } from "../common/LoadingSpinners";
+import { ALL_STREAMING_PLATFORMS } from "../../utils/platformHelpers";
 
 interface ClientModalProps {
   isOpen: boolean;
@@ -11,38 +23,16 @@ interface ClientModalProps {
   initialClient?: Client | null;
 }
 
-const PLATFORMS_LIST: StreamingPlatform[] = [
-  'Netflix',
-  'Disney+',
-  'Disney+ Premium',
-  'Disney+ Estándar',
-  'HBO Max',
-  'Max',
-  'Youtube Premium',
-  'Amazon Prime Video',
-  'Paramount Plus',
-  'Spotify Premium',
-  'Crunchyroll',
-  'DGO',
-  'Apple TV',
-  'Vix Premium',
-  'Flujo TV',
-  'Telelatino',
-  'Movistar TV',
-  'NBA League Pass',
-  'Otro'
-];
-
 export const ClientModal: React.FC<ClientModalProps> = ({
   isOpen,
   onClose,
-  initialClient
+  initialClient,
 }) => {
-  const { saveClient, deleteClient } = useData();
+  const { saveClient, deleteClient } = useDataStore();
 
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [status, setStatus] = useState<'active' | 'inactive'>('active');
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [status, setStatus] = useState<"active" | "inactive">("active");
   const [subscriptions, setSubscriptions] = useState<ClientSubscription[]>([]);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -51,27 +41,29 @@ export const ClientModal: React.FC<ClientModalProps> = ({
   useEffect(() => {
     if (initialClient) {
       setName(initialClient.name);
-      setPhone(initialClient.phone || '');
+      setPhone(initialClient.phone || "");
       setStatus(initialClient.status);
       setSubscriptions(initialClient.subscriptions || []);
     } else {
-      setName('');
-      setPhone('');
-      setStatus('active');
+      setName("");
+      setPhone("");
+      setStatus("active");
       setSubscriptions([
         {
           id: `sub-${Date.now()}`,
-          clientId: '',
-          clientName: '',
-          serviceName: 'Netflix',
-          hireDate: new Date().toLocaleDateString('es-ES'),
-          cutDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString('es-ES'),
-          email: '',
-          password: '',
-          profileName: '',
-          pin: '',
-          status: 'active'
-        }
+          clientId: "",
+          clientName: "",
+          serviceName: "Netflix",
+          hireDate: new Date().toLocaleDateString("es-ES"),
+          cutDate: new Date(
+            Date.now() + 30 * 24 * 60 * 60 * 1000,
+          ).toLocaleDateString("es-ES"),
+          email: "",
+          password: "",
+          profileName: "",
+          pin: "",
+          status: "active",
+        },
       ]);
     }
   }, [initialClient, isOpen]);
@@ -83,17 +75,19 @@ export const ClientModal: React.FC<ClientModalProps> = ({
       ...subscriptions,
       {
         id: `sub-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
-        clientId: initialClient?.id || '',
-        clientName: name || 'Cliente',
-        serviceName: 'Disney+',
-        hireDate: new Date().toLocaleDateString('es-ES'),
-        cutDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString('es-ES'),
-        email: '',
-        password: '',
-        profileName: '',
-        pin: '',
-        status: 'active'
-      }
+        clientId: initialClient?.id || "",
+        clientName: name || "Cliente",
+        serviceName: "Disney+",
+        hireDate: new Date().toLocaleDateString("es-ES"),
+        cutDate: new Date(
+          Date.now() + 30 * 24 * 60 * 60 * 1000,
+        ).toLocaleDateString("es-ES"),
+        email: "",
+        password: "",
+        profileName: "",
+        pin: "",
+        status: "active",
+      },
     ]);
   };
 
@@ -101,16 +95,20 @@ export const ClientModal: React.FC<ClientModalProps> = ({
     setSubscriptions(subscriptions.filter((s) => s.id !== subId));
   };
 
-  const handleUpdateSubscription = (subId: string, field: keyof ClientSubscription, value: any) => {
+  const handleUpdateSubscription = (
+    subId: string,
+    field: keyof ClientSubscription,
+    value: any,
+  ) => {
     setSubscriptions(
-      subscriptions.map((s) => (s.id === subId ? { ...s, [field]: value } : s))
+      subscriptions.map((s) => (s.id === subId ? { ...s, [field]: value } : s)),
     );
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) {
-      alert('Por favor ingrese el nombre del cliente');
+      alert("Por favor ingrese el nombre del cliente");
       return;
     }
 
@@ -120,7 +118,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
       const updatedSubscriptions = subscriptions.map((s) => ({
         ...s,
         clientId,
-        clientName: name
+        clientName: name,
       }));
 
       const clientToSave: Client = {
@@ -129,7 +127,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
         phone,
         status,
         createdAt: initialClient?.createdAt || new Date().toISOString(),
-        subscriptions: updatedSubscriptions
+        subscriptions: updatedSubscriptions,
       };
 
       await saveClient(clientToSave);
@@ -141,7 +139,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
   return createPortal(
     <div className="fixed inset-0 z-50 overflow-hidden">
       {/* Backdrop */}
-      <div 
+      <div
         className="fixed inset-0 bg-black/15 dark:bg-black/35 backdrop-brightness-[0.75] transition-all duration-300 animate-fade-in"
         onClick={onClose}
       />
@@ -156,10 +154,12 @@ export const ClientModal: React.FC<ClientModalProps> = ({
               </div>
               <div>
                 <h3 className="font-bold text-lg text-slate-900 dark:text-[#E4E4E7]">
-                  {initialClient ? 'Editar Cliente' : 'Nuevo Cliente'}
+                  {initialClient ? "Editar Cliente" : "Nuevo Cliente"}
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-[#94949E]">
-                  {initialClient ? `Gestión de datos de ${initialClient.name}` : 'Añadir nuevo registro y suscripciones'}
+                  {initialClient
+                    ? `Gestión de datos de ${initialClient.name}`
+                    : "Añadir nuevo registro y suscripciones"}
                 </p>
               </div>
             </div>
@@ -186,7 +186,10 @@ export const ClientModal: React.FC<ClientModalProps> = ({
           </div>
 
           {/* Form Content */}
-          <form onSubmit={handleSubmit} className="flex-1 flex flex-col min-h-0">
+          <form
+            onSubmit={handleSubmit}
+            className="flex-1 flex flex-col min-h-0"
+          >
             <div className="flex-1 overflow-y-auto p-6 space-y-6 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
               {/* General info */}
               <div className="space-y-4 p-4 rounded-2xl bg-slate-50 dark:bg-[#181820] border border-slate-200 dark:border-[#25252D]">
@@ -232,7 +235,9 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                   </label>
                   <select
                     value={status}
-                    onChange={(e) => setStatus(e.target.value as 'active' | 'inactive')}
+                    onChange={(e) =>
+                      setStatus(e.target.value as "active" | "inactive")
+                    }
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-[#2D2D35] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-xs focus:ring-2 focus:ring-indigo-500 font-medium"
                   >
                     <option value="active">Activo</option>
@@ -288,11 +293,15 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                           <select
                             value={sub.serviceName}
                             onChange={(e) =>
-                              handleUpdateSubscription(sub.id, 'serviceName', e.target.value)
+                              handleUpdateSubscription(
+                                sub.id,
+                                "serviceName",
+                                e.target.value,
+                              )
                             }
                             className="w-full p-2 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-xs font-medium"
                           >
-                            {PLATFORMS_LIST.map((p) => (
+                            {ALL_STREAMING_PLATFORMS.map((p) => (
                               <option key={p} value={p}>
                                 {p}
                               </option>
@@ -309,7 +318,11 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                             placeholder="DD/MM/YY"
                             value={sub.hireDate}
                             onChange={(e) =>
-                              handleUpdateSubscription(sub.id, 'hireDate', e.target.value)
+                              handleUpdateSubscription(
+                                sub.id,
+                                "hireDate",
+                                e.target.value,
+                              )
                             }
                             className="w-full p-2 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-xs"
                           />
@@ -324,7 +337,11 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                             placeholder="DD/MM/YY"
                             value={sub.cutDate}
                             onChange={(e) =>
-                              handleUpdateSubscription(sub.id, 'cutDate', e.target.value)
+                              handleUpdateSubscription(
+                                sub.id,
+                                "cutDate",
+                                e.target.value,
+                              )
                             }
                             className="w-full p-2 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-xs font-semibold text-amber-600 dark:text-amber-400"
                           />
@@ -339,9 +356,13 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                           </label>
                           <input
                             type="email"
-                            value={sub.email || ''}
+                            value={sub.email || ""}
                             onChange={(e) =>
-                              handleUpdateSubscription(sub.id, 'email', e.target.value)
+                              handleUpdateSubscription(
+                                sub.id,
+                                "email",
+                                e.target.value,
+                              )
                             }
                             placeholder="correo@ejemplo.com"
                             className="w-full p-2 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-xs font-mono"
@@ -355,9 +376,13 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                           </label>
                           <input
                             type="text"
-                            value={sub.password || ''}
+                            value={sub.password || ""}
                             onChange={(e) =>
-                              handleUpdateSubscription(sub.id, 'password', e.target.value)
+                              handleUpdateSubscription(
+                                sub.id,
+                                "password",
+                                e.target.value,
+                              )
                             }
                             placeholder="Contraseña"
                             className="w-full p-2 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-xs font-mono"
@@ -372,9 +397,13 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                           </label>
                           <input
                             type="text"
-                            value={sub.profileName || ''}
+                            value={sub.profileName || ""}
                             onChange={(e) =>
-                              handleUpdateSubscription(sub.id, 'profileName', e.target.value)
+                              handleUpdateSubscription(
+                                sub.id,
+                                "profileName",
+                                e.target.value,
+                              )
                             }
                             placeholder="Ej: Valentina / Perfil 1"
                             className="w-full p-2 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-xs"
@@ -388,9 +417,13 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                           </label>
                           <input
                             type="text"
-                            value={sub.pin || ''}
+                            value={sub.pin || ""}
                             onChange={(e) =>
-                              handleUpdateSubscription(sub.id, 'pin', e.target.value)
+                              handleUpdateSubscription(
+                                sub.id,
+                                "pin",
+                                e.target.value,
+                              )
                             }
                             placeholder="Ej: 1234"
                             className="w-full p-2 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-xs font-mono"
@@ -417,8 +450,10 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                 disabled={isSaving}
                 className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-lg shadow-indigo-600/20 transition-all flex items-center gap-2 disabled:opacity-60"
               >
-                {isSaving && <CircularSpinner size={16} className="text-white" />}
-                {initialClient ? 'Guardar Cambios' : 'Registrar Cliente'}
+                {isSaving && (
+                  <CircularSpinner size={16} className="text-white" />
+                )}
+                {initialClient ? "Guardar Cambios" : "Registrar Cliente"}
               </button>
             </div>
           </form>
@@ -440,7 +475,11 @@ export const ClientModal: React.FC<ClientModalProps> = ({
               ¿Eliminar Cliente?
             </h3>
             <p className="text-sm text-center text-slate-500 dark:text-[#94949E] mb-6">
-              ¿Estás seguro de que deseas eliminar a <strong className="text-slate-800 dark:text-white font-semibold">{initialClient.name}</strong>?
+              ¿Estás seguro de que deseas eliminar a{" "}
+              <strong className="text-slate-800 dark:text-white font-semibold">
+                {initialClient.name}
+              </strong>
+              ?
             </p>
             <div className="flex items-center gap-3">
               <button
@@ -466,7 +505,9 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                 }}
                 className="flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-semibold text-xs shadow-md shadow-red-600/20 transition-all flex items-center justify-center gap-2"
               >
-                {isDeleting && <CircularSpinner size={16} className="text-white" />}
+                {isDeleting && (
+                  <CircularSpinner size={16} className="text-white" />
+                )}
                 Eliminar
               </button>
             </div>
@@ -474,6 +515,6 @@ export const ClientModal: React.FC<ClientModalProps> = ({
         </div>
       )}
     </div>,
-    document.body
+    document.body,
   );
 };

@@ -1,8 +1,12 @@
-import React, { useState } from 'react';
-import { useData } from '../../context/DataContext';
-import { getPlatformConfig, getPlatformBadgeProps } from '../../utils/platformHelpers';
-import { PlatformIcon } from '../common/PlatformIcon';
-import { CircularSpinner } from '../common/LoadingSpinners';
+import React, { useState } from "react";
+import { useDataStore } from "../../store/dataStore";
+import {
+  getPlatformConfig,
+  getPlatformBadgeProps,
+  ALL_STREAMING_PLATFORMS,
+} from "../../utils/platformHelpers";
+import { PlatformIcon } from "../common/PlatformIcon";
+import { CircularSpinner } from "../common/LoadingSpinners";
 import {
   Sparkles,
   Tv,
@@ -16,43 +20,36 @@ import {
   Check,
   Search,
   Eye,
-  EyeOff
-} from 'lucide-react';
-import { FreeProfile, StreamingPlatform } from '../../types';
-import { AssignProfileModal } from './AssignProfileModal';
-
-const PLATFORMS_LIST: StreamingPlatform[] = [
-  'Amazon Prime Video',
-  'Crunchyroll',
-  'Disney+ Estándar',
-  'Disney+ Premium',
-  'HBO Max',
-  'NBA League Pass',
-  'Spotify Premium',
-  'Vix Premium',
-  'Netflix',
-  'Otro'
-];
+  EyeOff,
+} from "lucide-react";
+import { FreeProfile, StreamingPlatform } from "../../types";
+import { AssignProfileModal } from "./AssignProfileModal";
 
 export const FreeProfilesList: React.FC = () => {
-  const { freeProfiles, saveFreeProfile, deleteFreeProfile } = useData();
+  const { freeProfiles, saveFreeProfile, deleteFreeProfile } = useDataStore();
 
-  const [search, setSearch] = useState('');
-  const [selectedProfileForAssign, setSelectedProfileForAssign] = useState<FreeProfile | null>(null);
-  const [showPasswords, setShowPasswords] = useState<Record<string, boolean>>({});
+  const [search, setSearch] = useState("");
+  const [selectedProfileForAssign, setSelectedProfileForAssign] =
+    useState<FreeProfile | null>(null);
+  const [showPasswords, setShowPasswords] = useState<Record<string, boolean>>(
+    {},
+  );
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
   // Profile deletion modal
-  const [profileToDelete, setProfileToDelete] = useState<FreeProfile | null>(null);
+  const [profileToDelete, setProfileToDelete] = useState<FreeProfile | null>(
+    null,
+  );
   const [isDeleting, setIsDeleting] = useState(false);
 
   // New profile modal state
   const [isNewProfileModalOpen, setIsNewProfileModalOpen] = useState(false);
-  const [newService, setNewService] = useState<StreamingPlatform>('Amazon Prime Video');
+  const [newService, setNewService] =
+    useState<StreamingPlatform>("Amazon Prime Video");
   const [newQuantity, setNewQuantity] = useState<number>(1);
-  const [newEmail, setNewEmail] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [newBrowser, setNewBrowser] = useState('Google Chrome');
+  const [newEmail, setNewEmail] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [newBrowser, setNewBrowser] = useState("Google Chrome");
 
   const togglePassword = (id: string) => {
     setShowPasswords((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -78,7 +75,7 @@ export const FreeProfilesList: React.FC = () => {
   const handleAddProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newEmail || !newPassword) {
-      alert('Por favor complete correo y contraseña');
+      alert("Por favor complete correo y contraseña");
       return;
     }
 
@@ -88,13 +85,13 @@ export const FreeProfilesList: React.FC = () => {
       quantity: newQuantity,
       email: newEmail,
       password: newPassword,
-      browser: newBrowser
+      browser: newBrowser,
     };
 
     await saveFreeProfile(newProf);
     setIsNewProfileModalOpen(false);
-    setNewEmail('');
-    setNewPassword('');
+    setNewEmail("");
+    setNewPassword("");
   };
 
   const filteredProfiles = freeProfiles.filter((p) => {
@@ -172,7 +169,10 @@ export const FreeProfilesList: React.FC = () => {
                     className={badgeProps.className}
                     style={badgeProps.style}
                   >
-                    <PlatformIcon platform={prof.serviceName} className="w-3.5 h-3.5 shrink-0" />
+                    <PlatformIcon
+                      platform={prof.serviceName}
+                      className="w-3.5 h-3.5 shrink-0"
+                    />
                     <span>{prof.serviceName}</span>
                   </span>
 
@@ -190,7 +190,9 @@ export const FreeProfilesList: React.FC = () => {
                     </span>
                   </div>
                   <button
-                    onClick={() => copyToClipboard(prof.email, `fpemail-${prof.id}`)}
+                    onClick={() =>
+                      copyToClipboard(prof.email, `fpemail-${prof.id}`)
+                    }
                     className="text-slate-400 hover:text-amber-500 p-0.5 shrink-0 cursor-pointer"
                   >
                     {copiedField === `fpemail-${prof.id}` ? (
@@ -206,7 +208,7 @@ export const FreeProfilesList: React.FC = () => {
                   <div className="flex items-center gap-1.5 truncate">
                     <Key className="w-3.5 h-3.5 text-[#94949E] shrink-0" />
                     <span className="font-mono text-[11px] text-slate-800 dark:text-[#E4E4E7] truncate">
-                      {isPassVisible ? prof.password : '••••••••••••'}
+                      {isPassVisible ? prof.password : "••••••••••••"}
                     </span>
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
@@ -221,7 +223,9 @@ export const FreeProfilesList: React.FC = () => {
                       )}
                     </button>
                     <button
-                      onClick={() => copyToClipboard(prof.password, `fppass-${prof.id}`)}
+                      onClick={() =>
+                        copyToClipboard(prof.password, `fppass-${prof.id}`)
+                      }
                       className="text-slate-400 hover:text-amber-500 p-0.5 cursor-pointer"
                     >
                       {copiedField === `fppass-${prof.id}` ? (
@@ -236,7 +240,10 @@ export const FreeProfilesList: React.FC = () => {
                 {prof.browser && (
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
                     <Compass className="w-3.5 h-3.5 text-sky-500" />
-                    Navegador: <strong className="text-slate-700 dark:text-slate-300">{prof.browser}</strong>
+                    Navegador:{" "}
+                    <strong className="text-slate-700 dark:text-slate-300">
+                      {prof.browser}
+                    </strong>
                   </p>
                 )}
 
@@ -287,10 +294,12 @@ export const FreeProfilesList: React.FC = () => {
                 </label>
                 <select
                   value={newService}
-                  onChange={(e) => setNewService(e.target.value as StreamingPlatform)}
+                  onChange={(e) =>
+                    setNewService(e.target.value as StreamingPlatform)
+                  }
                   className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-xs"
                 >
-                  {PLATFORMS_LIST.map((p) => (
+                  {ALL_STREAMING_PLATFORMS.map((p) => (
                     <option key={p} value={p}>
                       {p}
                     </option>
@@ -306,7 +315,9 @@ export const FreeProfilesList: React.FC = () => {
                   type="number"
                   min={1}
                   value={newQuantity}
-                  onChange={(e) => setNewQuantity(parseInt(e.target.value, 10) || 1)}
+                  onChange={(e) =>
+                    setNewQuantity(parseInt(e.target.value, 10) || 1)
+                  }
                   className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-xs"
                 />
               </div>
@@ -383,7 +394,11 @@ export const FreeProfilesList: React.FC = () => {
               ¿Eliminar Perfil Libre?
             </h3>
             <p className="text-xs text-center text-slate-500 dark:text-[#94949E] mb-6">
-              ¿Deseas borrar el perfil de <strong className="text-slate-800 dark:text-white font-semibold">{profileToDelete.serviceName}</strong> ({profileToDelete.email})?
+              ¿Deseas borrar el perfil de{" "}
+              <strong className="text-slate-800 dark:text-white font-semibold">
+                {profileToDelete.serviceName}
+              </strong>{" "}
+              ({profileToDelete.email})?
             </p>
             <div className="flex items-center gap-3">
               <button
@@ -400,7 +415,9 @@ export const FreeProfilesList: React.FC = () => {
                 onClick={confirmDeleteProfile}
                 className="flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-semibold text-xs shadow-md shadow-red-600/20 transition-all flex items-center justify-center gap-2"
               >
-                {isDeleting && <CircularSpinner size={16} className="text-white" />}
+                {isDeleting && (
+                  <CircularSpinner size={16} className="text-white" />
+                )}
                 Eliminar
               </button>
             </div>
@@ -410,4 +427,3 @@ export const FreeProfilesList: React.FC = () => {
     </div>
   );
 };
-

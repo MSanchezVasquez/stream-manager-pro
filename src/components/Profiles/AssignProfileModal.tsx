@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { X, UserCheck, Sparkles } from 'lucide-react';
-import { PlatformIcon } from '../common/PlatformIcon';
-import { FreeProfile } from '../../types';
-import { useData } from '../../context/DataContext';
-import { CircularSpinner } from '../common/LoadingSpinners';
+import React, { useState } from "react";
+import { X, UserCheck, Sparkles } from "lucide-react";
+import { PlatformIcon } from "../common/PlatformIcon";
+import { FreeProfile } from "../../types";
+import { useDataStore } from "../../store/dataStore";
+import { CircularSpinner } from "../common/LoadingSpinners";
 
 interface AssignProfileModalProps {
   isOpen: boolean;
@@ -14,29 +14,32 @@ interface AssignProfileModalProps {
 export const AssignProfileModal: React.FC<AssignProfileModalProps> = ({
   isOpen,
   onClose,
-  profile
+  profile,
 }) => {
-  const { clients, assignFreeProfileToClient } = useData();
-  const [selectedClientId, setSelectedClientId] = useState<string>('');
+  const { clients, assignFreeProfileToClient } = useDataStore();
+  const [selectedClientId, setSelectedClientId] = useState<string>("");
   const [isAssigning, setIsAssigning] = useState<boolean>(false);
 
   if (!isOpen) return null;
 
-  const activeClients = clients.filter((c) => c.status === 'active');
+  const activeClients = clients.filter((c) => c.status === "active");
 
   const handleAssign = async () => {
     if (!selectedClientId) {
-      alert('Seleccione un cliente de la lista');
+      alert("Seleccione un cliente de la lista");
       return;
     }
 
     setIsAssigning(true);
     try {
-      const success = await assignFreeProfileToClient(profile, selectedClientId);
+      const success = await assignFreeProfileToClient(
+        profile,
+        selectedClientId,
+      );
       if (success) {
         onClose();
       } else {
-        alert('Ocurrió un error al asignar el perfil.');
+        alert("Ocurrió un error al asignar el perfil.");
       }
     } finally {
       setIsAssigning(false);
@@ -62,8 +65,13 @@ export const AssignProfileModal: React.FC<AssignProfileModalProps> = ({
               Asignar Perfil Libre
             </h3>
             <p className="text-xs text-slate-500 dark:text-[#94949E] flex items-center gap-1.5">
-              <PlatformIcon platform={profile.serviceName} className="w-4 h-4" />
-              <span>{profile.serviceName} - {profile.email}</span>
+              <PlatformIcon
+                platform={profile.serviceName}
+                className="w-4 h-4"
+              />
+              <span>
+                {profile.serviceName} - {profile.email}
+              </span>
             </p>
           </div>
         </div>
@@ -88,7 +96,8 @@ export const AssignProfileModal: React.FC<AssignProfileModalProps> = ({
           </div>
 
           <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-700 dark:text-amber-300">
-            💡 Al asignar, se creará un servicio para este cliente y se reducirá el stock disponible ({profile.quantity} disponible(s)).
+            💡 Al asignar, se creará un servicio para este cliente y se reducirá
+            el stock disponible ({profile.quantity} disponible(s)).
           </div>
         </div>
 

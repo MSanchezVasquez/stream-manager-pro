@@ -12,13 +12,14 @@ import {
   Users,
   Bell,
 } from "lucide-react";
-import { useAuth } from "../../context/AuthContext";
-import { useTheme } from "../../context/ThemeContext";
+import { useAuthStore } from "../../store/authStore";
+import { useThemeStore } from "../../store/themeStore";
 import { CircularSpinner } from "../common/LoadingSpinners";
 
 export const AuthScreen: React.FC = () => {
-  const { loginWithEmail, registerWithEmail, loginWithGoogle } = useAuth();
-  const { theme, toggleTheme } = useTheme();
+  const { loginWithEmail, registerWithEmail, loginWithGoogle } = useAuthStore();
+  const theme = useThemeStore((state) => state.themeMode);
+  const toggleTheme = useThemeStore((state) => state.toggleTheme);
 
   const [isRegister, setIsRegister] = useState(false);
   const [showPassword, setShowPassword] = useState(false);

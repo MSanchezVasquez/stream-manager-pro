@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
-import { useData } from '../../context/DataContext';
-import { CircularSpinner } from '../common/LoadingSpinners';
-import { ExternalLink, Globe, Plus, Trash2, Copy, Check } from 'lucide-react';
-import { QuickLink } from '../../types';
+import React, { useState } from "react";
+import { useDataStore } from "../../store/dataStore";
+import { CircularSpinner } from "../common/LoadingSpinners";
+import { ExternalLink, Globe, Plus, Trash2, Copy, Check } from "lucide-react";
+import { QuickLink } from "../../types";
 
 export const QuickLinksView: React.FC = () => {
-  const { quickLinks, saveQuickLink, deleteQuickLink } = useData();
+  const { quickLinks, saveQuickLink, deleteQuickLink } = useDataStore();
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [title, setTitle] = useState('');
-  const [url, setUrl] = useState('');
+  const [title, setTitle] = useState("");
+  const [url, setUrl] = useState("");
 
   // Delete modal state
   const [linkToDelete, setLinkToDelete] = useState<QuickLink | null>(null);
@@ -38,20 +38,20 @@ export const QuickLinksView: React.FC = () => {
     if (!title || !url) return;
 
     let fullUrl = url.trim();
-    if (!fullUrl.startsWith('http://') && !fullUrl.startsWith('https://')) {
+    if (!fullUrl.startsWith("http://") && !fullUrl.startsWith("https://")) {
       fullUrl = `https://${fullUrl}`;
     }
 
     const newLink: QuickLink = {
       id: `ql-${Date.now()}`,
       title: title.trim(),
-      url: fullUrl
+      url: fullUrl,
     };
 
     await saveQuickLink(newLink);
     setIsAddModalOpen(false);
-    setTitle('');
-    setUrl('');
+    setTitle("");
+    setUrl("");
   };
 
   return (
@@ -205,7 +205,11 @@ export const QuickLinksView: React.FC = () => {
               ¿Eliminar Enlace Rápido?
             </h3>
             <p className="text-xs text-center text-slate-500 dark:text-[#94949E] mb-6">
-              ¿Deseas eliminar el enlace <strong className="text-slate-800 dark:text-white font-semibold">{linkToDelete.title}</strong>?
+              ¿Deseas eliminar el enlace{" "}
+              <strong className="text-slate-800 dark:text-white font-semibold">
+                {linkToDelete.title}
+              </strong>
+              ?
             </p>
             <div className="flex items-center gap-3">
               <button
@@ -222,7 +226,9 @@ export const QuickLinksView: React.FC = () => {
                 onClick={confirmDeleteLink}
                 className="flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-semibold text-xs shadow-md shadow-red-600/20 transition-all flex items-center justify-center gap-2"
               >
-                {isDeleting && <CircularSpinner size={16} className="text-white" />}
+                {isDeleting && (
+                  <CircularSpinner size={16} className="text-white" />
+                )}
                 Eliminar
               </button>
             </div>
@@ -232,4 +238,3 @@ export const QuickLinksView: React.FC = () => {
     </div>
   );
 };
-

@@ -1,32 +1,26 @@
 export type StreamingPlatform =
-  | 'Netflix'
-  | 'Disney+'
-  | 'Disney+ Premium'
-  | 'Disney+ Estándar'
-  | 'HBO Max'
-  | 'Max'
-  | 'Youtube Premium'
-  | 'Amazon Prime Video'
-  | 'Prime Video'
-  | 'Paramount Plus'
-  | 'Paramount+'
-  | 'Spotify Premium'
-  | 'Spotify'
-  | 'Crunchyroll'
-  | 'Crunchyroll Premium'
-  | 'DGO'
-  | 'Apple TV'
-  | 'Apple Music'
-  | 'Vix Premium'
-  | 'Vix'
-  | 'Flujo TV'
-  | 'Telelatino'
-  | 'Movistar TV'
-  | 'NBA League Pass'
-  | 'PornHub'
-  | 'Otro';
+  | "Amazon Prime Video"
+  | "Apple TV"
+  | "Crunchyroll"
+  | "DGO"
+  | "Disney+"
+  | "Disney+ Estándar"
+  | "Disney+ Premium"
+  | "Flujo TV"
+  | "HBO Max"
+  | "Max"
+  | "Movistar TV"
+  | "NBA League Pass"
+  | "Netflix"
+  | "Netflix Perfil Privado"
+  | "Paramount Plus"
+  | "Spotify Premium"
+  | "Telelatino"
+  | "Vix Premium"
+  | "Youtube Premium"
+  | "Otro";
 
-export type SubscriptionStatus = 'active' | 'expired' | 'warning' | 'inactive';
+export type SubscriptionStatus = "active" | "expired" | "warning" | "inactive";
 
 export interface ClientSubscription {
   id: string;
@@ -48,7 +42,7 @@ export interface ClientSubscription {
 export interface Client {
   id: string;
   name: string;
-  status: 'active' | 'inactive';
+  status: "active" | "inactive";
   phone?: string;
   notes?: string;
   createdAt: string;
@@ -66,7 +60,7 @@ export interface SupplierAccount {
   browser?: string;
   webmailUrl?: string;
   notes?: string;
-  status: 'active' | 'expired' | 'revision';
+  status: "active" | "expired" | "revision";
 }
 
 export interface Supplier {

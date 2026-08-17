@@ -1,10 +1,19 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { X, LogIn, Mail, Lock, LogOut, CheckCircle2, ShieldCheck, UserCheck } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
-import { CircularSpinner } from '../common/LoadingSpinners';
-import gsap from 'gsap';
+import React, { useState, useEffect, useRef } from "react";
+import {
+  X,
+  LogIn,
+  Mail,
+  Lock,
+  LogOut,
+  CheckCircle2,
+  ShieldCheck,
+  UserCheck,
+} from "lucide-react";
+import { useAuthStore } from "../../store/authStore";
+import { CircularSpinner } from "../common/LoadingSpinners";
+import gsap from "gsap";
 
-import { LogoutConfirmModal } from './LogoutConfirmModal';
+import { LogoutConfirmModal } from "./LogoutConfirmModal";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -12,10 +21,10 @@ interface AuthModalProps {
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
-  const { user, loginWithEmail, loginWithGoogle, logout } = useAuth();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [errorMsg, setErrorMsg] = useState('');
+  const { user, loginWithEmail, loginWithGoogle, logout } = useAuthStore();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isVisible, setIsVisible] = useState(isOpen);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
@@ -28,10 +37,24 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
       setIsVisible(true);
       requestAnimationFrame(() => {
         if (overlayRef.current) {
-          gsap.fromTo(overlayRef.current, { opacity: 0 }, { opacity: 1, duration: 0.25, ease: 'power2.out' });
+          gsap.fromTo(
+            overlayRef.current,
+            { opacity: 0 },
+            { opacity: 1, duration: 0.25, ease: "power2.out" },
+          );
         }
         if (modalRef.current) {
-          gsap.fromTo(modalRef.current, { scale: 0.88, opacity: 0, y: 15 }, { scale: 1, opacity: 1, y: 0, duration: 0.3, ease: 'back.out(1.5)' });
+          gsap.fromTo(
+            modalRef.current,
+            { scale: 0.88, opacity: 0, y: 15 },
+            {
+              scale: 1,
+              opacity: 1,
+              y: 0,
+              duration: 0.3,
+              ease: "back.out(1.5)",
+            },
+          );
         }
       });
     } else if (isVisible) {
@@ -41,17 +64,21 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
   const handleAnimatedClose = () => {
     if (modalRef.current && overlayRef.current) {
-      gsap.to(overlayRef.current, { opacity: 0, duration: 0.2, ease: 'power2.in' });
+      gsap.to(overlayRef.current, {
+        opacity: 0,
+        duration: 0.2,
+        ease: "power2.in",
+      });
       gsap.to(modalRef.current, {
         scale: 0.9,
         opacity: 0,
         y: 10,
         duration: 0.2,
-        ease: 'power2.in',
+        ease: "power2.in",
         onComplete: () => {
           setIsVisible(false);
           onClose();
-        }
+        },
       });
     } else {
       setIsVisible(false);
@@ -62,17 +89,17 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   if (!isOpen && !isVisible) return null;
 
   const handleGoogleLogin = async () => {
-    setErrorMsg('');
+    setErrorMsg("");
     setIsSubmitting(true);
     try {
       await loginWithGoogle();
       handleAnimatedClose();
     } catch (err: any) {
       console.error(err);
-      if (err.code === 'auth/popup-closed-by-user') {
-        setErrorMsg('Se cerró la ventana de inicio con Google.');
+      if (err.code === "auth/popup-closed-by-user") {
+        setErrorMsg("Se cerró la ventana de inicio con Google.");
       } else {
-        setErrorMsg(err.message || 'Error al iniciar sesión con Google.');
+        setErrorMsg(err.message || "Error al iniciar sesión con Google.");
       }
     } finally {
       setIsSubmitting(false);
@@ -81,13 +108,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorMsg('');
+    setErrorMsg("");
     setIsSubmitting(true);
     try {
       await loginWithEmail(email, password);
       handleAnimatedClose();
     } catch (err: any) {
-      setErrorMsg(err.message || 'Error al iniciar sesión');
+      setErrorMsg(err.message || "Error al iniciar sesión");
     } finally {
       setIsSubmitting(false);
     }
@@ -117,14 +144,20 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
           <div className="flex items-center justify-between pb-4 mb-5 border-b border-slate-100 dark:border-[#25252D]">
             <div className="flex items-center gap-3">
               <div className="p-2.5 rounded-2xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
-                {user ? <UserCheck className="w-5 h-5" /> : <LogIn className="w-5 h-5" />}
+                {user ? (
+                  <UserCheck className="w-5 h-5" />
+                ) : (
+                  <LogIn className="w-5 h-5" />
+                )}
               </div>
               <div>
                 <h3 className="font-bold text-base text-slate-900 dark:text-white">
-                  {user ? 'Mi Cuenta' : 'Iniciar Sesión'}
+                  {user ? "Mi Cuenta" : "Iniciar Sesión"}
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-[#94949E]">
-                  {user ? 'Información y estado de sesión' : 'Accede a tu cuenta de streaming'}
+                  {user
+                    ? "Información y estado de sesión"
+                    : "Accede a tu cuenta de streaming"}
                 </p>
               </div>
             </div>
@@ -144,24 +177,37 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
               <div className="p-5 rounded-2xl bg-slate-50 dark:bg-[#1B1B22] border border-slate-200 dark:border-[#2D2D33] space-y-4">
                 <div className="flex items-center gap-3">
                   {user.photoURL ? (
-                    <img src={user.photoURL} alt="Avatar" className="w-12 h-12 rounded-full object-cover border-2 border-indigo-500/30" referrerPolicy="no-referrer" />
+                    <img
+                      src={user.photoURL}
+                      alt="Avatar"
+                      className="w-12 h-12 rounded-full object-cover border-2 border-indigo-500/30"
+                      referrerPolicy="no-referrer"
+                    />
                   ) : (
                     <div className="w-12 h-12 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-md">
-                      {user.email ? user.email.charAt(0).toUpperCase() : 'U'}
+                      {user.email ? user.email.charAt(0).toUpperCase() : "U"}
                     </div>
                   )}
                   <div className="overflow-hidden">
-                    <p className="text-[11px] text-[#94949E] uppercase font-bold tracking-wider">Usuario Autenticado</p>
+                    <p className="text-[11px] text-[#94949E] uppercase font-bold tracking-wider">
+                      Usuario Autenticado
+                    </p>
                     <p className="font-bold text-sm text-slate-900 dark:text-white truncate">
                       {user.displayName || user.email}
                     </p>
-                    {user.email && <p className="text-xs text-slate-500 dark:text-[#94949E] truncate">{user.email}</p>}
+                    {user.email && (
+                      <p className="text-xs text-slate-500 dark:text-[#94949E] truncate">
+                        {user.email}
+                      </p>
+                    )}
                   </div>
                 </div>
 
                 <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-400 flex items-center gap-2 text-xs font-semibold">
                   <CheckCircle2 className="w-4 h-4 shrink-0" />
-                  <span>Cuentas y clientes vinculados permanentemente a tu perfil</span>
+                  <span>
+                    Cuentas y clientes vinculados permanentemente a tu perfil
+                  </span>
                 </div>
               </div>
 
@@ -169,13 +215,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-[#94949E]">Autenticación</span>
                   <span className="font-medium text-slate-800 dark:text-white">
-                    {user.providerData?.[0]?.providerId === 'google.com' ? 'Google' : 'Correo / Contraseña'}
+                    {user.providerData?.[0]?.providerId === "google.com"
+                      ? "Google"
+                      : "Correo / Contraseña"}
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-[#94949E]">Guardado Cloud</span>
                   <span className="text-emerald-500 font-medium flex items-center gap-1">
-                    <ShieldCheck className="w-3.5 h-3.5" /> En tiempo real (Firestore)
+                    <ShieldCheck className="w-3.5 h-3.5" /> En tiempo real
+                    (Firestore)
                   </span>
                 </div>
               </div>
@@ -286,7 +335,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                   disabled={isSubmitting}
                   className="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-60"
                 >
-                  {isSubmitting && <CircularSpinner size={16} className="text-white" />}
+                  {isSubmitting && (
+                    <CircularSpinner size={16} className="text-white" />
+                  )}
                   <span>Ingresar a mi Cuenta</span>
                 </button>
               </form>
@@ -302,5 +353,3 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     </div>
   );
 };
-
-

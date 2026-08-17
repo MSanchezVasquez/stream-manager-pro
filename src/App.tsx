@@ -97,6 +97,8 @@ function MainApp() {
               </div>
             )}
 
+            {activeTab === "profile" && <UserProfile />}
+
             {activeTab === "clients_active" && (
               <ClientList
                 statusFilter="active"
@@ -118,24 +120,6 @@ function MainApp() {
             {activeTab === "alerts" && <ExpirationAlerts />}
 
             {activeTab === "links" && <QuickLinksView />}
-
-            {activeTab === "dashboard" && (
-              <div className="space-y-8">
-                <OverviewCards onNavigateTab={(tab) => setActiveTab(tab)} />
-                <ExpirationAlerts />
-                <PlatformDistributionChart />
-              </div>
-            )}
-
-            {/* AÑADE ESTA LÍNEA AQUÍ */}
-            {activeTab === "profile" && <UserProfile />}
-
-            {activeTab === "clients_active" && (
-              <ClientList
-                statusFilter="active"
-                globalSearchQuery={searchQuery}
-              />
-            )}
           </div>
         </div>
       </main>

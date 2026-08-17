@@ -13,8 +13,8 @@ import {
   ShieldCheck,
   Tv,
 } from "lucide-react";
-import { useAuth } from "../../context/AuthContext";
-import { useTheme } from "../../context/ThemeContext";
+import { useAuthStore } from "../../store/authStore";
+import { useThemeStore } from "../../store/themeStore";
 import gsap from "gsap";
 
 import { LogoutConfirmModal } from "./LogoutConfirmModal";
@@ -63,8 +63,8 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
   onOpenAuthModal,
   onOpenProfile,
 }) => {
-  const { user, logout } = useAuth();
-  const { themeMode, setThemeMode } = useTheme();
+  const { user, logout } = useAuthStore();
+  const { themeMode, setThemeMode } = useThemeStore();
 
   const [selectedLangCode, setSelectedLangCode] = useState<string>("es");
   const [autoDetectLang, setAutoDetectLang] = useState<boolean>(true);
