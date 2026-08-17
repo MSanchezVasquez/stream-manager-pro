@@ -10,7 +10,11 @@ import {
   signInWithPopup,
   User,
 } from "../lib/firebase";
-import { AuthResponse } from "../context/AuthContext";
+
+export interface AuthResponse {
+  success: boolean;
+  error?: string;
+}
 
 interface AuthState {
   user: User | null;
