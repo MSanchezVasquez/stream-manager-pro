@@ -47,6 +47,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   const logoRef = useRef<HTMLDivElement>(null);
   const themeBtnRef = useRef<HTMLButtonElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const avatarBtnRef = useRef<HTMLButtonElement>(null);
 
   // Calculate total alerts (cut-off in <= 5 days or expired)
   const alertCount = clients.reduce((acc, client) => {
@@ -177,6 +178,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* User Profile Avatar / Auth Status */}
           <div className="relative shrink-0 flex items-center justify-center">
             <button
+              ref={avatarBtnRef}
               onClick={() => setIsPopoverOpen(!isPopoverOpen)}
               className="relative w-9 h-9 shrink-0 rounded-full flex items-center justify-center focus:outline-none cursor-pointer overflow-hidden transition-transform"
               title="Mi Perfil"
@@ -218,6 +220,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <ProfilePopover
               isOpen={isPopoverOpen}
               onClose={() => setIsPopoverOpen(false)}
+              triggerRef={avatarBtnRef}
               onOpenSettings={onOpenAuthModal}
               onOpenAuthModal={onOpenAuthModal}
               onOpenProfile={() => setActiveTab("profile")}

@@ -26,6 +26,10 @@ interface ProfilePopoverProps {
   onRequestLogout?: () => void;
   onOpenAuthModal?: () => void;
   onOpenProfile?: () => void;
+  /** Ref del botón que abre/cierra el popover (ej. el avatar en el Navbar).
+   * Se usa para que el listener de "clic afuera" no lo cierre y lo vuelva
+   * a abrir en el mismo clic. */
+  triggerRef?: React.RefObject<HTMLElement>;
 }
 
 const LANGUAGES = [
@@ -62,6 +66,7 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
   onRequestLogout,
   onOpenAuthModal,
   onOpenProfile,
+  triggerRef,
 }) => {
   const { user, logout } = useAuthStore();
   const { themeMode, setThemeMode } = useThemeStore();
@@ -86,10 +91,14 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
   // Click outside handler
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (
-        popoverRef.current &&
-        !popoverRef.current.contains(e.target as Node)
-      ) {
+      const target = e.target as Node;
+      const clickedInsidePopover = popoverRef.current?.contains(target);
+      const clickedOnTrigger = triggerRef?.current?.contains(target);
+
+      // Si el clic fue dentro del popover o sobre el botón que lo abre/cierra,
+      // dejamos que el propio onClick del botón maneje el toggle y NO cerramos
+      // aquí (evita que se cierre y se vuelva a abrir en el mismo clic).
+      if (!clickedInsidePopover && !clickedOnTrigger) {
         onClose();
       }
     };
@@ -99,7 +108,7 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, triggerRef]);
 
   if (!isOpen || !user) return null;
 
