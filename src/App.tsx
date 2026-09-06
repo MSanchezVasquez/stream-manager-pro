@@ -3,6 +3,7 @@ import { useAuthStore } from "./store/authStore";
 import { useDataStore } from "./store/dataStore";
 
 import { Navbar } from "./components/Navbar";
+import { Footer } from "./components/Footer";
 import { Sidebar } from "./components/Sidebar";
 import { OverviewCards } from "./components/Dashboard/OverviewCards";
 import { PlatformDistributionChart } from "./components/Dashboard/PlatformDistributionChart";
@@ -127,17 +128,7 @@ function MainApp() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-slate-200 dark:border-[#1F1F23] mt-auto py-8 bg-white/50 dark:bg-[#0F0F12] text-center text-xs text-slate-500 dark:text-[#94949E]">
-        <div className="max-w-7xl mx-auto px-4">
-          <p className="font-medium">
-            StreamManager Pro &copy; {new Date().getFullYear()} — Plataforma de
-            Gestión de Cuentas Streaming
-          </p>
-          <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">
-            Realtime Firebase Database • GSAP Animations • Tailwind CSS
-          </p>
-        </div>
-      </footer>
+      <Footer onNavigateTab={(tab) => setActiveTab(tab)} />
 
       {/* Modals */}
       {isClientModalOpen && (

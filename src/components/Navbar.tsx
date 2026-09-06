@@ -1,13 +1,14 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useMemo } from "react";
 import {
   Sun,
   Moon,
-  ShieldCheck,
-  UserCheck,
   Bell,
   Search,
-  LogIn,
-  ChevronDown,
+  Sparkles,
+  Tv,
+  Film,
+  Zap,
+  Star,
 } from "lucide-react";
 import { AppLogo } from "./AppLogo";
 import { ProfilePopover } from "./Auth/ProfilePopover";
@@ -25,6 +26,19 @@ interface NavbarProps {
   onOpenAuthModal: () => void;
 }
 
+const STREAMING_PLATFORMS = [
+  { id: "all", label: "Todas" },
+  { id: "Netflix", label: "Netflix" },
+  { id: "Disney+", label: "Disney+" },
+  { id: "Max", label: "Max" },
+  { id: "Prime Video", label: "Prime Video" },
+  { id: "Spotify", label: "Spotify" },
+  { id: "Paramount+", label: "Paramount+" },
+  { id: "Crunchyroll", label: "Crunchyroll" },
+  { id: "YouTube", label: "YouTube" },
+  { id: "IPTV", label: "IPTV" },
+];
+
 export const Navbar: React.FC<NavbarProps> = ({
   searchQuery,
   setSearchQuery,
@@ -34,44 +48,68 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const { themeMode: theme, toggleTheme } = useThemeStore();
   const { user, logout } = useAuthStore();
-  const clients = useDataStore((state) => state.clients);
+  const { clients, freeProfiles } = useDataStore();
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const logoRef = useRef<HTMLDivElement>(null);
+  const themeBtnRef = useRef<HTMLButtonElement>(null);
+  const avatarBtnRef = useRef<HTMLButtonElement>(null);
 
   const handleConfirmLogout = async () => {
     setIsLogoutModalOpen(false);
     await logout();
   };
 
-  const logoRef = useRef<HTMLDivElement>(null);
-  const themeBtnRef = useRef<HTMLButtonElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const avatarBtnRef = useRef<HTMLButtonElement>(null);
+  // Keyboard shortcut Ctrl+K to focus search input
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   // Calculate total alerts (cut-off in <= 5 days or expired)
-  const alertCount = clients.reduce((acc, client) => {
-    if (client.status !== "active") return acc;
-    const count = client.subscriptions.filter((sub) => {
-      if (!sub.cutDate) return false;
-      const parts = sub.cutDate.split("/");
-      if (parts.length === 3) {
-        let year = parseInt(parts[2], 10);
-        if (year < 100) year += 2000;
-        const target = new Date(
-          year,
-          parseInt(parts[1], 10) - 1,
-          parseInt(parts[0], 10),
-        );
-        const diff = Math.ceil(
-          (target.getTime() - Date.now()) / (1000 * 3600 * 24),
-        );
-        return diff <= 5;
-      }
-      return false;
-    }).length;
-    return acc + count;
-  }, 0);
+  const alertCount = useMemo(() => {
+    return clients.reduce((acc, client) => {
+      if (client.status !== "active") return acc;
+      const count = client.subscriptions.filter((sub) => {
+        if (!sub.cutDate) return false;
+        const parts = sub.cutDate.split("/");
+        if (parts.length === 3) {
+          let year = parseInt(parts[2], 10);
+          if (year < 100) year += 2000;
+          const target = new Date(
+            year,
+            parseInt(parts[1], 10) - 1,
+            parseInt(parts[0], 10),
+          );
+          const diff = Math.ceil(
+            (target.getTime() - Date.now()) / (1000 * 3600 * 24),
+          );
+          return diff <= 5;
+        }
+        return false;
+      }).length;
+      return acc + count;
+    }, 0);
+  }, [clients]);
+
+  const activeClientsCount = useMemo(
+    () => clients.filter((c) => c.status === "active").length,
+    [clients],
+  );
+
+  const freeProfilesCount = useMemo(
+    () => freeProfiles.reduce((sum, p) => sum + p.quantity, 0),
+    [freeProfiles],
+  );
 
   useEffect(() => {
     if (logoRef.current) {
@@ -96,146 +134,221 @@ export const Navbar: React.FC<NavbarProps> = ({
     toggleTheme();
   };
 
+  const handlePlatformClick = (platformId: string) => {
+    if (platformId === "all") {
+      setSearchQuery("");
+      return;
+    }
+    if (searchQuery.toLowerCase() === platformId.toLowerCase()) {
+      setSearchQuery("");
+    } else {
+      setSearchQuery(platformId);
+      if (activeTab !== "clients_active" && activeTab !== "clients_inactive") {
+        setActiveTab("clients_active");
+      }
+    }
+  };
+
   return (
-    <header className="sticky top-0 z-30 border-b border-slate-200 dark:border-[#1F1F23] bg-white/80 dark:bg-[#0F0F12]/95 backdrop-blur-md transition-colors duration-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-        {/* Brand / Logo */}
-        <div
-          ref={logoRef}
-          className="flex items-center gap-3 cursor-pointer"
-          onClick={() => setActiveTab("dashboard")}
-        >
-          <div className="flex items-center justify-center shrink-0">
-            <AppLogo className="w-8 h-8 text-slate-800 dark:text-[#E4E4E7]" />
-          </div>
-          <div>
-            <h1 className="font-bold text-2xl leading-none tracking-tight text-slate-900 dark:text-[#E4E4E7] flex items-center gap-2">
-              StreamManager
-            </h1>
-          </div>
-        </div>
-
-        {/* Search Bar */}
-        <div className="flex-1 max-w-md hidden md:block">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94949E]" />
-            <input
-              type="text"
-              placeholder="Buscar por cliente, correo o servicio..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-1.5 text-sm rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-slate-50 dark:bg-[#1A1A1E] text-slate-900 dark:text-[#E4E4E7] placeholder-slate-400 dark:placeholder-[#94949E] focus:outline-none transition-all"
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-600 dark:hover:text-[#E4E4E7]"
-              >
-                ✕
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Quick Actions & Controls */}
-        <div className="flex items-center gap-2">
-          {/* Expiration Alerts Trigger */}
-          <button
-            onClick={() => setActiveTab("alerts")}
-            className={`relative p-2 rounded-xl border transition-all ${
-              activeTab === "alerts"
-                ? "border-amber-500/50 bg-amber-500/10 text-amber-500"
-                : "border-slate-200 dark:border-[#2D2D33] text-slate-600 dark:text-[#94949E] hover:bg-slate-100 dark:hover:bg-[#1A1A1E]"
-            }`}
-            title="Alertas de Vencimiento"
+    <header className="sticky top-0 z-30 w-full bg-[#2242cc] text-white shadow-md transition-colors duration-300 select-none">
+      {/* Level 1: Main Header Tier (Brand, Nav Buttons, Search & Profile) */}
+      <div className="border-b border-white/15">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3 sm:gap-6">
+          {/* Brand Logo */}
+          <div
+            ref={logoRef}
+            className="flex items-center gap-2.5 cursor-pointer group shrink-0"
+            onClick={() => setActiveTab("dashboard")}
           >
-            <Bell className="w-4 h-4" />
-            {alertCount > 0 && (
-              <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-amber-500 text-white text-[10px] font-bold flex items-center justify-center animate-bounce">
-                {alertCount}
+            <div className="w-9 h-9 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-transform">
+              <AppLogo className="w-6 h-6 text-white" />
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="font-extrabold text-xl sm:text-2xl tracking-tight text-white leading-none">
+                StreamManager
               </span>
-            )}
-          </button>
+              <span className="text-[9px] uppercase tracking-wider bg-white text-[#2242cc] px-1.5 py-0.5 rounded font-black shadow-sm">
+                PRO
+              </span>
+            </div>
+          </div>
 
-          {/* Theme Toggle */}
-          <button
-            ref={themeBtnRef}
-            onClick={handleThemeToggle}
-            className="p-2 rounded-xl border border-slate-200 dark:border-[#2D2D33] text-slate-600 dark:text-[#94949E] hover:bg-slate-100 dark:hover:bg-[#1A1A1E] transition-colors"
-            title={
-              theme === "dark"
-                ? "Cambiar a Modo Claro"
-                : "Cambiar a Modo Oscuro"
-            }
-          >
-            {theme === "dark" ? (
-              <Sun className="w-4 h-4 text-amber-400" />
-            ) : (
-              <Moon className="w-4 h-4 text-indigo-600" />
-            )}
-          </button>
-
-          {/* User Profile Avatar / Auth Status */}
-          <div className="relative shrink-0 flex items-center justify-center">
-            <button
-              ref={avatarBtnRef}
-              onClick={() => setIsPopoverOpen(!isPopoverOpen)}
-              className="relative w-9 h-9 shrink-0 rounded-full flex items-center justify-center focus:outline-none cursor-pointer overflow-hidden transition-transform"
-              title="Mi Perfil"
-            >
-              {user?.photoURL ? (
-                <img
-                  src={user.photoURL}
-                  alt="Perfil"
-                  className="w-full h-full rounded-full object-cover"
-                  referrerPolicy="no-referrer"
-                />
+          {/* Sofascore-style Pill Search Bar */}
+          <div className="flex-1 max-w-sm sm:max-w-md lg:max-w-lg mx-2 sm:mx-4">
+            <div className="relative">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/70" />
+              <input
+                ref={searchInputRef}
+                type="text"
+                placeholder="Buscar cliente, correo o cuenta..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-9 pr-14 py-2 text-xs rounded-full border border-white/20 bg-white/15 backdrop-blur-sm text-white placeholder:text-white/70 focus:outline-none focus:bg-white/25 focus:border-white transition-all shadow-inner"
+              />
+              {searchQuery ? (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-white/80 hover:text-white"
+                >
+                  ✕
+                </button>
               ) : (
-                <div className="w-full h-full rounded-full bg-slate-100 dark:bg-[#1A1A20] border border-slate-200 dark:border-[#2D2D35] flex items-center justify-center overflow-hidden shrink-0">
-                  {user ? (
-                    <span className="font-bold text-xs text-indigo-600 dark:text-indigo-400">
-                      {user.email ? user.email.charAt(0).toUpperCase() : "U"}
-                    </span>
-                  ) : (
-                    <svg
-                      viewBox="0 0 100 100"
-                      className="w-6 h-6 text-amber-600 dark:text-amber-400 fill-current"
-                    >
-                      <circle
-                        cx="50"
-                        cy="50"
-                        r="45"
-                        fill="currentColor"
-                        fillOpacity="0.15"
-                      />
-                      <path d="M50 20 C42 20 38 28 42 36 C34 38 32 46 38 52 C32 58 36 68 46 68 C40 76 52 82 60 76 C68 70 66 58 60 52 C66 46 64 36 56 34 C60 26 56 20 50 20 Z" />
-                      <circle cx="46" cy="32" r="3" fill="currentColor" />
-                    </svg>
-                  )}
-                </div>
+                <kbd className="hidden sm:inline-block absolute right-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 text-[10px] font-bold text-white/80 bg-white/15 rounded border border-white/25 pointer-events-none">
+                  Ctrl K
+                </kbd>
+              )}
+            </div>
+          </div>
+
+          {/* Right Action Icons & Profile */}
+          <div className="flex items-center gap-2 sm:gap-2.5">
+            {/* Expiration Alerts Button with Bounce Badge */}
+            <button
+              type="button"
+              onClick={() => setActiveTab("alerts")}
+              className={`relative p-2 rounded-xl transition-all border ${
+                activeTab === "alerts"
+                  ? "bg-white text-[#2242cc] border-white shadow-sm"
+                  : "bg-white/10 hover:bg-white/20 border-white/15 text-white"
+              }`}
+              title="Alertas de Vencimiento"
+            >
+              <Bell className="w-4 h-4" />
+              {alertCount > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-amber-400 text-[#2242cc] text-[10px] font-black flex items-center justify-center animate-bounce shadow">
+                  {alertCount}
+                </span>
               )}
             </button>
 
-            {/* Profile Popover Menu */}
-            <ProfilePopover
-              isOpen={isPopoverOpen}
-              onClose={() => setIsPopoverOpen(false)}
-              triggerRef={avatarBtnRef}
-              onOpenSettings={onOpenAuthModal}
-              onOpenAuthModal={onOpenAuthModal}
-              onOpenProfile={() => setActiveTab("profile")}
-              onRequestLogout={() => {
-                setIsPopoverOpen(false);
-                setIsLogoutModalOpen(true);
-              }}
+            {/* Theme Toggle Button */}
+            <button
+              ref={themeBtnRef}
+              type="button"
+              onClick={handleThemeToggle}
+              className="p-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 text-white transition-all"
+              title={
+                theme === "dark"
+                  ? "Cambiar a Modo Claro"
+                  : "Cambiar a Modo Oscuro"
+              }
+            >
+              {theme === "dark" ? (
+                <Sun className="w-4 h-4 text-amber-300" />
+              ) : (
+                <Moon className="w-4 h-4 text-white" />
+              )}
+            </button>
+
+            {/* User Profile Avatar with Popover */}
+            <div className="relative shrink-0 flex items-center justify-center">
+              <button
+                ref={avatarBtnRef}
+                type="button"
+                onClick={() => setIsPopoverOpen(!isPopoverOpen)}
+                className="relative w-9 h-9 shrink-0 rounded-full border-2 border-white/40 hover:border-white flex items-center justify-center focus:outline-none cursor-pointer overflow-hidden transition-all hover:scale-105 shadow-sm"
+                title="Mi Perfil"
+              >
+                {user?.photoURL ? (
+                  <img
+                    src={user.photoURL}
+                    alt="Perfil"
+                    className="w-full h-full rounded-full object-cover"
+                    referrerPolicy="no-referrer"
+                  />
+                ) : (
+                  <div className="w-full h-full rounded-full bg-white/20 flex items-center justify-center overflow-hidden shrink-0 text-white font-black text-xs">
+                    {user?.email ? user.email.charAt(0).toUpperCase() : "U"}
+                  </div>
+                )}
+              </button>
+
+              <ProfilePopover
+                isOpen={isPopoverOpen}
+                onClose={() => setIsPopoverOpen(false)}
+                triggerRef={avatarBtnRef}
+                onOpenSettings={onOpenAuthModal}
+                onOpenAuthModal={onOpenAuthModal}
+                onOpenProfile={() => setActiveTab("profile")}
+                onRequestLogout={() => {
+                  setIsPopoverOpen(false);
+                  setIsLogoutModalOpen(true);
+                }}
+              />
+            </div>
+
+            <LogoutConfirmModal
+              isOpen={isLogoutModalOpen}
+              onClose={() => setIsLogoutModalOpen(false)}
+              onConfirm={handleConfirmLogout}
             />
           </div>
+        </div>
+      </div>
 
-          <LogoutConfirmModal
-            isOpen={isLogoutModalOpen}
-            onClose={() => setIsLogoutModalOpen(false)}
-            onConfirm={handleConfirmLogout}
-          />
+      {/* Level 2: Category & Platform Filters Sub-bar (Sofascore Sports Bar Style) */}
+      <div className="bg-black/10 py-1.5 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+          {/* Platform Pills (Horizontal scrolling) */}
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+            {STREAMING_PLATFORMS.map((platform) => {
+              const isSelected =
+                platform.id === "all"
+                  ? searchQuery === ""
+                  : searchQuery.toLowerCase() === platform.id.toLowerCase();
+
+              return (
+                <button
+                  key={platform.id}
+                  type="button"
+                  onClick={() => handlePlatformClick(platform.id)}
+                  className={`px-3 py-1 rounded-full text-xs transition-all whitespace-nowrap flex items-center gap-1.5 shrink-0 ${
+                    isSelected
+                      ? "bg-white text-[#2242cc] font-black shadow-sm"
+                      : "text-white/85 hover:text-white hover:bg-white/15 font-semibold"
+                  }`}
+                >
+                  {platform.id === "all" ? (
+                    <Film className="w-3.5 h-3.5" />
+                  ) : (
+                    <Tv className="w-3 h-3" />
+                  )}
+                  <span>{platform.label}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Right Highlights & Shortcuts (Sofascore style) */}
+          <div className="hidden md:flex items-center gap-4 text-xs font-semibold text-white/90 shrink-0">
+            <button
+              type="button"
+              onClick={() => setActiveTab("alerts")}
+              className="hover:text-white transition-colors flex items-center gap-1.5 cursor-pointer"
+            >
+              <Zap className="w-3.5 h-3.5 text-amber-300" />
+              <span>Vencimientos ({alertCount})</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab("clients_active")}
+              className="hover:text-white transition-colors flex items-center gap-1.5 cursor-pointer"
+            >
+              <Star className="w-3.5 h-3.5 text-emerald-300" />
+              <span>{activeClientsCount} Activos</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab("free_profiles")}
+              className="hover:text-white transition-colors flex items-center gap-1.5 cursor-pointer"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-cyan-300" />
+              <span>{freeProfilesCount} Perfiles Libres</span>
+            </button>
+          </div>
         </div>
       </div>
     </header>
