@@ -94,12 +94,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
   ];
 
   return (
-    <aside className="w-full md:w-64 shrink-0">
-      <div className="sticky top-20 flex flex-col gap-4">
+    <aside className="hidden lg:block w-64 shrink-0">
+      <div className="sticky top-20 flex flex-col gap-3">
+        {/* Header */}
+        <div className="flex items-center justify-between px-1.5 pb-0.5">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-[#80808C] font-space">
+            Menú de navegación
+          </span>
+        </div>
+
         {/* Primary CTA button */}
         <button
           onClick={onOpenAddClientModal}
-          className="w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm shadow-lg shadow-indigo-600/20 transition-all transform active:scale-95 flex items-center justify-center gap-2"
+          className="w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm shadow-lg shadow-indigo-600/20 transition-all transform active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
         >
           <PlusCircle className="w-4 h-4" />
           <span>Nuevo Cliente / Servicio</span>

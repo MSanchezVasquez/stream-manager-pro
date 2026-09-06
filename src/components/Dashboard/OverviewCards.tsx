@@ -94,7 +94,7 @@ export const OverviewCards: React.FC<{
   return (
     <div
       ref={containerRef}
-      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8"
+      className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 sm:gap-4 mb-6 sm:mb-8"
     >
       {cards.map((card, idx) => {
         const Icon = card.icon;
@@ -102,20 +102,22 @@ export const OverviewCards: React.FC<{
           <div
             key={idx}
             onClick={() => onNavigateTab(card.tab)}
-            className={`cursor-pointer p-5 rounded-xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#1F1F23] shadow-sm hover:border-[#2D2D33] transition-all transform hover:-translate-y-0.5 relative overflow-hidden group`}
+            className={`cursor-pointer p-3.5 sm:p-5 rounded-xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#1F1F23] shadow-sm hover:border-[#2D2D33] transition-all transform hover:-translate-y-0.5 relative overflow-hidden group ${
+              idx === 4 ? "col-span-2 sm:col-span-2 lg:col-span-1" : "col-span-1"
+            }`}
           >
             <div
               className={`absolute -right-4 -bottom-4 w-20 h-20 rounded-full bg-gradient-to-br ${card.color} blur-2xl group-hover:scale-150 transition-transform`}
             />
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-semibold text-slate-500 dark:text-[#94949E] uppercase tracking-wider font-space">
+            <div className="flex items-start justify-between gap-1.5 mb-1.5 sm:mb-2">
+              <span className="text-[10px] sm:text-xs font-semibold text-slate-500 dark:text-[#94949E] uppercase tracking-wider font-space line-clamp-2 leading-tight">
                 {card.title}
               </span>
-              <div className={`p-2 rounded-xl ${card.iconBg}`}>
-                <Icon className="w-4 h-4" />
+              <div className={`p-1.5 sm:p-2 rounded-lg sm:rounded-xl shrink-0 ${card.iconBg}`}>
+                <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </div>
             </div>
-            <div className="text-2xl font-bold text-slate-900 dark:text-[#E4E4E7] font-cascadia font-light">
+            <div className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-[#E4E4E7] font-cascadia font-light">
               {card.value}
             </div>
           </div>

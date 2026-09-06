@@ -92,7 +92,7 @@ export const PlatformIcon: React.FC<PlatformIconProps> = ({
       >
         <g
           transform="translate(0.000000,2000.000000) scale(0.100000,-0.100000)"
-          fill="#000000"
+          fill="currentColor"
           stroke="none"
         >
           <path
@@ -261,6 +261,34 @@ m-227 -1510 c42 -11 103 -33 135 -49 l58 -28 0 -610 0 -609 -50 -27 c-105 -57
     return (
       <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
         <path fill="#FF4500" d="M3 4h4.5l4.5 11.5L16.5 4H21L14 20h-4L3 4z" />
+      </svg>
+    );
+  }
+
+  // Star+
+  if (norm.includes("star")) {
+    return (
+      <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
+        <path
+          fill="#FF7700"
+          d="M12 2l2.4 6.9 7.6.3-5.8 4.6 2 7.2L12 16.8 5.8 21l2-7.2-5.8-4.6 7.6-.3L12 2z"
+        />
+        <path
+          fill="#FFB800"
+          d="M19 4v3h3v2h-3v3h-2V9h-3V7h3V4h2z"
+        />
+      </svg>
+    );
+  }
+
+  // IPTV
+  if (norm.includes("iptv")) {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+        <rect x="2" y="7" width="20" height="15" rx="2" ry="2" fill="none" />
+        <polyline points="17 2 12 7 7 2" />
+        <circle cx="8" cy="14" r="1" fill="currentColor" />
+        <line x1="12" y1="14" x2="16" y2="14" />
       </svg>
     );
   }
