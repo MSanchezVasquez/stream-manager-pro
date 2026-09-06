@@ -4,14 +4,7 @@ import {
   ChevronDown,
   Settings,
   LogOut,
-  LogIn,
-  User,
   Check,
-  Star,
-  Calendar,
-  Award,
-  ShieldCheck,
-  Tv,
 } from "lucide-react";
 import { useAuthStore } from "../../store/authStore";
 import { useThemeStore } from "../../store/themeStore";
@@ -29,7 +22,7 @@ interface ProfilePopoverProps {
   /** Ref del botón que abre/cierra el popover (ej. el avatar en el Navbar).
    * Se usa para que el listener de "clic afuera" no lo cierre y lo vuelva
    * a abrir en el mismo clic. */
-  triggerRef?: React.RefObject<HTMLElement>;
+  triggerRef?: React.RefObject<HTMLElement | null>;
 }
 
 const LANGUAGES = [

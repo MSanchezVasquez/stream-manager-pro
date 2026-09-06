@@ -404,11 +404,31 @@ export const useDataStore = create<DataState>((set, get) => ({
 
     try {
       const parsed = JSON.parse(jsonStr);
-      if (parsed.clients) {
+
+      if (Array.isArray(parsed.clients)) {
         set({ clients: parsed.clients });
         for (const c of parsed.clients)
           await saveUserDocument(uid, COLLECTIONS.CLIENTS, c);
       }
+
+      if (Array.isArray(parsed.suppliers)) {
+        set({ suppliers: parsed.suppliers });
+        for (const s of parsed.suppliers)
+          await saveUserDocument(uid, COLLECTIONS.SUPPLIERS, s);
+      }
+
+      if (Array.isArray(parsed.freeProfiles)) {
+        set({ freeProfiles: parsed.freeProfiles });
+        for (const p of parsed.freeProfiles)
+          await saveUserDocument(uid, COLLECTIONS.FREE_PROFILES, p);
+      }
+
+      if (Array.isArray(parsed.quickLinks)) {
+        set({ quickLinks: parsed.quickLinks });
+        for (const l of parsed.quickLinks)
+          await saveUserDocument(uid, COLLECTIONS.QUICK_LINKS, l);
+      }
+
       return true;
     } catch (e) {
       console.error("Invalid backup JSON", e);
