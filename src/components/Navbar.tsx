@@ -30,13 +30,12 @@ const STREAMING_PLATFORMS = [
   { id: "all", label: "Todas" },
   { id: "Netflix", label: "Netflix" },
   { id: "Disney+", label: "Disney+" },
-  { id: "Max", label: "Max" },
+  { id: "HBO Max", label: "HBO Max" },
   { id: "Prime Video", label: "Prime Video" },
   { id: "Spotify", label: "Spotify" },
   { id: "Paramount+", label: "Paramount+" },
   { id: "Crunchyroll", label: "Crunchyroll" },
-  { id: "YouTube", label: "YouTube" },
-  { id: "IPTV", label: "IPTV" },
+  { id: "YouTube Premium", label: "YouTube Premium" },
 ];
 
 export const Navbar: React.FC<NavbarProps> = ({

@@ -1,6 +1,6 @@
 import React from "react";
 import { useDataStore } from "../../store/dataStore";
-import { getPlatformConfig } from "../../utils/platformHelpers";
+import { getPlatformConfig, getPlatformDisplayName } from "../../utils/platformHelpers";
 import { PlatformIcon } from "../common/PlatformIcon";
 import { Tv } from "lucide-react";
 
@@ -13,7 +13,7 @@ export const PlatformDistributionChart: React.FC = () => {
     if (c.status === "active") {
       c.subscriptions.forEach((s) => {
         if (s.status === "active") {
-          const norm = s.serviceName || "Otros";
+          const norm = getPlatformDisplayName(s.serviceName) || "Otros";
           platformCounts[norm] = (platformCounts[norm] || 0) + 1;
         }
       });

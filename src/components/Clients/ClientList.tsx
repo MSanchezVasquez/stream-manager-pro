@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import { createPortal } from "react-dom";
-import { useDataStore } from "../../store/dataStore";
+import { useDataStore, isSubscriptionFromFreeProfile } from "../../store/dataStore";
 import { CircularSpinner } from "../common/LoadingSpinners";
 import {
   getPlatformConfig,
   getPlatformBadgeProps,
   formatCutDateStatus,
+  getClientAccountHealth,
+  getPlatformDisplayName,
+  getDaysRemaining,
 } from "../../utils/platformHelpers";
 import { PlatformIcon } from "../common/PlatformIcon";
 import {
@@ -30,6 +33,12 @@ import {
   Sidebar as SidebarIcon,
   Save,
   X,
+  Sparkles,
+  CheckCircle2,
+  AlertCircle,
+  Clock,
+  Info,
+  Activity,
 } from "lucide-react";
 import { Client, ClientSubscription, StreamingPlatform } from "../../types";
 import { ClientModal } from "./ClientModal";
@@ -46,7 +55,7 @@ const PLATFORM_FILTER_OPTIONS = [
   "Disney+",
   "HBO Max",
   "Youtube Premium",
-  "Amazon Prime Video",
+  "Prime Video",
   "Paramount Plus",
   "Spotify Premium",
   "Crunchyroll",
@@ -57,9 +66,12 @@ export const ClientList: React.FC<ClientListProps> = ({
   statusFilter,
   globalSearchQuery,
 }) => {
-  const { clients, deleteClient, saveClient } = useDataStore();
+  const { clients, freeProfiles, deleteClient, saveClient } = useDataStore();
 
   const [platformFilter, setPlatformFilter] = useState<string>("Todos");
+  const [healthFilter, setHealthFilter] = useState<
+    "all" | "healthy" | "warning" | "expired"
+  >("all");
   const [localSearch, setLocalSearch] = useState<string>("");
   const [showPasswords, setShowPasswords] = useState<Record<string, boolean>>(
     {},
@@ -84,6 +96,62 @@ export const ClientList: React.FC<ClientListProps> = ({
   } | null>(null);
 
   const effectiveSearch = globalSearchQuery || localSearch;
+
+  // Health summary statistics for clients matching statusFilter and optional platformFilter
+  const clientsInStatus = clients.filter((c) => c.status === statusFilter);
+
+  const healthStats = clientsInStatus.reduce(
+    (acc, client) => {
+      // Filter subs by active platform filter if specified
+      const subs = client.subscriptions.filter((sub) => {
+        if (platformFilter === "Todos") return true;
+        const filterLower = platformFilter.toLowerCase();
+        const subLower = sub.serviceName.toLowerCase();
+        return filterLower === "prime video"
+          ? subLower.includes("prime") || subLower.includes("amazon")
+          : subLower.includes(filterLower);
+      });
+
+      if (subs.length === 0) return acc;
+
+      const hasExpired = subs.some((s) => {
+        const d = getDaysRemaining(s.cutDate);
+        return s.status === "expired" || d < 0;
+      });
+      const hasWarning = subs.some((s) => {
+        const d = getDaysRemaining(s.cutDate);
+        return (
+          s.status !== "expired" &&
+          s.status !== "inactive" &&
+          d >= 0 &&
+          d <= 5
+        );
+      });
+      const hasHealthy = subs.some((s) => {
+        const d = getDaysRemaining(s.cutDate);
+        return s.status !== "expired" && s.status !== "inactive" && d > 5;
+      });
+
+      if (hasExpired) acc.expired++;
+      if (hasWarning) acc.warning++;
+      if (hasHealthy) acc.healthy++;
+      return acc;
+    },
+    { healthy: 0, warning: 0, expired: 0 },
+  );
+
+  const totalInPlatformFilter =
+    platformFilter === "Todos"
+      ? clientsInStatus.length
+      : clientsInStatus.filter((c) =>
+          c.subscriptions.some((sub) => {
+            const filterLower = platformFilter.toLowerCase();
+            const subLower = sub.serviceName.toLowerCase();
+            return filterLower === "prime video"
+              ? subLower.includes("prime") || subLower.includes("amazon")
+              : subLower.includes(filterLower);
+          }),
+        ).length;
 
   const startInlineEdit = (client: Client) => {
     setInlineEditingClientId(client.id);
@@ -111,16 +179,52 @@ export const ClientList: React.FC<ClientListProps> = ({
     cancelInlineEdit();
   };
 
-  // Filter clients by status (active / inactive)
+  // Check if an individual subscription matches active platform and health filters
+  const isSubMatchingFilters = (sub: ClientSubscription) => {
+    // 1. Platform filter
+    if (platformFilter !== "Todos") {
+      const filterLower = platformFilter.toLowerCase();
+      const subLower = sub.serviceName.toLowerCase();
+      const matchesPlat =
+        filterLower === "prime video"
+          ? subLower.includes("prime") || subLower.includes("amazon")
+          : subLower.includes(filterLower);
+      if (!matchesPlat) return false;
+    }
+
+    // 2. Health filter
+    if (healthFilter !== "all") {
+      const days = getDaysRemaining(sub.cutDate);
+      const isExpired = sub.status === "expired" || days < 0;
+      const isWarning =
+        !isExpired &&
+        sub.status !== "inactive" &&
+        days >= 0 &&
+        days <= 5;
+      const isHealthy =
+        !isExpired &&
+        sub.status !== "inactive" &&
+        days > 5;
+
+      if (healthFilter === "expired" && !isExpired) return false;
+      if (healthFilter === "warning" && !isWarning) return false;
+      if (healthFilter === "healthy" && !isHealthy) return false;
+    }
+
+    return true;
+  };
+
+  const hasActiveSubFilters =
+    platformFilter !== "Todos" || healthFilter !== "all";
+
+  // Filter clients by status (active / inactive), health status, and platform
   const filteredClients = clients.filter((client) => {
     if (client.status !== statusFilter) return false;
 
-    // Platform filter
-    if (platformFilter !== "Todos") {
-      const hasPlatform = client.subscriptions.some((sub) =>
-        sub.serviceName.toLowerCase().includes(platformFilter.toLowerCase()),
-      );
-      if (!hasPlatform) return false;
+    // When platform or health filters are active, client must contain at least one subscription matching those filters
+    if (hasActiveSubFilters) {
+      const hasMatchingSub = client.subscriptions.some(isSubMatchingFilters);
+      if (!hasMatchingSub) return false;
     }
 
     // Search query
@@ -218,12 +322,90 @@ export const ClientList: React.FC<ClientListProps> = ({
               setEditingClient(null);
               setIsClientModalOpen(true);
             }}
-            className="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center justify-center gap-1.5 shadow-md shadow-indigo-600/20 transition-all shrink-0"
+            className="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center justify-center gap-1.5 shadow-md shadow-indigo-600/20 transition-all shrink-0 cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>Añadir Cliente</span>
           </button>
         </div>
+      </div>
+
+      {/* Account Health Quick-Filter Bar */}
+      <div className="flex flex-wrap items-center justify-between gap-3 p-3 rounded-xl bg-slate-50/80 dark:bg-[#15151A] border border-slate-200/80 dark:border-[#22222A]">
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <span className="text-xs font-semibold text-slate-500 dark:text-[#94949E] mr-1 flex items-center gap-1">
+            <Activity className="w-3.5 h-3.5 text-indigo-500" />
+            Salud de Cuenta:
+          </span>
+
+          <button
+            onClick={() => setHealthFilter("all")}
+            className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
+              healthFilter === "all"
+                ? "bg-white dark:bg-[#252530] text-slate-900 dark:text-white shadow-xs border border-slate-200 dark:border-[#353542]"
+                : "text-slate-600 dark:text-[#94949E] hover:bg-slate-200/60 dark:hover:bg-[#1E1E26]"
+            }`}
+          >
+            <span>Todos</span>
+            <span className="text-[10px] font-cascadia px-1.5 py-0.2 rounded-full bg-slate-200 dark:bg-slate-700/60 text-slate-700 dark:text-slate-300">
+              {totalInPlatformFilter}
+            </span>
+          </button>
+
+          <button
+            onClick={() => setHealthFilter("healthy")}
+            className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
+              healthFilter === "healthy"
+                ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 shadow-xs border border-emerald-500/30"
+                : "text-slate-600 dark:text-[#94949E] hover:bg-emerald-500/10 hover:text-emerald-600"
+            }`}
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            <span>Al día</span>
+            <span className="text-[10px] font-cascadia px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300">
+              {healthStats.healthy}
+            </span>
+          </button>
+
+          <button
+            onClick={() => setHealthFilter("warning")}
+            className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
+              healthFilter === "warning"
+                ? "bg-amber-500/15 text-amber-800 dark:text-amber-300 shadow-xs border border-amber-500/30"
+                : "text-slate-600 dark:text-[#94949E] hover:bg-amber-500/10 hover:text-amber-600"
+            }`}
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+            <span>Por vencer (≤5d)</span>
+            <span className="text-[10px] font-cascadia px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-800 dark:text-amber-300">
+              {healthStats.warning}
+            </span>
+          </button>
+
+          <button
+            onClick={() => setHealthFilter("expired")}
+            className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
+              healthFilter === "expired"
+                ? "bg-red-500/15 text-red-700 dark:text-red-300 shadow-xs border border-red-500/30"
+                : "text-slate-600 dark:text-[#94949E] hover:bg-red-500/10 hover:text-red-600"
+            }`}
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
+            <span>Vencidos</span>
+            <span className="text-[10px] font-cascadia px-1.5 py-0.2 rounded-full bg-red-500/20 text-red-700 dark:text-red-300">
+              {healthStats.expired}
+            </span>
+          </button>
+        </div>
+
+        {healthFilter !== "all" && (
+          <button
+            onClick={() => setHealthFilter("all")}
+            className="text-[11px] text-indigo-600 dark:text-indigo-400 hover:underline font-semibold cursor-pointer"
+          >
+            Restablecer filtro de salud
+          </button>
+        )}
       </div>
 
       {/* Clients Grid - Adaptable Fluid Masonry Layout */}
@@ -233,14 +415,36 @@ export const ClientList: React.FC<ClientListProps> = ({
           <h3 className="text-base font-bold text-slate-700 dark:text-[#E4E4E7] mb-1 font-space">
             No se encontraron clientes
           </h3>
-          <p className="text-xs text-slate-500 dark:text-[#94949E] max-w-sm mx-auto">
-            Intenta cambiar el término de búsqueda o registra un nuevo cliente
-            en el sistema.
+          <p className="text-xs text-slate-500 dark:text-[#94949E] max-w-sm mx-auto mb-3">
+            {healthFilter !== "all"
+              ? `No hay clientes con estado "${
+                  healthFilter === "healthy"
+                    ? "Al día"
+                    : healthFilter === "warning"
+                    ? "Por vencer"
+                    : "Vencidos"
+                }" con los filtros actuales.`
+              : "Intenta cambiar el término de búsqueda o registra un nuevo cliente en el sistema."}
           </p>
+          {(healthFilter !== "all" || platformFilter !== "Todos") && (
+            <button
+              onClick={() => {
+                setHealthFilter("all");
+                setPlatformFilter("Todos");
+              }}
+              className="px-3 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-300 text-xs font-semibold hover:bg-indigo-100 transition-colors cursor-pointer"
+            >
+              Mostrar todos los clientes
+            </button>
+          )}
         </div>
       ) : (
         <div className="columns-1 md:columns-2 xl:columns-3 gap-6 space-y-6">
           {filteredClients.map((client) => {
+            const visibleSubs = client.subscriptions.filter(isSubMatchingFilters);
+            const health = hasActiveSubFilters
+              ? getClientAccountHealth({ ...client, subscriptions: visibleSubs })
+              : getClientAccountHealth(client);
             const isInlineEditing =
               inlineEditingClientId === client.id && inlineClientData;
 
@@ -252,10 +456,21 @@ export const ClientList: React.FC<ClientListProps> = ({
                 >
                   {/* Inline Edit Header */}
                   <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-[#1F1F23]">
-                    <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
-                      <Edit2 className="w-3.5 h-3.5" />
-                      Edición Rápida en Tarjeta
-                    </span>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
+                        <Edit2 className="w-3.5 h-3.5" />
+                        Edición Rápida en Tarjeta
+                      </span>
+                      <span
+                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold ${health.badgeClass} select-none`}
+                        title={health.tooltip}
+                      >
+                        <span
+                          className={`w-1.5 h-1.5 rounded-full ${health.dotClass}`}
+                        />
+                        <span>{health.label}</span>
+                      </span>
+                    </div>
                     <div className="flex items-center gap-1">
                       <button
                         onClick={() => {
@@ -483,42 +698,88 @@ export const ClientList: React.FC<ClientListProps> = ({
             return (
               <div
                 key={client.id}
-                className="break-inside-avoid mb-6 p-5 rounded-2xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#1F1F23] shadow-sm hover:border-[#2D2D33] transition-all flex flex-col relative group"
+                className="break-inside-avoid mb-6 p-5 rounded-2xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#1F1F23] shadow-sm hover:border-slate-300 dark:hover:border-[#2D2D33] transition-all flex flex-col relative group"
               >
                 {/* Header */}
-                <div className="flex items-start justify-between gap-3 mb-4 pb-3 border-b border-slate-100 dark:border-[#1F1F23]">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white font-bold flex items-center justify-center text-sm shadow-md shadow-indigo-600/20 font-space">
+                <div className="flex items-start justify-between gap-3 mb-4 pb-3.5 border-b border-slate-100 dark:border-[#1F1F23]">
+                  <div className="flex items-start gap-3 min-w-0 flex-1">
+                    <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white font-bold flex items-center justify-center text-sm shadow-md shadow-indigo-600/20 font-space shrink-0 mt-0.5">
                       {client.name.substring(0, 2).toUpperCase()}
                     </div>
-                    <div>
-                      {/* font-space en los nombres */}
-                      <h3 className="font-bold text-base text-slate-900 dark:text-[#E4E4E7] leading-tight font-space tracking-tight">
+                    <div className="min-w-0 flex-1 space-y-1.5">
+                      {/* Name */}
+                      <h3
+                        className="font-bold text-base text-slate-900 dark:text-[#E4E4E7] leading-snug font-space tracking-tight truncate"
+                        title={client.name}
+                      >
                         {client.name}
                       </h3>
-                      {client.phone ? (
-                        <p className="text-xs text-slate-500 dark:text-[#94949E] flex items-center gap-1 mt-0.5 font-cascadia font-light">
-                          <Smartphone className="w-3 h-3 text-emerald-500" />
-                          {client.phone}
-                        </p>
-                      ) : (
-                        <p className="text-xs text-slate-400 dark:text-[#94949E] italic">
-                          <span className="font-cascadia font-bold">
-                            {client.subscriptions.length}
-                          </span>{" "}
-                          servicio(s) contratado(s)
-                        </p>
-                      )}
+
+                      {/* Account Health Status Badge */}
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span
+                          className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold shrink-0 ${health.badgeClass} select-none transition-all shadow-xs`}
+                          title={health.tooltip}
+                        >
+                          <span
+                            className={`w-1.5 h-1.5 rounded-full ${health.dotClass} shrink-0`}
+                          />
+                          {health.level === "expired" && (
+                            <AlertCircle className="w-3.5 h-3.5 shrink-0 text-red-600 dark:text-red-400" />
+                          )}
+                          {(health.level === "near_expiration" ||
+                            health.level === "expiring_today") && (
+                            <Clock className="w-3.5 h-3.5 shrink-0 text-amber-600 dark:text-amber-400" />
+                          )}
+                          {health.level === "healthy" && (
+                            <CheckCircle2 className="w-3.5 h-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                          )}
+                          {health.level === "no_profiles" && (
+                            <Info className="w-3.5 h-3.5 shrink-0 text-slate-400" />
+                          )}
+                          {health.level === "inactive" && (
+                            <UserX className="w-3.5 h-3.5 shrink-0 text-slate-400" />
+                          )}
+                          <span className="whitespace-nowrap">{health.label}</span>
+                        </span>
+                      </div>
+
+                      {/* Phone and Profiles Count Side-by-Side */}
+                      <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-[#94949E] flex-wrap pt-0.5">
+                        {client.phone && (
+                          <span className="inline-flex items-center gap-1.5 font-cascadia font-medium text-xs text-slate-600 dark:text-slate-300">
+                            <Smartphone className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                            <span>{client.phone}</span>
+                          </span>
+                        )}
+
+                        {client.phone && (
+                          <span className="text-slate-300 dark:text-slate-600 font-bold">•</span>
+                        )}
+
+                        <span className="inline-flex items-center gap-1 text-xs text-slate-500 dark:text-[#94949E] whitespace-nowrap">
+                          <span className="font-cascadia font-bold text-slate-700 dark:text-slate-300">
+                            {visibleSubs.length}
+                          </span>
+                          <span>{visibleSubs.length === 1 ? "perfil" : "perfiles"}</span>
+                          {hasActiveSubFilters &&
+                            visibleSubs.length !== client.subscriptions.length && (
+                              <span className="text-[10px] text-slate-400 dark:text-[#94949E] font-normal ml-0.5">
+                                (de {client.subscriptions.length})
+                              </span>
+                            )}
+                        </span>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-0.5 shrink-0 ml-1">
                     <button
                       onClick={() => startInlineEdit(client)}
                       className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-[#1A1A1E] transition-colors"
                       title="Edición rápida en tarjeta"
                     >
-                      <Edit2 className="w-4 h-4" />
+                      <Edit2 className="w-3.5 h-3.5" />
                     </button>
                     <button
                       onClick={() => {
@@ -528,28 +789,21 @@ export const ClientList: React.FC<ClientListProps> = ({
                       className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-[#1A1A1E] transition-colors"
                       title="Abrir panel lateral"
                     >
-                      <SidebarIcon className="w-4 h-4" />
+                      <SidebarIcon className="w-3.5 h-3.5" />
                     </button>
                     <button
                       onClick={() => handleDelete(client)}
                       className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-500/10 transition-colors"
                       title="Eliminar Cliente"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 </div>
 
                 {/* Subscriptions list */}
                 <div className="space-y-3 mb-2">
-                  {(platformFilter === "Todos"
-                    ? client.subscriptions
-                    : client.subscriptions.filter((sub) =>
-                        sub.serviceName
-                          .toLowerCase()
-                          .includes(platformFilter.toLowerCase()),
-                      )
-                  ).map((sub) => {
+                  {visibleSubs.map((sub) => {
                     const platConfig = getPlatformConfig(sub.serviceName);
                     const badgeProps = getPlatformBadgeProps(platConfig);
                     const statusInfo = formatCutDateStatus(sub.cutDate);
@@ -561,7 +815,7 @@ export const ClientList: React.FC<ClientListProps> = ({
                         className="p-3.5 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-slate-50/70 dark:bg-[#1A1A1E] space-y-2 relative"
                       >
                         {/* Platform header */}
-                        <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center justify-between gap-2 flex-wrap">
                           <span
                             className={badgeProps.className}
                             style={badgeProps.style}
@@ -570,16 +824,27 @@ export const ClientList: React.FC<ClientListProps> = ({
                               platform={sub.serviceName}
                               className="w-3.5 h-3.5 shrink-0"
                             />
-                            <span className="font-semibold">
-                              {sub.serviceName}
+                            <span className="font-semibold whitespace-nowrap">
+                              {getPlatformDisplayName(sub.serviceName)}
                             </span>
                           </span>
 
-                          <span
-                            className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${statusInfo.badge}`}
-                          >
-                            {statusInfo.label}
-                          </span>
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            {isSubscriptionFromFreeProfile(sub, freeProfiles) && (
+                              <span
+                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/20 whitespace-nowrap"
+                                title="Asignado desde Perfiles Libres (se restaurará al eliminar)"
+                              >
+                                <Sparkles className="w-2.5 h-2.5 text-amber-500 shrink-0" />
+                                <span>Perfil Libre</span>
+                              </span>
+                            )}
+                            <span
+                              className={`px-2 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap shrink-0 ${statusInfo.badge}`}
+                            >
+                              {statusInfo.label}
+                            </span>
+                          </div>
                         </div>
 
                         {/* Dates */}
@@ -603,7 +868,7 @@ export const ClientList: React.FC<ClientListProps> = ({
                           <div className="pt-2 border-t border-slate-200/60 dark:border-[#2D2D33] space-y-1.5 text-xs">
                             {sub.email && (
                               <div className="flex items-center justify-between gap-2 bg-white dark:bg-[#0F0F12] px-2.5 py-1 rounded-lg border border-slate-200/80 dark:border-[#2D2D33]">
-                                <div className="flex items-center gap-1.5 truncate">
+                                <div className="flex items-center gap-1.5 min-w-0 flex-1">
                                   <Mail className="w-3 h-3 text-[#94949E] shrink-0" />
                                   {/* Cambiamos a font-cascadia font-light */}
                                   <span className="font-cascadia font-light text-[11px] text-slate-800 dark:text-[#E4E4E7] truncate tracking-wide">
@@ -631,7 +896,7 @@ export const ClientList: React.FC<ClientListProps> = ({
 
                             {sub.password && (
                               <div className="flex items-center justify-between gap-2 bg-white dark:bg-[#0F0F12] px-2.5 py-1 rounded-lg border border-slate-200/80 dark:border-[#2D2D33]">
-                                <div className="flex items-center gap-1.5 truncate">
+                                <div className="flex items-center gap-1.5 min-w-0 flex-1">
                                   <Key className="w-3 h-3 text-[#94949E] shrink-0" />
                                   {/* Cambiamos a font-cascadia font-light */}
                                   <span className="font-cascadia font-light text-[11px] text-slate-800 dark:text-[#E4E4E7] truncate tracking-wide">
@@ -717,6 +982,12 @@ export const ClientList: React.FC<ClientListProps> = ({
                       </div>
                     );
                   })}
+
+                  {visibleSubs.length === 0 && (
+                    <div className="py-4 px-3 text-center text-xs text-slate-400 dark:text-[#94949E] rounded-xl border border-dashed border-slate-200 dark:border-[#2D2D33]">
+                      Sin perfiles coincidentes
+                    </div>
+                  )}
                 </div>
               </div>
             );
@@ -764,7 +1035,7 @@ export const ClientList: React.FC<ClientListProps> = ({
               <h3 className="text-lg font-bold text-center text-slate-900 dark:text-[#E4E4E7] mb-2 font-space">
                 ¿Eliminar Cliente?
               </h3>
-              <p className="text-sm text-center text-slate-500 dark:text-[#94949E] mb-6">
+              <p className="text-sm text-center text-slate-500 dark:text-[#94949E] mb-4">
                 ¿Estás seguro de que deseas eliminar a{" "}
                 <strong className="text-slate-800 dark:text-white font-semibold">
                   {clientToDelete.name}
@@ -772,6 +1043,22 @@ export const ClientList: React.FC<ClientListProps> = ({
                 ? Esta acción borra el cliente y todas sus suscripciones
                 asociadas.
               </p>
+
+              {clientToDelete.subscriptions.some((sub) =>
+                isSubscriptionFromFreeProfile(sub, freeProfiles),
+              ) && (
+                <div className="mb-5 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-800 dark:text-amber-300 flex items-start gap-2.5 text-left">
+                  <Sparkles className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-bold block text-amber-700 dark:text-amber-300 mb-0.5">
+                      Restauración de inventario
+                    </span>
+                    <span>
+                      Los perfiles asignados desde <em>Perfiles Libres</em> se restaurarán y sumarán de vuelta automáticamente.
+                    </span>
+                  </div>
+                </div>
+              )}
               <div className="flex items-center gap-3">
                 <button
                   type="button"

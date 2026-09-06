@@ -81,61 +81,82 @@ export const QuickLinksView: React.FC = () => {
         </button>
       </div>
 
-      {/* Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {quickLinks.map((link) => (
-          <div
-            key={link.id}
-            className="p-5 rounded-xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#1F1F23] shadow-sm hover:border-[#2D2D33] transition-all flex flex-col justify-between gap-4 relative group"
+      {/* Grid or Empty State */}
+      {quickLinks.length === 0 ? (
+        <div className="p-12 text-center rounded-2xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#1F1F23] shadow-sm flex flex-col items-center justify-center">
+          <div className="w-14 h-14 rounded-2xl bg-sky-500/10 text-sky-500 flex items-center justify-center mb-4">
+            <Globe className="w-7 h-7" />
+          </div>
+          <h3 className="text-base font-bold text-slate-800 dark:text-[#E4E4E7] mb-1">
+            No tienes enlaces rápidos guardados
+          </h3>
+          <p className="text-xs text-slate-500 dark:text-[#94949E] max-w-md mx-auto mb-6">
+            Guarda accesos directos a paneles de streaming, páginas de validación de códigos o herramientas externas frecuentes.
+          </p>
+          <button
+            onClick={() => setIsAddModalOpen(true)}
+            className="px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold flex items-center gap-2 shadow-md shadow-sky-600/20 transition-all cursor-pointer"
           >
-            <div>
-              <div className="flex items-center justify-between gap-2 mb-2">
-                <span className="p-2 rounded-xl bg-sky-500/10 text-sky-500">
-                  <Globe className="w-4 h-4" />
-                </span>
-                <button
-                  onClick={() => setLinkToDelete(link)}
-                  className="p-1 rounded text-slate-400 hover:text-red-500 opacity-80 group-hover:opacity-100 transition-opacity cursor-pointer"
-                  title="Eliminar Enlace"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
+            <Plus className="w-4 h-4" />
+            <span>Crear Primer Enlace Rápido</span>
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {quickLinks.map((link) => (
+            <div
+              key={link.id}
+              className="p-5 rounded-xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#1F1F23] shadow-sm hover:border-[#2D2D33] transition-all flex flex-col justify-between gap-4 relative group"
+            >
+              <div>
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <span className="p-2 rounded-xl bg-sky-500/10 text-sky-500">
+                    <Globe className="w-4 h-4" />
+                  </span>
+                  <button
+                    onClick={() => setLinkToDelete(link)}
+                    className="p-1 rounded text-slate-400 hover:text-red-500 opacity-80 group-hover:opacity-100 transition-opacity cursor-pointer"
+                    title="Eliminar Enlace"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+
+                <h3 className="font-bold text-sm text-slate-900 dark:text-[#E4E4E7] mb-1">
+                  {link.title}
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-[#94949E] font-mono truncate">
+                  {link.url}
+                </p>
               </div>
 
-              <h3 className="font-bold text-sm text-slate-900 dark:text-[#E4E4E7] mb-1">
-                {link.title}
-              </h3>
-              <p className="text-xs text-slate-500 dark:text-[#94949E] font-mono truncate">
-                {link.url}
-              </p>
-            </div>
+              <div className="flex items-center gap-2 pt-2 border-t border-slate-100 dark:border-[#1F1F23]">
+                <a
+                  href={link.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex-1 py-1.5 px-3 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-sm"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  <span>Abrir Sitio</span>
+                </a>
 
-            <div className="flex items-center gap-2 pt-2 border-t border-slate-100 dark:border-[#1F1F23]">
-              <a
-                href={link.url}
-                target="_blank"
-                rel="noreferrer"
-                className="flex-1 py-1.5 px-3 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-sm"
-              >
-                <ExternalLink className="w-3.5 h-3.5" />
-                <span>Abrir Sitio</span>
-              </a>
-
-              <button
-                onClick={() => copyLink(link.url, link.id)}
-                className="p-2 rounded-xl border border-slate-200 dark:border-[#2D2D33] text-slate-600 dark:text-[#94949E] hover:bg-slate-100 dark:hover:bg-[#1A1A1E] transition-colors cursor-pointer"
-                title="Copiar URL"
-              >
-                {copiedId === link.id ? (
-                  <Check className="w-3.5 h-3.5 text-emerald-500" />
-                ) : (
-                  <Copy className="w-3.5 h-3.5" />
-                )}
-              </button>
+                <button
+                  onClick={() => copyLink(link.url, link.id)}
+                  className="p-2 rounded-xl border border-slate-200 dark:border-[#2D2D33] text-slate-600 dark:text-[#94949E] hover:bg-slate-100 dark:hover:bg-[#1A1A1E] transition-colors cursor-pointer"
+                  title="Copiar URL"
+                >
+                  {copiedId === link.id ? (
+                    <Check className="w-3.5 h-3.5 text-emerald-500" />
+                  ) : (
+                    <Copy className="w-3.5 h-3.5" />
+                  )}
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* Add Modal */}
       {isAddModalOpen && (

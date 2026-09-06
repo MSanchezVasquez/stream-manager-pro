@@ -3,6 +3,7 @@ import { useDataStore } from "../../store/dataStore";
 import {
   getPlatformConfig,
   getPlatformBadgeProps,
+  getPlatformDisplayName,
 } from "../../utils/platformHelpers";
 import { PlatformIcon } from "../common/PlatformIcon";
 import { CircularSpinner } from "../common/LoadingSpinners";
@@ -279,7 +280,7 @@ export const SupplierList: React.FC = () => {
                               platform={acc.serviceName}
                               className="w-3.5 h-3.5 shrink-0"
                             />
-                            <span>{acc.serviceName}</span>
+                            <span>{getPlatformDisplayName(acc.serviceName)}</span>
                           </span>
 
                           <div className="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">

@@ -12,11 +12,16 @@ import {
   Shield,
   Smartphone,
   AlertTriangle,
+  Sparkles,
+  AlertCircle,
+  Clock,
+  CheckCircle2,
 } from "lucide-react";
 import { Client, ClientSubscription } from "../../types";
-import { useDataStore } from "../../store/dataStore";
+import { useDataStore, isSubscriptionFromFreeProfile } from "../../store/dataStore";
 import { CircularSpinner } from "../common/LoadingSpinners";
 import { PlatformSelect } from "./PlatformSelect";
+import { getClientAccountHealth } from "../../utils/platformHelpers";
 
 interface ClientModalProps {
   isOpen: boolean;
@@ -29,7 +34,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
   onClose,
   initialClient,
 }) => {
-  const { clients, saveClient, deleteClient } = useDataStore();
+  const { clients, freeProfiles, saveClient, deleteClient } = useDataStore();
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -199,9 +204,35 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                 <User className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="font-bold text-lg text-slate-900 dark:text-[#E4E4E7]">
-                  {activeClient ? "Editar Cliente" : "Nuevo Cliente"}
-                </h3>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h3 className="font-bold text-lg text-slate-900 dark:text-[#E4E4E7]">
+                    {activeClient ? "Editar Cliente" : "Nuevo Cliente"}
+                  </h3>
+                  {activeClient && (() => {
+                    const health = getClientAccountHealth(activeClient);
+                    return (
+                      <span
+                        className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold ${health.badgeClass} select-none shadow-xs`}
+                        title={health.tooltip}
+                      >
+                        <span
+                          className={`w-1.5 h-1.5 rounded-full ${health.dotClass} shrink-0`}
+                        />
+                        {health.level === "expired" && (
+                          <AlertCircle className="w-3.5 h-3.5 shrink-0 text-red-600 dark:text-red-400" />
+                        )}
+                        {(health.level === "near_expiration" ||
+                          health.level === "expiring_today") && (
+                          <Clock className="w-3.5 h-3.5 shrink-0 text-amber-600 dark:text-amber-400" />
+                        )}
+                        {health.level === "healthy" && (
+                          <CheckCircle2 className="w-3.5 h-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                        )}
+                        <span>{health.label}</span>
+                      </span>
+                    );
+                  })()}
+                </div>
                 <p className="text-xs text-slate-500 dark:text-[#94949E]">
                   {activeClient
                     ? `Gestión de datos de ${activeClient.name}`
@@ -361,9 +392,20 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                       className="p-4 rounded-2xl border border-slate-200 dark:border-[#25252D] bg-slate-50/70 dark:bg-[#181820] space-y-3 relative"
                     >
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">
-                          Servicio #{index + 1}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">
+                            Servicio #{index + 1}
+                          </span>
+                          {isSubscriptionFromFreeProfile(sub, freeProfiles) && (
+                            <span
+                              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/20"
+                              title="Asignado desde Perfiles Libres (si se elimina este servicio, volverá al inventario)"
+                            >
+                              <Sparkles className="w-2.5 h-2.5 text-amber-500" />
+                              <span>Perfil Libre</span>
+                            </span>
+                          )}
+                        </div>
                         {subscriptions.length > 1 && (
                           <button
                             type="button"
@@ -565,13 +607,29 @@ export const ClientModal: React.FC<ClientModalProps> = ({
             <h3 className="text-lg font-bold text-center text-slate-900 dark:text-[#E4E4E7] mb-2">
               ¿Eliminar Cliente?
             </h3>
-            <p className="text-sm text-center text-slate-500 dark:text-[#94949E] mb-6">
+            <p className="text-sm text-center text-slate-500 dark:text-[#94949E] mb-4">
               ¿Estás seguro de que deseas eliminar a{" "}
               <strong className="text-slate-800 dark:text-white font-semibold">
                 {activeClient.name}
               </strong>
               ?
             </p>
+
+            {activeClient.subscriptions.some((sub) =>
+              isSubscriptionFromFreeProfile(sub, freeProfiles),
+            ) && (
+              <div className="mb-5 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-800 dark:text-amber-300 flex items-start gap-2.5 text-left">
+                <Sparkles className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-bold block text-amber-700 dark:text-amber-300 mb-0.5">
+                    Restauración de inventario
+                  </span>
+                  <span>
+                    Los perfiles asignados desde <em>Perfiles Libres</em> se restaurarán y sumarán de vuelta automáticamente.
+                  </span>
+                </div>
+              </div>
+            )}
             <div className="flex items-center gap-3">
               <button
                 type="button"

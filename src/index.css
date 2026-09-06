@@ -9,6 +9,15 @@
   --font-cascadia: "Cascadia Code", monospace;
 } */
 
+html,
+body,
+#root {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+}
+
 html {
   overflow-y: scroll;
   scrollbar-gutter: stable;

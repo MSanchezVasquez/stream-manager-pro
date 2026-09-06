@@ -79,8 +79,8 @@ function MainApp() {
       />
 
       {/* Main Container */}
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex flex-col md:flex-row gap-8 items-start">
+      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col">
+        <div className="flex flex-col md:flex-row gap-8 items-start flex-1 w-full min-h-[calc(100vh-22rem)]">
           {/* Navigation Sidebar (oculto en la pestaña Perfil) */}
           {activeTab !== "profile" && (
             <Sidebar
@@ -91,7 +91,7 @@ function MainApp() {
           )}
 
           {/* Tab Views */}
-          <div ref={mainContentRef} className="flex-1 min-w-0">
+          <div ref={mainContentRef} className="flex-1 min-w-0 w-full flex flex-col">
             {activeTab === "dashboard" && (
               <div className="space-y-8">
                 <OverviewCards onNavigateTab={(tab) => setActiveTab(tab)} />

@@ -1,4 +1,5 @@
 export type StreamingPlatform =
+  | "Prime Video"
   | "Amazon Prime Video"
   | "Apple TV"
   | "Crunchyroll"
@@ -37,6 +38,16 @@ export interface ClientSubscription {
   supplierName?: string;
   notes?: string;
   price?: number;
+  isFromFreeProfile?: boolean;
+  freeProfileId?: string;
+  freeProfileSnapshot?: {
+    id?: string;
+    serviceName: StreamingPlatform;
+    email: string;
+    password?: string;
+    browser?: string;
+    notes?: string;
+  };
 }
 
 export interface Client {

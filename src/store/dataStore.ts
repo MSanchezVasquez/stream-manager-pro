@@ -40,6 +40,89 @@ interface DataState {
   importDataJSON: (jsonStr: string) => Promise<boolean>;
 }
 
+// Helper para identificar si una suscripción proviene de Perfiles Libres
+export const isSubscriptionFromFreeProfile = (
+  sub: ClientSubscription,
+  existingFreeProfiles: FreeProfile[] = [],
+): boolean => {
+  if (sub.isFromFreeProfile || sub.freeProfileId || sub.freeProfileSnapshot) {
+    return true;
+  }
+  // Si no tiene proveedor asignado y coincide en plataforma y correo con un perfil libre existente
+  if (
+    !sub.supplierName &&
+    sub.email &&
+    existingFreeProfiles.some(
+      (fp) =>
+        fp.serviceName === sub.serviceName &&
+        fp.email?.toLowerCase().trim() === sub.email?.toLowerCase().trim(),
+    )
+  ) {
+    return true;
+  }
+  return false;
+};
+
+// Helper para restaurar el inventario de perfiles libres a partir de suscripciones eliminadas
+const restoreFreeProfilesFromSubscriptions = async (
+  uid: string,
+  subscriptions: ClientSubscription[],
+  currentFreeProfiles: FreeProfile[],
+): Promise<FreeProfile[]> => {
+  const subsToRestore = subscriptions.filter((sub) =>
+    isSubscriptionFromFreeProfile(sub, currentFreeProfiles),
+  );
+
+  if (subsToRestore.length === 0) {
+    return currentFreeProfiles;
+  }
+
+  let updatedProfiles = [...currentFreeProfiles];
+
+  for (const sub of subsToRestore) {
+    const matchIdx = updatedProfiles.findIndex((fp) => {
+      if (sub.freeProfileId && fp.id === sub.freeProfileId) return true;
+      if (
+        sub.email &&
+        fp.serviceName === sub.serviceName &&
+        fp.email.toLowerCase().trim() === sub.email.toLowerCase().trim()
+      ) {
+        return true;
+      }
+      return false;
+    });
+
+    if (matchIdx >= 0) {
+      const existing = updatedProfiles[matchIdx];
+      const incremented: FreeProfile = {
+        ...existing,
+        quantity: (existing.quantity || 0) + 1,
+      };
+      updatedProfiles[matchIdx] = incremented;
+      await saveUserDocument(uid, COLLECTIONS.FREE_PROFILES, incremented);
+    } else {
+      const restoredProfile: FreeProfile = {
+        id:
+          sub.freeProfileSnapshot?.id ||
+          sub.freeProfileId ||
+          `fp-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+        serviceName: sub.serviceName,
+        quantity: 1,
+        email: sub.email || sub.freeProfileSnapshot?.email || "",
+        password: sub.password || sub.freeProfileSnapshot?.password || "",
+        browser:
+          sub.freeProfileSnapshot?.browser ||
+          "Google Chrome",
+        notes: sub.freeProfileSnapshot?.notes || sub.notes || "",
+      };
+      updatedProfiles.push(restoredProfile);
+      await saveUserDocument(uid, COLLECTIONS.FREE_PROFILES, restoredProfile);
+    }
+  }
+
+  return updatedProfiles;
+};
+
 export const useDataStore = create<DataState>((set, get) => ({
   clients: [],
   suppliers: [],
@@ -101,6 +184,7 @@ export const useDataStore = create<DataState>((set, get) => ({
     if (!uid || !client) return false;
 
     const previousClients = get().clients;
+    const existingClient = previousClients.find((c) => c?.id === client.id);
 
     set((state) => {
       const idx = state.clients.findIndex((c) => c?.id === client.id);
@@ -116,8 +200,33 @@ export const useDataStore = create<DataState>((set, get) => ({
     if (!success) {
       // Rollback
       set({ clients: previousClients });
+      return false;
     }
-    return success;
+
+    // Si al editar el cliente se eliminaron suscripciones que venían de Perfiles Libres, restaurarlas
+    if (existingClient?.subscriptions) {
+      const newSubIds = new Set((client.subscriptions || []).map((s) => s.id));
+      const removedSubs = existingClient.subscriptions.filter(
+        (s) => !newSubIds.has(s.id),
+      );
+      if (removedSubs.length > 0) {
+        try {
+          const updatedProfiles = await restoreFreeProfilesFromSubscriptions(
+            uid,
+            removedSubs,
+            get().freeProfiles,
+          );
+          set({ freeProfiles: updatedProfiles });
+        } catch (err) {
+          console.error(
+            "Error al restaurar perfiles libres tras modificar suscripciones:",
+            err,
+          );
+        }
+      }
+    }
+
+    return true;
   },
 
   deleteClient: async (clientId) => {
@@ -125,6 +234,7 @@ export const useDataStore = create<DataState>((set, get) => ({
     if (!uid || !clientId) return false;
 
     const previousClients = get().clients;
+    const clientToDelete = previousClients.find((c) => c?.id === clientId);
 
     set((state) => ({
       clients: state.clients.filter((c) => c?.id !== clientId),
@@ -137,8 +247,27 @@ export const useDataStore = create<DataState>((set, get) => ({
     );
     if (!success) {
       set({ clients: previousClients });
+      return false;
     }
-    return success;
+
+    // Si el cliente eliminado tenía suscripciones que provenían de Perfiles Libres, restaurar su stock
+    if (clientToDelete?.subscriptions && clientToDelete.subscriptions.length > 0) {
+      try {
+        const updatedProfiles = await restoreFreeProfilesFromSubscriptions(
+          uid,
+          clientToDelete.subscriptions,
+          get().freeProfiles,
+        );
+        set({ freeProfiles: updatedProfiles });
+      } catch (err) {
+        console.error(
+          "Error al restaurar perfiles libres tras eliminar cliente:",
+          err,
+        );
+      }
+    }
+
+    return true;
   },
 
   // --- CRUD PROVEEDORES ---
@@ -333,6 +462,16 @@ export const useDataStore = create<DataState>((set, get) => ({
             status: "active",
             notes: currentProfile.notes || "",
             price: 0,
+            isFromFreeProfile: true,
+            freeProfileId: profile.id,
+            freeProfileSnapshot: {
+              id: profile.id,
+              serviceName: currentProfile.serviceName,
+              email: currentProfile.email,
+              password: currentProfile.password,
+              browser: currentProfile.browser || "Google Chrome",
+              notes: currentProfile.notes || "",
+            },
           };
 
           const updatedClient: Client = {

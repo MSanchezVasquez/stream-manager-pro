@@ -5,6 +5,7 @@ import {
   getDaysRemaining,
   getPlatformConfig,
   getPlatformBadgeProps,
+  getPlatformDisplayName,
 } from "../../utils/platformHelpers";
 import { PlatformIcon } from "../common/PlatformIcon";
 import {
@@ -144,7 +145,7 @@ export const ExpirationAlerts: React.FC = () => {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
           {filteredItems.map((item) => {
             const platformConfig = getPlatformConfig(item.sub.serviceName);
             const badgeProps = getPlatformBadgeProps(platformConfig);
@@ -153,22 +154,22 @@ export const ExpirationAlerts: React.FC = () => {
             return (
               <div
                 key={item.sub.id}
-                className="p-4 rounded-xl border border-slate-200 dark:border-[#1F1F23] bg-slate-50/50 dark:bg-[#1A1A1E]/50 hover:border-[#2D2D33] transition-all flex flex-col justify-between gap-3"
+                className="p-4.5 rounded-2xl border border-slate-200 dark:border-[#1F1F23] bg-slate-50/60 dark:bg-[#18181E] hover:border-slate-300 dark:hover:border-[#2D2D33] shadow-xs hover:shadow-sm transition-all flex flex-col justify-between gap-4"
               >
                 <div>
-                  <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center justify-between gap-3 mb-3.5 flex-wrap">
                     <span
-                      className={badgeProps.className}
+                      className={`${badgeProps.className} whitespace-nowrap shrink-0`}
                       style={badgeProps.style}
                     >
                       <PlatformIcon
                         platform={item.sub.serviceName}
                         className="w-3.5 h-3.5 shrink-0"
                       />
-                      <span>{item.sub.serviceName}</span>
+                      <span className="font-semibold">{getPlatformDisplayName(item.sub.serviceName)}</span>
                     </span>
                     <span
-                      className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${statusInfo.badge}`}
+                      className={`px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap shrink-0 shadow-2xs ${statusInfo.badge}`}
                     >
                       {statusInfo.label}
                     </span>

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ChevronDown, Search } from "lucide-react";
 import { StreamingPlatform } from "../../types";
-import { ALL_STREAMING_PLATFORMS } from "../../utils/platformHelpers";
+import { ALL_STREAMING_PLATFORMS, getPlatformDisplayName } from "../../utils/platformHelpers";
 import { PlatformIcon } from "../common/PlatformIcon";
 
 interface PlatformSelectProps {
@@ -9,6 +9,10 @@ interface PlatformSelectProps {
   onChange: (platform: StreamingPlatform) => void;
   className?: string;
 }
+
+const SELECTABLE_PLATFORMS = ALL_STREAMING_PLATFORMS.filter(
+  (p) => p !== "Amazon Prime Video",
+);
 
 /**
  * Selector de plataforma con ícono + nombre completo siempre visibles.
@@ -54,7 +58,7 @@ export const PlatformSelect: React.FC<PlatformSelectProps> = ({
     };
   }, [isOpen]);
 
-  const filteredPlatforms = ALL_STREAMING_PLATFORMS.filter((p) =>
+  const filteredPlatforms = SELECTABLE_PLATFORMS.filter((p) =>
     p.toLowerCase().includes(query.trim().toLowerCase()),
   );
 
@@ -75,7 +79,7 @@ export const PlatformSelect: React.FC<PlatformSelectProps> = ({
       >
         <span className="flex items-center gap-2 min-w-0">
           <PlatformIcon platform={value} className="w-4 h-4 shrink-0" />
-          <span className="truncate">{value}</span>
+          <span className="truncate">{getPlatformDisplayName(value)}</span>
         </span>
         <ChevronDown
           className={`w-3.5 h-3.5 text-slate-400 shrink-0 transition-transform ${isOpen ? "rotate-180" : ""}`}

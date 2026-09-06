@@ -19,7 +19,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigateTab }) => {
   return (
     <footer className="w-full bg-[#2242cc] text-white transition-colors duration-300 shadow-inner mt-auto">
       {/* Top Tier: Brand, Store Badges, Navigation Links & Social Media */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-7">
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
           {/* Brand & App Download Buttons */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">

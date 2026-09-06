@@ -4,6 +4,7 @@ import {
   getPlatformConfig,
   getPlatformBadgeProps,
   ALL_STREAMING_PLATFORMS,
+  getPlatformDisplayName,
 } from "../../utils/platformHelpers";
 import { PlatformIcon } from "../common/PlatformIcon";
 import { CircularSpinner } from "../common/LoadingSpinners";
@@ -45,7 +46,7 @@ export const FreeProfilesList: React.FC = () => {
   // New profile modal state
   const [isNewProfileModalOpen, setIsNewProfileModalOpen] = useState(false);
   const [newService, setNewService] =
-    useState<StreamingPlatform>("Amazon Prime Video");
+    useState<StreamingPlatform>("Prime Video");
   const [newQuantity, setNewQuantity] = useState<number>(1);
   const [newEmail, setNewEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -173,7 +174,7 @@ export const FreeProfilesList: React.FC = () => {
                       platform={prof.serviceName}
                       className="w-3.5 h-3.5 shrink-0"
                     />
-                    <span>{prof.serviceName}</span>
+                    <span>{getPlatformDisplayName(prof.serviceName)}</span>
                   </span>
 
                   <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">

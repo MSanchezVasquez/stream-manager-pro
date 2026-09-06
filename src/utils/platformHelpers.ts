@@ -1,5 +1,5 @@
 import { CSSProperties } from "react";
-import { StreamingPlatform } from "../types";
+import { StreamingPlatform, Client } from "../types";
 
 export const ALL_STREAMING_PLATFORMS: StreamingPlatform[] = [
   "Netflix",
@@ -10,6 +10,7 @@ export const ALL_STREAMING_PLATFORMS: StreamingPlatform[] = [
   "HBO Max",
   "Max",
   "Youtube Premium",
+  "Prime Video",
   "Amazon Prime Video",
   "Paramount Plus",
   "Spotify Premium",
@@ -82,8 +83,16 @@ export const PLATFORM_CONFIGS: Record<string, PlatformConfig> = {
     borderColor: "border-rose-500/30",
     iconName: "PlayCircle",
   },
+  "Prime Video": {
+    name: "Prime Video",
+    color: "#00A8E1",
+    bgColor: "bg-sky-500/10 dark:bg-sky-950/40",
+    textColor: "text-sky-500 dark:text-sky-300",
+    borderColor: "border-sky-500/30",
+    iconName: "Video",
+  },
   "Amazon Prime Video": {
-    name: "Amazon Prime Video",
+    name: "Prime Video",
     color: "#00A8E1",
     bgColor: "bg-sky-500/10 dark:bg-sky-950/40",
     textColor: "text-sky-500 dark:text-sky-300",
@@ -165,6 +174,24 @@ export function getPlatformConfig(platformName: string): PlatformConfig {
 }
 
 /**
+ * Normaliza y devuelve el nombre visual preferido de la plataforma.
+ * P. ej. convierte "Amazon Prime Video" a "Prime Video".
+ */
+export function getPlatformDisplayName(platformName: string): string {
+  if (!platformName) return "";
+  const trimmed = platformName.trim();
+  if (
+    trimmed === "Amazon Prime Video" ||
+    trimmed.toLowerCase() === "amazon prime video" ||
+    trimmed.toLowerCase() === "amazon prime"
+  ) {
+    return "Prime Video";
+  }
+  const conf = getPlatformConfig(trimmed);
+  return conf.name || trimmed;
+}
+
+/**
  * Returns class names and inline styles for a platform badge based on platform config.
  * Supports both Tailwind class strings and hex/rgb color codes in bgColor and borderColor.
  */
@@ -181,7 +208,7 @@ export function getPlatformBadgeProps(platConfig: PlatformConfig) {
   );
 
   const className = [
-    "px-2.5 py-1 rounded-full text-xs font-bold border flex items-center gap-1.5 text-slate-800 dark:text-[#E4E4E7]",
+    "px-2.5 py-1 rounded-full text-xs font-bold border flex items-center gap-1.5 text-slate-800 dark:text-[#E4E4E7] whitespace-nowrap shrink-0",
     !isCustomBg && platConfig.bgColor ? platConfig.bgColor : "",
     !isCustomBorder && platConfig.borderColor ? platConfig.borderColor : "",
   ]
@@ -257,8 +284,10 @@ export function formatCutDateStatus(dateStr: string): {
   }
 
   if (days < 0) {
+    const absDays = Math.abs(days);
+    const dayWord = absDays === 1 ? "día" : "días";
     return {
-      label: `Vencido hace ${Math.abs(days)} día(s)`,
+      label: `Vencido hace ${absDays} ${dayWord}`,
       days,
       colorClass: "text-red-600 dark:text-red-400 font-bold",
       badge:
@@ -277,8 +306,9 @@ export function formatCutDateStatus(dateStr: string): {
   }
 
   if (days <= 5) {
+    const dayWord = days === 1 ? "Vence mañana" : `Vence en ${days} días`;
     return {
-      label: `Vence en ${days} día(s)`,
+      label: dayWord,
       days,
       colorClass: "text-amber-600 dark:text-amber-400 font-medium",
       badge:
@@ -324,4 +354,179 @@ export function generateWhatsAppMessage(
   if (pin) credentialsText += `\n🔒 *PIN:* ${pin}`;
 
   return `Hola *${clientName}* 👋\n\nLe recordamos que ${timeAlert}\n${credentialsText}\n\nPara renovar o ante cualquier consulta, responda a este mensaje. ¡Gracias por preferir nuestro servicio! 🚀`;
+}
+
+export type ClientHealthLevel =
+  | "healthy"
+  | "expiring_today"
+  | "near_expiration"
+  | "expired"
+  | "no_profiles"
+  | "inactive";
+
+export interface ClientAccountHealth {
+  level: ClientHealthLevel;
+  label: string;
+  badgeClass: string;
+  dotClass: string;
+  borderClass: string;
+  tooltip: string;
+  minDaysRemaining: number;
+  expiredCount: number;
+  expiringCount: number;
+  activeCount: number;
+}
+
+/**
+ * Evaluates the overall health status of a client based on their linked profiles and cut-off dates
+ */
+export function getClientAccountHealth(client: Client): ClientAccountHealth {
+  if (client.status === "inactive") {
+    return {
+      level: "inactive",
+      label: "Inactivo",
+      badgeClass:
+        "bg-slate-100 text-slate-600 dark:bg-[#1A1A20] dark:text-[#94949E] border border-slate-200 dark:border-[#2D2D33]",
+      dotClass: "bg-slate-400 dark:bg-slate-500",
+      borderClass: "border-slate-200 dark:border-[#1F1F23]",
+      tooltip: "Cliente marcado como inactivo o cancelado",
+      minDaysRemaining: 999,
+      expiredCount: 0,
+      expiringCount: 0,
+      activeCount: 0,
+    };
+  }
+
+  const subs = client.subscriptions || [];
+
+  if (subs.length === 0) {
+    return {
+      level: "no_profiles",
+      label: "Sin perfiles",
+      badgeClass:
+        "bg-slate-100 text-slate-500 dark:bg-[#1A1A20] dark:text-[#94949E] border border-slate-200 dark:border-[#2D2D33]",
+      dotClass: "bg-slate-400",
+      borderClass: "border-slate-200 dark:border-[#1F1F23]",
+      tooltip: "Sin servicios ni perfiles vinculados",
+      minDaysRemaining: 999,
+      expiredCount: 0,
+      expiringCount: 0,
+      activeCount: 0,
+    };
+  }
+
+  let expiredCount = 0;
+  let expiringTodayCount = 0;
+  let nearExpirationCount = 0;
+  let activeCount = 0;
+  let minDaysRemaining = 999;
+  let minExpiredDays = 0;
+
+  for (const sub of subs) {
+    if (sub.status === "inactive") continue;
+
+    const days = getDaysRemaining(sub.cutDate);
+
+    if (sub.status === "expired" || days < 0) {
+      expiredCount++;
+      if (days < minExpiredDays) {
+        minExpiredDays = days;
+      }
+    } else if (days === 0) {
+      expiringTodayCount++;
+      if (0 < minDaysRemaining) {
+        minDaysRemaining = 0;
+      }
+    } else if (days <= 5) {
+      nearExpirationCount++;
+      if (days < minDaysRemaining) {
+        minDaysRemaining = days;
+      }
+    } else {
+      activeCount++;
+      if (days < minDaysRemaining) {
+        minDaysRemaining = days;
+      }
+    }
+  }
+
+  // 1. Any expired profiles?
+  if (expiredCount > 0) {
+    const isSingle = subs.length === 1;
+    const label = isSingle
+      ? minExpiredDays < 0 && minExpiredDays > -99
+        ? `Vencido hace ${Math.abs(minExpiredDays)}d`
+        : "Vencido"
+      : expiredCount === 1
+        ? "1 perfil vencido"
+        : `${expiredCount} perfiles vencidos`;
+
+    return {
+      level: "expired",
+      label,
+      badgeClass:
+        "bg-red-500/10 text-red-700 dark:bg-red-950/40 dark:text-red-300 border border-red-500/30 font-bold",
+      dotClass: "bg-red-500 shadow-sm shadow-red-500/50",
+      borderClass: "border-slate-200 dark:border-[#1F1F23]",
+      tooltip: `Atención: cuenta con ${expiredCount} ${expiredCount === 1 ? "perfil vencido" : "perfiles vencidos"}`,
+      minDaysRemaining: minExpiredDays,
+      expiredCount,
+      expiringCount: expiringTodayCount + nearExpirationCount,
+      activeCount,
+    };
+  }
+
+  // 2. Any profile expiring today?
+  if (expiringTodayCount > 0) {
+    return {
+      level: "expiring_today",
+      label: "¡Vence Hoy!",
+      badgeClass:
+        "bg-amber-500/20 text-amber-800 dark:bg-amber-950/50 dark:text-amber-300 border border-amber-500/40 font-bold animate-pulse",
+      dotClass: "bg-amber-500 animate-ping",
+      borderClass: "border-slate-200 dark:border-[#1F1F23]",
+      tooltip: "Prioritario: perfil vence el día de hoy",
+      minDaysRemaining: 0,
+      expiredCount: 0,
+      expiringCount: expiringTodayCount + nearExpirationCount,
+      activeCount,
+    };
+  }
+
+  // 3. Any profile near expiration (1 - 5 days)?
+  if (nearExpirationCount > 0) {
+    const label =
+      minDaysRemaining === 1
+        ? "Vence mañana"
+        : `Vence en ${minDaysRemaining}d`;
+
+    return {
+      level: "near_expiration",
+      label,
+      badgeClass:
+        "bg-amber-500/10 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300 border border-amber-500/30 font-semibold",
+      dotClass: "bg-amber-500",
+      borderClass: "border-slate-200 dark:border-[#1F1F23]",
+      tooltip: `Próximo corte: ${minDaysRemaining} día(s) restante(s)`,
+      minDaysRemaining,
+      expiredCount: 0,
+      expiringCount: nearExpirationCount,
+      activeCount,
+    };
+  }
+
+  // 4. All profiles active and healthy
+  return {
+    level: "healthy",
+    label: "Al día",
+    badgeClass:
+      "bg-emerald-500/10 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-500/30 font-semibold",
+    dotClass: "bg-emerald-500",
+    borderClass: "border-slate-200 dark:border-[#1F1F23]",
+    tooltip: `Todos los perfiles activos y al día (${activeCount} servicio(s))`,
+    minDaysRemaining,
+    expiredCount: 0,
+    expiringCount: 0,
+    activeCount,
+  };
 }
