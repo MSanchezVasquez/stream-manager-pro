@@ -11,11 +11,12 @@ import {
   Mail,
   Shield,
   Smartphone,
+  AlertTriangle,
 } from "lucide-react";
-import { Client, ClientSubscription, StreamingPlatform } from "../../types";
+import { Client, ClientSubscription } from "../../types";
 import { useDataStore } from "../../store/dataStore";
 import { CircularSpinner } from "../common/LoadingSpinners";
-import { ALL_STREAMING_PLATFORMS } from "../../utils/platformHelpers";
+import { PlatformSelect } from "./PlatformSelect";
 
 interface ClientModalProps {
   isOpen: boolean;
@@ -28,7 +29,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
   onClose,
   initialClient,
 }) => {
-  const { saveClient, deleteClient } = useDataStore();
+  const { clients, saveClient, deleteClient } = useDataStore();
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -37,20 +38,37 @@ export const ClientModal: React.FC<ClientModalProps> = ({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [duplicateClient, setDuplicateClient] = useState<Client | null>(null);
+  const [confirmDuplicateAnyway, setConfirmDuplicateAnyway] = useState(false);
+
+  // Cliente "activo" del formulario. Empieza siendo initialClient, pero
+  // puede cambiar internamente (ej. al elegir "Editar cliente existente"
+  // en el aviso de duplicado) sin depender de que el componente padre
+  // vuelva a renderizar el modal con un initialClient distinto.
+  const [activeClient, setActiveClient] = useState<Client | null | undefined>(
+    initialClient,
+  );
 
   useEffect(() => {
-    if (initialClient) {
-      setName(initialClient.name);
-      setPhone(initialClient.phone || "");
-      setStatus(initialClient.status);
-      setSubscriptions(initialClient.subscriptions || []);
+    setActiveClient(initialClient);
+  }, [initialClient, isOpen]);
+
+  useEffect(() => {
+    setDuplicateClient(null);
+    setConfirmDuplicateAnyway(false);
+
+    if (activeClient) {
+      setName(activeClient.name);
+      setPhone(activeClient.phone || "");
+      setStatus(activeClient.status);
+      setSubscriptions(activeClient.subscriptions || []);
     } else {
       setName("");
       setPhone("");
       setStatus("active");
       setSubscriptions([
         {
-          id: `sub-${Date.now()}`,
+          id: crypto.randomUUID(),
           clientId: "",
           clientName: "",
           serviceName: "Netflix",
@@ -66,7 +84,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
         },
       ]);
     }
-  }, [initialClient, isOpen]);
+  }, [activeClient]);
 
   if (!isOpen) return null;
 
@@ -74,8 +92,8 @@ export const ClientModal: React.FC<ClientModalProps> = ({
     setSubscriptions([
       ...subscriptions,
       {
-        id: `sub-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
-        clientId: initialClient?.id || "",
+        id: crypto.randomUUID(),
+        clientId: activeClient?.id || "",
         clientName: name || "Cliente",
         serviceName: "Disney+",
         hireDate: new Date().toLocaleDateString("es-ES"),
@@ -105,16 +123,27 @@ export const ClientModal: React.FC<ClientModalProps> = ({
     );
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!name.trim()) {
-      alert("Por favor ingrese el nombre del cliente");
+  // Detecta en vivo si ya existe otro cliente con el mismo nombre, para
+  // evitar crear registros duplicados (ej. añadir un servicio nuevo desde
+  // "Añadir Cliente" en vez de editar el cliente que ya existía).
+  useEffect(() => {
+    setConfirmDuplicateAnyway(false);
+
+    if (activeClient || !name.trim()) {
+      setDuplicateClient(null);
       return;
     }
 
+    const match = clients.find(
+      (c) => c.name.trim().toLowerCase() === name.trim().toLowerCase(),
+    );
+    setDuplicateClient(match || null);
+  }, [name, clients, activeClient]);
+
+  const performSave = async () => {
     setIsSaving(true);
     try {
-      const clientId = initialClient?.id || `client-${Date.now()}`;
+      const clientId = activeClient?.id || crypto.randomUUID();
       const updatedSubscriptions = subscriptions.map((s) => ({
         ...s,
         clientId,
@@ -126,7 +155,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
         name,
         phone,
         status,
-        createdAt: initialClient?.createdAt || new Date().toISOString(),
+        createdAt: activeClient?.createdAt || new Date().toISOString(),
         subscriptions: updatedSubscriptions,
       };
 
@@ -135,6 +164,23 @@ export const ClientModal: React.FC<ClientModalProps> = ({
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim()) {
+      alert("Por favor ingrese el nombre del cliente");
+      return;
+    }
+
+    // Si hay un posible duplicado sin confirmar, no guardamos todavía:
+    // el aviso ya está visible en el formulario con la opción de abrir
+    // el cliente existente o continuar de todas formas.
+    if (duplicateClient && !confirmDuplicateAnyway) {
+      return;
+    }
+
+    await performSave();
   };
   return createPortal(
     <div className="fixed inset-0 z-50 overflow-hidden">
@@ -154,18 +200,18 @@ export const ClientModal: React.FC<ClientModalProps> = ({
               </div>
               <div>
                 <h3 className="font-bold text-lg text-slate-900 dark:text-[#E4E4E7]">
-                  {initialClient ? "Editar Cliente" : "Nuevo Cliente"}
+                  {activeClient ? "Editar Cliente" : "Nuevo Cliente"}
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-[#94949E]">
-                  {initialClient
-                    ? `Gestión de datos de ${initialClient.name}`
+                  {activeClient
+                    ? `Gestión de datos de ${activeClient.name}`
                     : "Añadir nuevo registro y suscripciones"}
                 </p>
               </div>
             </div>
 
             <div className="flex items-center gap-1.5">
-              {initialClient && (
+              {activeClient && (
                 <button
                   type="button"
                   onClick={() => setShowDeleteConfirm(true)}
@@ -229,6 +275,51 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                   </div>
                 </div>
 
+                {duplicateClient && (
+                  <div className="p-3 rounded-xl border border-amber-400/40 bg-amber-500/10 flex items-start gap-2.5">
+                    <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                    <div className="flex-1 min-w-0 space-y-2">
+                      {confirmDuplicateAnyway ? (
+                        <p className="text-xs text-amber-800 dark:text-amber-300">
+                          Ok, se creará un cliente nuevo aunque el nombre se
+                          repita con{" "}
+                          <span className="font-bold">
+                            {duplicateClient.name}
+                          </span>
+                          .
+                        </p>
+                      ) : (
+                        <>
+                          <p className="text-xs text-amber-800 dark:text-amber-300">
+                            Ya existe un cliente llamado{" "}
+                            <span className="font-bold">
+                              {duplicateClient.name}
+                            </span>
+                            . Si quieres añadirle un servicio nuevo, edítalo en
+                            vez de crear un registro duplicado.
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            <button
+                              type="button"
+                              onClick={() => setActiveClient(duplicateClient)}
+                              className="px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-[11px] font-semibold transition-colors"
+                            >
+                              Editar cliente existente
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setConfirmDuplicateAnyway(true)}
+                              className="px-2.5 py-1 rounded-lg bg-transparent border border-amber-400/50 text-amber-700 dark:text-amber-300 hover:bg-amber-500/10 text-[11px] font-semibold transition-colors"
+                            >
+                              Crear de todas formas
+                            </button>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )}
+
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 dark:text-[#C4C4CE] mb-1">
                     Estado del Cliente
@@ -290,23 +381,16 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                           <label className="block text-[11px] font-semibold text-slate-600 dark:text-[#94949E] mb-1">
                             Plataforma Streaming
                           </label>
-                          <select
+                          <PlatformSelect
                             value={sub.serviceName}
-                            onChange={(e) =>
+                            onChange={(platform) =>
                               handleUpdateSubscription(
                                 sub.id,
                                 "serviceName",
-                                e.target.value,
+                                platform,
                               )
                             }
-                            className="w-full p-2 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-xs font-medium"
-                          >
-                            {ALL_STREAMING_PLATFORMS.map((p) => (
-                              <option key={p} value={p}>
-                                {p}
-                              </option>
-                            ))}
-                          </select>
+                          />
                         </div>
 
                         <div>
@@ -447,13 +531,20 @@ export const ClientModal: React.FC<ClientModalProps> = ({
               </button>
               <button
                 type="submit"
-                disabled={isSaving}
+                disabled={
+                  isSaving || (!!duplicateClient && !confirmDuplicateAnyway)
+                }
+                title={
+                  duplicateClient && !confirmDuplicateAnyway
+                    ? "Resuelve el aviso de cliente duplicado para continuar"
+                    : undefined
+                }
                 className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-lg shadow-indigo-600/20 transition-all flex items-center gap-2 disabled:opacity-60"
               >
                 {isSaving && (
                   <CircularSpinner size={16} className="text-white" />
                 )}
-                {initialClient ? "Guardar Cambios" : "Registrar Cliente"}
+                {activeClient ? "Guardar Cambios" : "Registrar Cliente"}
               </button>
             </div>
           </form>
@@ -461,7 +552,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
       </div>
 
       {/* Delete Confirmation Overlay */}
-      {showDeleteConfirm && initialClient && (
+      {showDeleteConfirm && activeClient && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div
             className="fixed inset-0 bg-black/20 dark:bg-black/40 backdrop-brightness-[0.75] transition-all duration-300 animate-fade-in"
@@ -477,7 +568,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
             <p className="text-sm text-center text-slate-500 dark:text-[#94949E] mb-6">
               ¿Estás seguro de que deseas eliminar a{" "}
               <strong className="text-slate-800 dark:text-white font-semibold">
-                {initialClient.name}
+                {activeClient.name}
               </strong>
               ?
             </p>
@@ -496,7 +587,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                 onClick={async () => {
                   setIsDeleting(true);
                   try {
-                    await deleteClient(initialClient.id);
+                    await deleteClient(activeClient.id);
                     setShowDeleteConfirm(false);
                     onClose();
                   } finally {
