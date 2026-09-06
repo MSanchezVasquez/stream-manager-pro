@@ -8,12 +8,14 @@ import {
   signOut,
   GoogleAuthProvider,
   signInWithPopup,
+  signInAnonymously,
   User,
 } from "../lib/firebase";
 
 export interface AuthResponse {
   success: boolean;
   error?: string;
+  code?: string;
 }
 
 interface AuthState {
@@ -27,6 +29,7 @@ interface AuthState {
     name?: string,
   ) => Promise<AuthResponse>;
   loginWithGoogle: () => Promise<AuthResponse>;
+  loginAsGuest: () => Promise<AuthResponse>;
   logout: () => Promise<void>;
 }
 
@@ -104,16 +107,50 @@ export const useAuthStore = create<AuthState>((set) => ({
       await signInWithPopup(auth, provider);
       return { success: true };
     } catch (err: any) {
-      console.error(err);
       if (err.code === "auth/popup-closed-by-user") {
         return {
           success: false,
-          error: "Se cerró la ventana de autenticación.",
+          code: err.code,
+          error: "Se cerró la ventana de autenticación con Google.",
         };
       }
+      if (err.code === "auth/unauthorized-domain") {
+        const domain = typeof window !== "undefined" ? window.location.hostname : "";
+        console.warn(
+          `[Firebase Auth] auth/unauthorized-domain: El dominio actual '${domain}' debe agregarse a Dominios Autorizados en Firebase Console (Authentication > Settings > Authorized Domains).`,
+        );
+        return {
+          success: false,
+          code: "auth/unauthorized-domain",
+          error: `Dominio no autorizado para Google Sign-In (${domain}). Para usar Google, agrega este dominio en Firebase Console > Authentication > Settings > Dominios autorizados. Mientras tanto, puedes iniciar sesión o registrarte con correo y contraseña.`,
+        };
+      }
+      console.warn("Google Auth notice:", err?.message || err);
       return {
         success: false,
+        code: err.code,
         error: err.message || "Error con Google Sign-In.",
+      };
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  loginAsGuest: async () => {
+    set({ loading: true });
+    try {
+      await signInAnonymously(auth);
+      return { success: true };
+    } catch (err: any) {
+      console.warn("Guest Auth notice:", err?.message || err);
+      return {
+        success: false,
+        code: err.code,
+        error:
+          err.code === "auth/admin-restricted-operation" ||
+          err.code === "auth/operation-not-allowed"
+            ? "El acceso anónimo no está habilitado en Firebase Console. Por favor regístrate o inicia sesión con correo."
+            : err.message || "Error al acceder como invitado.",
       };
     } finally {
       set({ loading: false });

@@ -92,14 +92,17 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     setErrorMsg("");
     setIsSubmitting(true);
     try {
-      await loginWithGoogle();
-      handleAnimatedClose();
+      const res = await loginWithGoogle();
+      if (res.success) {
+        handleAnimatedClose();
+      } else if (res.error) {
+        setErrorMsg(res.error);
+      }
     } catch (err: any) {
-      console.error(err);
-      if (err.code === "auth/popup-closed-by-user") {
+      if (err?.code === "auth/popup-closed-by-user") {
         setErrorMsg("Se cerró la ventana de inicio con Google.");
       } else {
-        setErrorMsg(err.message || "Error al iniciar sesión con Google.");
+        setErrorMsg(err?.message || "Error al iniciar sesión con Google.");
       }
     } finally {
       setIsSubmitting(false);
@@ -111,10 +114,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     setErrorMsg("");
     setIsSubmitting(true);
     try {
-      await loginWithEmail(email, password);
-      handleAnimatedClose();
+      const res = await loginWithEmail(email, password);
+      if (res.success) {
+        handleAnimatedClose();
+      } else if (res.error) {
+        setErrorMsg(res.error);
+      }
     } catch (err: any) {
-      setErrorMsg(err.message || "Error al iniciar sesión");
+      setErrorMsg(err?.message || "Error al iniciar sesión");
     } finally {
       setIsSubmitting(false);
     }

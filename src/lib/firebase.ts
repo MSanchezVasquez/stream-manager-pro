@@ -22,14 +22,14 @@ import {
   User,
 } from "firebase/auth";
 
-// 2. AGREGAMOS la nueva configuración apuntando a tu .env
+// 2. Configuración apuntando a las variables de entorno de Firebase
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyDZrZkyCnHiP2GpN9t1nfow_a2ZnyX7Q2E",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "gestor-streaming-ea667.firebaseapp.com",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "gestor-streaming-ea667",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "gestor-streaming-ea667.firebasestorage.app",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "37136935425",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:37136935425:web:5b8f074a44386a93cfee00",
 };
 
 // Initialize Firebase App lazily
@@ -271,5 +271,6 @@ export {
   onAuthStateChanged,
   GoogleAuthProvider,
   signInWithPopup,
+  signInAnonymously,
 };
 export type { User };
