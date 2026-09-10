@@ -20,6 +20,8 @@ import { FullScreenAppLoader } from "./components/common/LoadingSpinners";
 import { UserProfile } from "./components/Profiles/UserProfile";
 import gsap from "gsap";
 import { ThemeController } from "./components/ThemeController";
+import { useVaultStore } from "./store/vaultStore";
+import { VaultUnlockModal } from "./components/Vault/VaultUnlockModal";
 
 function MainApp() {
   const { user, loading: authLoading, initAuth } = useAuthStore();
@@ -32,6 +34,15 @@ function MainApp() {
 
   // Estado para el sidebar flotante en tablet y celular
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState<boolean>(false);
+
+  const { isUnlocked } = useVaultStore();
+  const [isVaultModalOpen, setIsVaultModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (user && !isUnlocked) {
+      setIsVaultModalOpen(true);
+    }
+  }, [user, isUnlocked]);
 
   // 1. Inicializar Autenticación al montar la app
   useEffect(() => {
@@ -127,7 +138,10 @@ function MainApp() {
           )}
 
           {/* Tab Views */}
-          <div ref={mainContentRef} className="flex-1 min-w-0 w-full flex flex-col">
+          <div
+            ref={mainContentRef}
+            className="flex-1 min-w-0 w-full flex flex-col"
+          >
             {activeTab === "dashboard" && (
               <div className="space-y-8">
                 <OverviewCards onNavigateTab={(tab) => setActiveTab(tab)} />
@@ -180,6 +194,14 @@ function MainApp() {
         <AuthModal
           isOpen={isAuthModalOpen}
           onClose={() => setIsAuthModalOpen(false)}
+        />
+      )}
+
+      {isVaultModalOpen && (
+        <VaultUnlockModal
+          isOpen={isVaultModalOpen}
+          onClose={() => setIsVaultModalOpen(false)}
+          allowSkip={true}
         />
       )}
     </div>

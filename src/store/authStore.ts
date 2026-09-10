@@ -11,6 +11,7 @@ import {
   signInAnonymously,
   User,
 } from "../lib/firebase";
+import { useVaultStore } from "./vaultStore";
 
 export interface AuthResponse {
   success: boolean;
@@ -115,7 +116,8 @@ export const useAuthStore = create<AuthState>((set) => ({
         };
       }
       if (err.code === "auth/unauthorized-domain") {
-        const domain = typeof window !== "undefined" ? window.location.hostname : "";
+        const domain =
+          typeof window !== "undefined" ? window.location.hostname : "";
         console.warn(
           `[Firebase Auth] auth/unauthorized-domain: El dominio actual '${domain}' debe agregarse a Dominios Autorizados en Firebase Console (Authentication > Settings > Authorized Domains).`,
         );
@@ -160,6 +162,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   logout: async () => {
     try {
       await signOut(auth);
+      useVaultStore.getState().resetVaultState(); // <-- agregar esto
       set({ user: null });
     } catch (err) {
       console.warn("Sign out error:", err);
