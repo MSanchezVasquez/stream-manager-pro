@@ -39,9 +39,16 @@ export const useAuthStore = create<AuthState>((set) => ({
   loading: true,
 
   initAuth: () => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      set({ user: currentUser, loading: false });
-    });
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      (currentUser) => {
+        set({ user: currentUser, loading: false });
+      },
+      (error) => {
+        console.error("Error en el listener de autenticación:", error);
+        set({ loading: false, user: null });
+      },
+    );
     return unsubscribe;
   },
 
