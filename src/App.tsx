@@ -114,6 +114,7 @@ function MainApp() {
         setActiveTab={setActiveTab}
         onOpenAuthModal={() => setIsAuthModalOpen(true)}
         onToggleSidebar={() => setIsMobileDrawerOpen(true)}
+        onOpenVaultModal={() => setIsVaultModalOpen(true)}
       />
 
       {/* Floating Sidebar Drawer (ONLY for Tablet & Mobile, does not push content) */}

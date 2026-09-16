@@ -162,7 +162,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   logout: async () => {
     try {
       await signOut(auth);
-      useVaultStore.getState().resetVaultState(); // <-- agregar esto
+      useVaultStore.getState().resetVaultState();
       set({ user: null });
     } catch (err) {
       console.warn("Sign out error:", err);
