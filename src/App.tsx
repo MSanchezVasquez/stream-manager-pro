@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useAuthStore } from "./store/authStore";
 import { useDataStore } from "./store/dataStore";
 
@@ -32,25 +32,16 @@ function MainApp() {
   const [isClientModalOpen, setIsClientModalOpen] = useState<boolean>(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
 
-  // Estado para el sidebar flotante en tablet y celular
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState<boolean>(false);
 
   const { isUnlocked } = useVaultStore();
   const [isVaultModalOpen, setIsVaultModalOpen] = useState(false);
 
   useEffect(() => {
-    if (user && !isUnlocked) {
-      setIsVaultModalOpen(true);
-    }
-  }, [user, isUnlocked]);
-
-  // 1. Inicializar Autenticación al montar la app
-  useEffect(() => {
     const unsubAuth = initAuth();
     return () => unsubAuth();
   }, [initAuth]);
 
-  // 2. Inicializar Datos cuando cambia el usuario
   useEffect(() => {
     const unsubData = subscribeToData(user?.uid || null);
     return () => unsubData();

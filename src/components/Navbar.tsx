@@ -302,6 +302,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 onOpenSettings={onOpenAuthModal}
                 onOpenAuthModal={onOpenAuthModal}
                 onOpenProfile={() => setActiveTab("profile")}
+                onOpenVaultModal={onOpenVaultModal}
                 onRequestLogout={() => {
                   setIsPopoverOpen(false);
                   setIsLogoutModalOpen(true);
