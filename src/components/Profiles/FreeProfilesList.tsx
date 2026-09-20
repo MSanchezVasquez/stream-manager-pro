@@ -1,9 +1,9 @@
 import React, { useState } from "react";
+import { PlatformSelect } from "../common/PlatformSelect";
 import { useDataStore } from "../../store/dataStore";
 import {
   getPlatformConfig,
   getPlatformBadgeProps,
-  ALL_STREAMING_PLATFORMS,
   getPlatformDisplayName,
 } from "../../utils/platformHelpers";
 import { PlatformIcon } from "../common/PlatformIcon";
@@ -293,19 +293,7 @@ export const FreeProfilesList: React.FC = () => {
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Plataforma
                 </label>
-                <select
-                  value={newService}
-                  onChange={(e) =>
-                    setNewService(e.target.value as StreamingPlatform)
-                  }
-                  className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-xs"
-                >
-                  {ALL_STREAMING_PLATFORMS.map((p) => (
-                    <option key={p} value={p}>
-                      {p}
-                    </option>
-                  ))}
-                </select>
+                <PlatformSelect value={newService} onChange={setNewService} />
               </div>
 
               <div>

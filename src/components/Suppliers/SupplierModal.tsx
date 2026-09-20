@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { PlatformSelect } from "../common/PlatformSelect";
 import {
   X,
   Truck,
@@ -11,7 +12,6 @@ import {
 } from "lucide-react";
 import { Supplier, SupplierAccount, StreamingPlatform } from "../../types";
 import { useDataStore } from "@/src/store/dataStore";
-import { ALL_STREAMING_PLATFORMS } from "../../utils/platformHelpers";
 
 interface SupplierModalProps {
   isOpen: boolean;
@@ -131,19 +131,7 @@ export const SupplierModal: React.FC<SupplierModalProps> = ({
             <label className="block text-xs font-semibold text-slate-700 dark:text-[#94949E] mb-1">
               Plataforma Streaming *
             </label>
-            <select
-              value={serviceName}
-              onChange={(e) =>
-                setServiceName(e.target.value as StreamingPlatform)
-              }
-              className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-slate-50 dark:bg-[#1A1A1E] text-slate-900 dark:text-[#E4E4E7] text-xs font-medium"
-            >
-              {ALL_STREAMING_PLATFORMS.map((p) => (
-                <option key={p} value={p}>
-                  {p}
-                </option>
-              ))}
-            </select>
+            <PlatformSelect value={serviceName} onChange={setServiceName} />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

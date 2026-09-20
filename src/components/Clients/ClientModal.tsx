@@ -19,9 +19,12 @@ import {
   UserX,
 } from "lucide-react";
 import { Client, ClientSubscription } from "../../types";
-import { useDataStore, isSubscriptionFromFreeProfile } from "../../store/dataStore";
+import {
+  useDataStore,
+  isSubscriptionFromFreeProfile,
+} from "../../store/dataStore";
 import { CircularSpinner } from "../common/LoadingSpinners";
-import { PlatformSelect } from "./PlatformSelect";
+import { PlatformSelect } from "../common/PlatformSelect";
 import { getClientAccountHealth } from "../../utils/platformHelpers";
 
 interface ClientModalProps {
@@ -77,7 +80,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
           id: crypto.randomUUID(),
           clientId: "",
           clientName: "",
-          serviceName: "Netflix",
+          serviceName: "Netflix Premium",
           hireDate: new Date().toLocaleDateString("es-ES"),
           cutDate: new Date(
             Date.now() + 30 * 24 * 60 * 60 * 1000,
@@ -101,7 +104,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
         id: crypto.randomUUID(),
         clientId: activeClient?.id || "",
         clientName: name || "Cliente",
-        serviceName: "Disney+",
+        serviceName: "Disney+ Estándar",
         hireDate: new Date().toLocaleDateString("es-ES"),
         cutDate: new Date(
           Date.now() + 30 * 24 * 60 * 60 * 1000,
@@ -209,30 +212,31 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                   <h3 className="font-bold text-lg text-slate-900 dark:text-[#E4E4E7]">
                     {activeClient ? "Editar Cliente" : "Nuevo Cliente"}
                   </h3>
-                  {activeClient && (() => {
-                    const health = getClientAccountHealth(activeClient);
-                    return (
-                      <span
-                        className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold ${health.badgeClass} select-none shadow-xs`}
-                        title={health.tooltip}
-                      >
+                  {activeClient &&
+                    (() => {
+                      const health = getClientAccountHealth(activeClient);
+                      return (
                         <span
-                          className={`w-1.5 h-1.5 rounded-full ${health.dotClass} shrink-0`}
-                        />
-                        {health.level === "expired" && (
-                          <AlertCircle className="w-3.5 h-3.5 shrink-0 text-red-600 dark:text-red-400" />
-                        )}
-                        {(health.level === "near_expiration" ||
-                          health.level === "expiring_today") && (
-                          <Clock className="w-3.5 h-3.5 shrink-0 text-amber-600 dark:text-amber-400" />
-                        )}
-                        {health.level === "healthy" && (
-                          <CheckCircle2 className="w-3.5 h-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
-                        )}
-                        <span>{health.label}</span>
-                      </span>
-                    );
-                  })()}
+                          className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold ${health.badgeClass} select-none shadow-xs`}
+                          title={health.tooltip}
+                        >
+                          <span
+                            className={`w-1.5 h-1.5 rounded-full ${health.dotClass} shrink-0`}
+                          />
+                          {health.level === "expired" && (
+                            <AlertCircle className="w-3.5 h-3.5 shrink-0 text-red-600 dark:text-red-400" />
+                          )}
+                          {(health.level === "near_expiration" ||
+                            health.level === "expiring_today") && (
+                            <Clock className="w-3.5 h-3.5 shrink-0 text-amber-600 dark:text-amber-400" />
+                          )}
+                          {health.level === "healthy" && (
+                            <CheckCircle2 className="w-3.5 h-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                          )}
+                          <span>{health.label}</span>
+                        </span>
+                      );
+                    })()}
                 </div>
                 <p className="text-xs text-slate-500 dark:text-[#94949E]">
                   {activeClient
@@ -643,7 +647,8 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                   <strong className="text-slate-800 dark:text-white font-semibold">
                     {activeClient.name}
                   </strong>
-                  ? Esta acción no se puede deshacer y borrará al cliente de la base de datos.
+                  ? Esta acción no se puede deshacer y borrará al cliente de la
+                  base de datos.
                 </>
               )}
             </p>
@@ -659,7 +664,8 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                       Restauración de inventario
                     </span>
                     <span>
-                      Los perfiles asignados desde <em>Perfiles Libres</em> se restaurarán y sumarán de vuelta automáticamente.
+                      Los perfiles asignados desde <em>Perfiles Libres</em> se
+                      restaurarán y sumarán de vuelta automáticamente.
                     </span>
                   </div>
                 </div>
@@ -702,7 +708,9 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                 {isDeleting && (
                   <CircularSpinner size={16} className="text-white" />
                 )}
-                {activeClient.status === "active" ? "Mover a Inactivos" : "Eliminar"}
+                {activeClient.status === "active"
+                  ? "Mover a Inactivos"
+                  : "Eliminar"}
               </button>
             </div>
           </div>
