@@ -33,7 +33,7 @@ export const QuickLinksView: React.FC = () => {
     }
   };
 
-  const handleAddLink = async (e: React.FormEvent) => {
+  const handleAddLink = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title || !url) return;
 
@@ -48,10 +48,17 @@ export const QuickLinksView: React.FC = () => {
       url: fullUrl,
     };
 
-    await saveQuickLink(newLink);
     setIsAddModalOpen(false);
     setTitle("");
     setUrl("");
+
+    saveQuickLink(newLink).then((success) => {
+      if (!success) {
+        alert(
+          "No se pudo guardar el enlace. Verifica tu conexión e inténtalo de nuevo.",
+        );
+      }
+    });
   };
 
   return (
@@ -91,7 +98,8 @@ export const QuickLinksView: React.FC = () => {
             No tienes enlaces rápidos guardados
           </h3>
           <p className="text-xs text-slate-500 dark:text-[#94949E] max-w-md mx-auto mb-6">
-            Guarda accesos directos a paneles de streaming, páginas de validación de códigos o herramientas externas frecuentes.
+            Guarda accesos directos a paneles de streaming, páginas de
+            validación de códigos o herramientas externas frecuentes.
           </p>
           <button
             onClick={() => setIsAddModalOpen(true)}

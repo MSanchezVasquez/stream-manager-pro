@@ -10,7 +10,6 @@ import { PlatformIcon } from "../common/PlatformIcon";
 import { CircularSpinner } from "../common/LoadingSpinners";
 import {
   Sparkles,
-  Tv,
   Mail,
   Key,
   Compass,
@@ -73,7 +72,7 @@ export const FreeProfilesList: React.FC = () => {
     }
   };
 
-  const handleAddProfile = async (e: React.FormEvent) => {
+  const handleAddProfile = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newEmail || !newPassword) {
       alert("Por favor complete correo y contraseña");
@@ -89,10 +88,17 @@ export const FreeProfilesList: React.FC = () => {
       browser: newBrowser,
     };
 
-    await saveFreeProfile(newProf);
     setIsNewProfileModalOpen(false);
     setNewEmail("");
     setNewPassword("");
+
+    saveFreeProfile(newProf).then((success) => {
+      if (!success) {
+        alert(
+          "No se pudo guardar el perfil libre. Verifica tu conexión e inténtalo de nuevo.",
+        );
+      }
+    });
   };
 
   const filteredProfiles = freeProfiles.filter((p) => {

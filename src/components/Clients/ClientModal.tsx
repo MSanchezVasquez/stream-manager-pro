@@ -6,7 +6,6 @@ import {
   Trash2,
   Tv,
   User,
-  Calendar,
   Key,
   Mail,
   Shield,
@@ -149,48 +148,46 @@ export const ClientModal: React.FC<ClientModalProps> = ({
     setDuplicateClient(match || null);
   }, [name, clients, activeClient]);
 
-  const performSave = async () => {
-    setIsSaving(true);
-    try {
-      const clientId = activeClient?.id || crypto.randomUUID();
-      const updatedSubscriptions = subscriptions.map((s) => ({
-        ...s,
-        clientId,
-        clientName: name,
-      }));
+  const performSave = () => {
+    const clientId = activeClient?.id || crypto.randomUUID();
+    const updatedSubscriptions = subscriptions.map((s) => ({
+      ...s,
+      clientId,
+      clientName: name,
+    }));
 
-      const clientToSave: Client = {
-        id: clientId,
-        name,
-        phone,
-        status,
-        createdAt: activeClient?.createdAt || new Date().toISOString(),
-        subscriptions: updatedSubscriptions,
-      };
+    const clientToSave: Client = {
+      id: clientId,
+      name,
+      phone,
+      status,
+      createdAt: activeClient?.createdAt || new Date().toISOString(),
+      subscriptions: updatedSubscriptions,
+    };
 
-      await saveClient(clientToSave);
-      onClose();
-    } finally {
-      setIsSaving(false);
-    }
+    onClose();
+
+    saveClient(clientToSave).then((success) => {
+      if (!success) {
+        alert(
+          "No se pudo guardar el cliente. Verifica tu conexión e inténtalo de nuevo.",
+        );
+      }
+    });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) {
       alert("Por favor ingrese el nombre del cliente");
       return;
     }
-
-    // Si hay un posible duplicado sin confirmar, no guardamos todavía:
-    // el aviso ya está visible en el formulario con la opción de abrir
-    // el cliente existente o continuar de todas formas.
     if (duplicateClient && !confirmDuplicateAnyway) {
       return;
     }
-
-    await performSave();
+    performSave();
   };
+
   return createPortal(
     <div className="fixed inset-0 z-50 overflow-hidden">
       {/* Backdrop */}
