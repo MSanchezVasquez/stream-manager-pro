@@ -136,7 +136,7 @@ export const SupplierModal: React.FC<SupplierModalProps> = ({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-[#94949E] mb-1 flex items-center gap-1">
+              <label className=" text-xs font-semibold text-slate-700 dark:text-[#94949E] mb-1 flex items-center gap-1">
                 <Mail className="w-3.5 h-3.5 text-[#94949E]" />
                 Correo de Cuenta *
               </label>
@@ -151,7 +151,7 @@ export const SupplierModal: React.FC<SupplierModalProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-[#94949E] mb-1 flex items-center gap-1">
+              <label className=" text-xs font-semibold text-slate-700 dark:text-[#94949E] mb-1 flex items-center gap-1">
                 <Key className="w-3.5 h-3.5 text-[#94949E]" />
                 Contraseña *
               </label>
@@ -168,7 +168,7 @@ export const SupplierModal: React.FC<SupplierModalProps> = ({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-[#94949E] mb-1 flex items-center gap-1">
+              <label className=" text-xs font-semibold text-slate-700 dark:text-[#94949E] mb-1 flex items-center gap-1">
                 <Calendar className="w-3.5 h-3.5 text-[#94949E]" />
                 Fecha de Expiración
               </label>
@@ -182,7 +182,7 @@ export const SupplierModal: React.FC<SupplierModalProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-[#94949E] mb-1 flex items-center gap-1">
+              <label className=" text-xs font-semibold text-slate-700 dark:text-[#94949E] mb-1 flex items-center gap-1">
                 <Compass className="w-3.5 h-3.5 text-[#94949E]" />
                 Navegador Asignado
               </label>
@@ -202,7 +202,7 @@ export const SupplierModal: React.FC<SupplierModalProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-[#94949E] mb-1 flex items-center gap-1">
+            <label className=" text-xs font-semibold text-slate-700 dark:text-[#94949E] mb-1 flex items-center gap-1">
               <Globe className="w-3.5 h-3.5 text-[#94949E]" />
               Enlace Webmail / Validación
             </label>

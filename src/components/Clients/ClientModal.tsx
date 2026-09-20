@@ -276,7 +276,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
             onSubmit={handleSubmit}
             className="flex-1 flex flex-col min-h-0"
           >
-            <div className="flex-1 overflow-y-auto p-6 space-y-6 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+            <div className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-none [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
               {/* General info */}
               <div className="space-y-4 p-4 rounded-2xl bg-slate-50 dark:bg-[#181820] border border-slate-200 dark:border-[#25252D]">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-[#94949E]">
@@ -478,14 +478,14 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                                 e.target.value,
                               )
                             }
-                            className="w-full p-2 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-xs font-semibold text-amber-600 dark:text-amber-400"
+                            className="w-full p-2 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-xs font-semibold"
                           />
                         </div>
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-200 dark:border-[#2D2D35]">
                         <div>
-                          <label className="block text-[11px] font-semibold text-slate-600 dark:text-[#94949E] mb-1 flex items-center gap-1">
+                          <label className=" text-[11px] font-semibold text-slate-600 dark:text-[#94949E] mb-1 flex items-center gap-1">
                             <Mail className="w-3 h-3 text-[#94949E]" />
                             Correo / Usuario de Cuenta
                           </label>
@@ -505,7 +505,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                         </div>
 
                         <div>
-                          <label className="block text-[11px] font-semibold text-slate-600 dark:text-[#94949E] mb-1 flex items-center gap-1">
+                          <label className=" text-[11px] font-semibold text-slate-600 dark:text-[#94949E] mb-1 flex items-center gap-1">
                             <Key className="w-3 h-3 text-[#94949E]" />
                             Contraseña de Cuenta
                           </label>
@@ -546,7 +546,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                         </div>
 
                         <div>
-                          <label className="block text-[11px] font-semibold text-slate-600 dark:text-[#94949E] mb-1 flex items-center gap-1">
+                          <label className=" text-[11px] font-semibold text-slate-600 dark:text-[#94949E] mb-1 flex items-center gap-1">
                             <Shield className="w-3 h-3 text-[#94949E]" />
                             PIN del Perfil
                           </label>

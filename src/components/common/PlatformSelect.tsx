@@ -121,7 +121,7 @@ export const PlatformSelect: React.FC<PlatformSelectProps> = ({
         <div
           ref={panelRef}
           style={{ transformOrigin: "top" }}
-          className="absolute z-30 mt-1.5 w-full min-w-[240px] rounded-2xl border border-slate-200 dark:border-[#2D2D33] bg-white/95 dark:bg-[#17171C]/95 backdrop-blur-md shadow-2xl overflow-hidden"
+          className="absolute z-30 mt-1.5 w-full min-w-60 rounded-2xl border border-slate-200 dark:border-[#2D2D33] bg-white/95 dark:bg-[#17171C]/95 backdrop-blur-md shadow-2xl overflow-hidden"
         >
           <div className="p-2 border-b border-slate-100 dark:border-[#25252D]">
             <div className="relative">
@@ -139,7 +139,7 @@ export const PlatformSelect: React.FC<PlatformSelectProps> = ({
 
           <ul
             role="listbox"
-            className="max-h-64 overflow-y-auto py-1.5 [scrollbar-width:thin] [scrollbar-color:#cbd5e1_transparent] dark:[scrollbar-color:#3a3a44_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-slate-300 dark:[&::-webkit-scrollbar-thumb]:bg-[#3a3a44] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-slate-400 dark:[&::-webkit-scrollbar-thumb:hover]:bg-[#4a4a56]"
+            className="max-h-64 overflow-y-auto py-1.5 scrollbar-thin [scrollbar-color:#cbd5e1_transparent] dark:[scrollbar-color:#3a3a44_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-slate-300 dark:[&::-webkit-scrollbar-thumb]:bg-[#3a3a44] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-slate-400 dark:[&::-webkit-scrollbar-thumb:hover]:bg-[#4a4a56]"
           >
             {filteredPlatforms.length === 0 && (
               <li className="px-3 py-3 text-xs text-slate-400 text-center">
