@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { DatePicker } from "../common/DatePicker";
 import { PlatformSelect } from "../common/PlatformSelect";
 import {
   X,
@@ -172,13 +173,7 @@ export const SupplierModal: React.FC<SupplierModalProps> = ({
                 <Calendar className="w-3.5 h-3.5 text-[#94949E]" />
                 Fecha de Expiración
               </label>
-              <input
-                type="text"
-                placeholder="DD/MM/YYYY"
-                value={expirationDate}
-                onChange={(e) => setExpirationDate(e.target.value)}
-                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-slate-50 dark:bg-[#1A1A1E] text-slate-900 dark:text-[#E4E4E7] text-xs"
-              />
+              <DatePicker value={expirationDate} onChange={setExpirationDate} />
             </div>
 
             <div>
