@@ -42,7 +42,7 @@ export const PLATFORM_CONFIGS: Record<string, PlatformConfig> = {
     iconName: "Tv",
   },
   "Netflix Perfil Privado": {
-    name: "Netflix",
+    name: "Netflix Perfil Privado",
     color: "#E50914",
     bgColor: "bg-red-500/10 dark:bg-red-950/40",
     textColor: "text-red-600 dark:text-red-400",
