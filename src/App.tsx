@@ -23,6 +23,21 @@ import { ThemeController } from "./components/ThemeController";
 import { useVaultStore } from "./store/vaultStore";
 import { VaultUnlockModal } from "./components/Vault/VaultUnlockModal";
 
+function useDelayedLoading(isLoading: boolean, delay = 400): boolean {
+  const [showLoader, setShowLoader] = useState(false);
+
+  useEffect(() => {
+    if (!isLoading) {
+      setShowLoader(false);
+      return;
+    }
+    const timer = setTimeout(() => setShowLoader(true), delay);
+    return () => clearTimeout(timer);
+  }, [isLoading, delay]);
+
+  return showLoader;
+}
+
 function MainApp() {
   const { user, loading: authLoading, initAuth } = useAuthStore();
   const { loading: dataLoading, isSyncing, subscribeToData } = useDataStore();
@@ -87,8 +102,13 @@ function MainApp() {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
+  const showAuthLoader = useDelayedLoading(authLoading);
+  const showDataLoader = useDelayedLoading(dataLoading);
+
   if (authLoading) {
-    return <FullScreenAppLoader message="Iniciando la aplicación..." />;
+    return showAuthLoader ? (
+      <FullScreenAppLoader message="Iniciando la aplicación..." />
+    ) : null;
   }
 
   if (!user) {
@@ -96,9 +116,9 @@ function MainApp() {
   }
 
   if (dataLoading) {
-    return (
+    return showDataLoader ? (
       <FullScreenAppLoader message="Cargando base de datos de cuentas y clientes..." />
-    );
+    ) : null;
   }
 
   return (

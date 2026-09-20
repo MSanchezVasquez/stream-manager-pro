@@ -1,12 +1,12 @@
-import React from 'react';
+import React from "react";
 
-// 1. Circular / Ring Spinner (inspired by respinner Circular)
+import { AppLogo } from "../AppLogo";
 export const CircularSpinner: React.FC<{
   size?: number;
   color?: string;
   strokeWidth?: number;
   className?: string;
-}> = ({ size = 24, strokeWidth = 3, className = '' }) => {
+}> = ({ size = 24, strokeWidth = 3, className = "" }) => {
   return (
     <svg
       width={size}
@@ -41,7 +41,7 @@ export const CircularSpinner: React.FC<{
 export const BeatSpinner: React.FC<{
   size?: number;
   className?: string;
-}> = ({ size = 8, className = '' }) => {
+}> = ({ size = 8, className = "" }) => {
   return (
     <div className={`flex items-center gap-1.5 ${className}`}>
       <span
@@ -49,11 +49,11 @@ export const BeatSpinner: React.FC<{
         className="rounded-full bg-indigo-600 dark:bg-indigo-400 animate-bounce"
       />
       <span
-        style={{ width: size, height: size, animationDelay: '0.15s' }}
+        style={{ width: size, height: size, animationDelay: "0.15s" }}
         className="rounded-full bg-indigo-600 dark:bg-indigo-400 animate-bounce"
       />
       <span
-        style={{ width: size, height: size, animationDelay: '0.3s' }}
+        style={{ width: size, height: size, animationDelay: "0.3s" }}
         className="rounded-full bg-indigo-600 dark:bg-indigo-400 animate-bounce"
       />
     </div>
@@ -64,7 +64,7 @@ export const BeatSpinner: React.FC<{
 export const RippleSpinner: React.FC<{
   size?: number;
   className?: string;
-}> = ({ size = 40, className = '' }) => {
+}> = ({ size = 40, className = "" }) => {
   return (
     <div
       style={{ width: size, height: size }}
@@ -81,7 +81,7 @@ export const RippleSpinner: React.FC<{
 export const WaveSpinner: React.FC<{
   height?: number;
   className?: string;
-}> = ({ height = 24, className = '' }) => {
+}> = ({ height = 24, className = "" }) => {
   return (
     <div
       style={{ height }}
@@ -102,7 +102,7 @@ export const WaveSpinner: React.FC<{
 export const GridSpinner: React.FC<{
   size?: number;
   className?: string;
-}> = ({ size = 32, className = '' }) => {
+}> = ({ size = 32, className = "" }) => {
   return (
     <div
       style={{ width: size, height: size }}
@@ -111,7 +111,9 @@ export const GridSpinner: React.FC<{
       {Array.from({ length: 9 }).map((_, i) => (
         <div
           key={i}
-          style={{ animationDelay: `${(i % 3) * 0.15 + Math.floor(i / 3) * 0.1}s` }}
+          style={{
+            animationDelay: `${(i % 3) * 0.15 + Math.floor(i / 3) * 0.1}s`,
+          }}
           className="bg-indigo-600 dark:bg-indigo-400 rounded-sm animate-pulse"
         />
       ))}
@@ -122,21 +124,25 @@ export const GridSpinner: React.FC<{
 // 6. Section Loading Spinner Card
 export const SectionLoading: React.FC<{
   message?: string;
-  variant?: 'circular' | 'beat' | 'ripple' | 'wave' | 'grid';
+  variant?: "circular" | "beat" | "ripple" | "wave" | "grid";
   height?: string;
 }> = ({
-  message = 'Cargando datos...',
-  variant = 'circular',
-  height = 'py-16'
+  message = "Cargando datos...",
+  variant = "circular",
+  height = "py-16",
 }) => {
   return (
-    <div className={`flex flex-col items-center justify-center ${height} text-center animate-fade-in`}>
+    <div
+      className={`flex flex-col items-center justify-center ${height} text-center animate-fade-in`}
+    >
       <div className="mb-4">
-        {variant === 'circular' && <CircularSpinner size={36} strokeWidth={3.5} />}
-        {variant === 'beat' && <BeatSpinner size={10} />}
-        {variant === 'ripple' && <RippleSpinner size={48} />}
-        {variant === 'wave' && <WaveSpinner height={30} />}
-        {variant === 'grid' && <GridSpinner size={36} />}
+        {variant === "circular" && (
+          <CircularSpinner size={36} strokeWidth={3.5} />
+        )}
+        {variant === "beat" && <BeatSpinner size={10} />}
+        {variant === "ripple" && <RippleSpinner size={48} />}
+        {variant === "wave" && <WaveSpinner height={30} />}
+        {variant === "grid" && <GridSpinner size={36} />}
       </div>
       <p className="text-xs font-semibold tracking-wide text-slate-500 dark:text-[#94949E] uppercase">
         {message}
@@ -147,7 +153,7 @@ export const SectionLoading: React.FC<{
 
 // 7. Fullscreen App Splash / Loading Overlay
 export const FullScreenAppLoader: React.FC<{ message?: string }> = ({
-  message = 'Iniciando StreamManager Pro...'
+  message = "Iniciando StreamManager Pro...",
 }) => {
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-slate-900/40 dark:bg-black/60 backdrop-brightness-[0.75] backdrop-blur-md animate-fade-in">
@@ -156,12 +162,15 @@ export const FullScreenAppLoader: React.FC<{ message?: string }> = ({
         <div className="absolute -top-12 -left-12 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none" />
         <div className="absolute -bottom-12 -right-12 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl pointer-events-none" />
 
-        <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/25 mb-5 relative">
-          <RippleSpinner size={40} className="text-white" />
+        <div className="w-14 h-14 rounded-2xl bg-linear-to-tr from-indigo-600 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/25 mb-5 relative animate-pulse">
+          <AppLogo className="w-7 h-7 text-white" />
         </div>
 
         <h3 className="text-lg font-bold text-slate-900 dark:text-[#E4E4E7] tracking-tight mb-1">
-          StreamManager <span className="text-indigo-500 text-xs px-2 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/20">PRO</span>
+          StreamManager{" "}
+          <span className="text-indigo-500 text-xs px-2 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/20">
+            PRO
+          </span>
         </h3>
 
         <p className="text-xs text-slate-500 dark:text-[#94949E] font-medium mb-6 text-center">
