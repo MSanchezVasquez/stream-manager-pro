@@ -14,6 +14,13 @@ interface PlatformSelectProps {
   className?: string;
 }
 
+/**
+ * Selector de plataforma con ícono + nombre completo siempre visibles,
+ * buscador y panel animado con GSAP (consistente con el resto de
+ * paneles flotantes de la app, como ProfilePopover). Reemplaza al
+ * <select> nativo del navegador en todos los formularios que eligen
+ * una plataforma de streaming (Clientes, Proveedores, Perfiles Libres).
+ */
 export const PlatformSelect: React.FC<PlatformSelectProps> = ({
   value,
   onChange,
@@ -132,7 +139,7 @@ export const PlatformSelect: React.FC<PlatformSelectProps> = ({
 
           <ul
             role="listbox"
-            className="max-h-64 overflow-y-auto py-1.5 [scrollbar-width:thin]"
+            className="max-h-64 overflow-y-auto py-1.5 [scrollbar-width:thin] [scrollbar-color:#cbd5e1_transparent] dark:[scrollbar-color:#3a3a44_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-slate-300 dark:[&::-webkit-scrollbar-thumb]:bg-[#3a3a44] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-slate-400 dark:[&::-webkit-scrollbar-thumb:hover]:bg-[#4a4a56]"
           >
             {filteredPlatforms.length === 0 && (
               <li className="px-3 py-3 text-xs text-slate-400 text-center">
