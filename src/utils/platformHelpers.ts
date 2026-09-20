@@ -2,19 +2,17 @@ import { CSSProperties } from "react";
 import { StreamingPlatform, Client } from "../types";
 
 export const ALL_STREAMING_PLATFORMS: StreamingPlatform[] = [
-  "Netflix",
+  "Netflix Premium",
   "Netflix Perfil Privado",
-  "Disney+",
   "Disney+ Premium",
   "Disney+ Estándar",
-  "HBO Max",
-  "Max",
+  "HBO Max Estándar",
+  "HBO Max Platino",
   "Youtube Premium",
   "Prime Video",
-  "Amazon Prime Video",
   "Paramount Plus",
   "Spotify Premium",
-  "Crunchyroll",
+  "Crunchyroll Fan",
   "DGO",
   "Apple TV",
   "Vix Premium",
@@ -35,8 +33,8 @@ export interface PlatformConfig {
 }
 
 export const PLATFORM_CONFIGS: Record<string, PlatformConfig> = {
-  Netflix: {
-    name: "Netflix",
+  "Netflix Premium": {
+    name: "Netflix Premium",
     color: "#E50914",
     bgColor: "bg-red-500/10 dark:bg-red-950/40",
     textColor: "text-red-600 dark:text-red-400",
@@ -67,12 +65,20 @@ export const PLATFORM_CONFIGS: Record<string, PlatformConfig> = {
     borderColor: "border-sky-500/30",
     iconName: "Sparkles",
   },
-  "HBO Max": {
-    name: "HBO Max",
+  "HBO Max Estándar": {
+    name: "HBO Max Estándar",
     color: "#9933CC",
     bgColor: "bg-gray-500/10 dark:bg-black/40",
     textColor: "text-purple-600 dark:text-purple-400",
     borderColor: "border-gray-500/30",
+    iconName: "Film",
+  },
+  "HBO Max Platino": {
+    name: "HBO Max Platino",
+    color: "#B8B8C0",
+    bgColor: "bg-slate-400/10 dark:bg-slate-300/10",
+    textColor: "text-slate-600 dark:text-slate-300",
+    borderColor: "border-slate-400/30",
     iconName: "Film",
   },
   "Youtube Premium": {
@@ -84,14 +90,6 @@ export const PLATFORM_CONFIGS: Record<string, PlatformConfig> = {
     iconName: "PlayCircle",
   },
   "Prime Video": {
-    name: "Prime Video",
-    color: "#00A8E1",
-    bgColor: "bg-sky-500/10 dark:bg-sky-950/40",
-    textColor: "text-sky-500 dark:text-sky-300",
-    borderColor: "border-sky-500/30",
-    iconName: "Video",
-  },
-  "Amazon Prime Video": {
     name: "Prime Video",
     color: "#00A8E1",
     bgColor: "bg-sky-500/10 dark:bg-sky-950/40",
@@ -115,8 +113,8 @@ export const PLATFORM_CONFIGS: Record<string, PlatformConfig> = {
     borderColor: "border-emerald-500/30",
     iconName: "Music",
   },
-  Crunchyroll: {
-    name: "Crunchyroll",
+  "Crunchyroll Fan": {
+    name: "Crunchyroll Fan",
     color: "#F47521",
     bgColor: "bg-amber-500/10 dark:bg-amber-950/40",
     textColor: "text-amber-600 dark:text-amber-400",
@@ -496,9 +494,7 @@ export function getClientAccountHealth(client: Client): ClientAccountHealth {
   // 3. Any profile near expiration (1 - 5 days)?
   if (nearExpirationCount > 0) {
     const label =
-      minDaysRemaining === 1
-        ? "Vence mañana"
-        : `Vence en ${minDaysRemaining}d`;
+      minDaysRemaining === 1 ? "Vence mañana" : `Vence en ${minDaysRemaining}d`;
 
     return {
       level: "near_expiration",

@@ -1,7 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ChevronDown, Search } from "lucide-react";
 import { StreamingPlatform } from "../../types";
-import { ALL_STREAMING_PLATFORMS, getPlatformDisplayName } from "../../utils/platformHelpers";
+import {
+  ALL_STREAMING_PLATFORMS,
+  getPlatformDisplayName,
+} from "../../utils/platformHelpers";
 import { PlatformIcon } from "../common/PlatformIcon";
 
 interface PlatformSelectProps {
@@ -10,9 +13,7 @@ interface PlatformSelectProps {
   className?: string;
 }
 
-const SELECTABLE_PLATFORMS = ALL_STREAMING_PLATFORMS.filter(
-  (p) => p !== "Amazon Prime Video",
-);
+const SELECTABLE_PLATFORMS = ALL_STREAMING_PLATFORMS;
 
 /**
  * Selector de plataforma con ícono + nombre completo siempre visibles.
