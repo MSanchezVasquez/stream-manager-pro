@@ -6,13 +6,21 @@ import {
   generateSalt,
   saltToBase64,
   saltFromBase64,
+  encryptText,
+  decryptText,
 } from "../lib/crypto";
 
 const VAULT_META_COLLECTION = "meta";
 const VAULT_META_DOC_ID = "vault";
 
+// Texto conocido que se cifra al crear el vault y se intenta descifrar al
+// desbloquear. Si el resultado no coincide con esta constante, la
+// passphrase ingresada es incorrecta (o el dato está corrupto).
+const VAULT_CHECK_PLAINTEXT = "vault_check_ok";
+
 interface VaultMetaDoc {
   salt: string; // base64
+  check: string; // VAULT_CHECK_PLAINTEXT cifrado con la clave real
   createdAt: string;
 }
 
@@ -44,9 +52,11 @@ export const useVaultStore = create<VaultState>((set, get) => ({
 
   /**
    * Consulta si el usuario ya tiene un vault configurado (existe el
-   * documento con el salt). Se llama típicamente justo después del login,
-   * para decidir si mostrar "Crea tu passphrase" o "Ingresa tu passphrase"
-   * en el VaultUnlockModal.
+   * documento con el salt). Debe llamarse en cuanto se conoce el uid del
+   * usuario autenticado (ej. en App.tsx, junto a subscribeToData), NO solo
+   * cuando se abre el modal — de lo contrario hasVaultConfigured vuelve a
+   * false en cada recarga y el indicador visual desaparece aunque el vault
+   * siga existiendo en Firestore.
    */
   checkVaultStatus: async (uid: string) => {
     if (!uid) return;
@@ -65,11 +75,11 @@ export const useVaultStore = create<VaultState>((set, get) => ({
   },
 
   /**
-   * Configura el vault por PRIMERA VEZ: genera un salt nuevo, lo guarda en
-   * Firestore (el salt no es secreto) y deriva + guarda la clave en memoria.
-   * Si ya existía un vault configurado, esta función no debe llamarse de
-   * nuevo (usar unlockVault en su lugar) para no invalidar datos ya cifrados
-   * con el salt anterior.
+   * Configura el vault por PRIMERA VEZ: genera un salt nuevo, cifra un
+   * valor de verificación conocido (VAULT_CHECK_PLAINTEXT) con la clave
+   * recién derivada, y guarda ambos en Firestore (ni el salt ni el
+   * ciphertext de verificación son secretos por sí solos: sin la
+   * passphrase no revelan nada útil).
    */
   setupVault: async (uid: string, passphrase: string): Promise<boolean> => {
     if (!uid || !passphrase) return false;
@@ -88,8 +98,12 @@ export const useVaultStore = create<VaultState>((set, get) => ({
       }
 
       const salt = generateSalt();
+      const key = await deriveKey(passphrase, salt);
+      const check = await encryptText(VAULT_CHECK_PLAINTEXT, key);
+
       const metaDoc: VaultMetaDoc = {
         salt: saltToBase64(salt),
+        check,
         createdAt: new Date().toISOString(),
       };
 
@@ -98,7 +112,6 @@ export const useVaultStore = create<VaultState>((set, get) => ({
         metaDoc,
       );
 
-      const key = await deriveKey(passphrase, salt);
       set({ key, isUnlocked: true, hasVaultConfigured: true, error: null });
       return true;
     } catch (err) {
@@ -110,15 +123,11 @@ export const useVaultStore = create<VaultState>((set, get) => ({
 
   /**
    * Desbloquea un vault ya existente derivando la clave con el salt
-   * guardado en Firestore + la passphrase ingresada.
-   *
-   * IMPORTANTE: no hay forma de "validar" matemáticamente que la passphrase
-   * es correcta en este paso (PBKDF2 siempre produce una clave, correcta o
-   * no). El error solo se detecta cuando se intenta descifrar un dato real
-   * y falla (ver decryptText en crypto.ts). Por eso este método devuelve
-   * `true` incluso si la passphrase es incorrecta; la UI debe manejar el
-   * caso mostrando datos como "⚠️ No se pudo descifrar" y ofreciendo
-   * reintentar.
+   * guardado en Firestore + la passphrase ingresada, y la VALIDA
+   * descifrando el valor de verificación. Si la passphrase es incorrecta,
+   * el descifrado falla (o produce basura) y esta función devuelve false
+   * sin tocar `key`/`isUnlocked` — la UI se queda bloqueada y muestra el
+   * error, en vez de aceptar cualquier passphrase silenciosamente.
    */
   unlockVault: async (uid: string, passphrase: string): Promise<boolean> => {
     if (!uid || !passphrase) return false;
@@ -140,6 +149,28 @@ export const useVaultStore = create<VaultState>((set, get) => ({
       const salt = saltFromBase64(metaData.salt);
       const key = await deriveKey(passphrase, salt);
 
+      // Validación real: intentamos descifrar el valor de verificación.
+      // Si metaData.check no existe (vault creado antes de este fix),
+      // no podemos validar y aceptamos la clave como antes (retrocompatible).
+      if (metaData.check) {
+        let decryptedCheck: string;
+        try {
+          decryptedCheck = await decryptText(metaData.check, key);
+        } catch {
+          set({
+            error: "Passphrase incorrecta. Verifica e inténtalo de nuevo.",
+          });
+          return false;
+        }
+
+        if (decryptedCheck !== VAULT_CHECK_PLAINTEXT) {
+          set({
+            error: "Passphrase incorrecta. Verifica e inténtalo de nuevo.",
+          });
+          return false;
+        }
+      }
+
       set({ key, isUnlocked: true, hasVaultConfigured: true, error: null });
       return true;
     } catch (err) {
@@ -152,9 +183,6 @@ export const useVaultStore = create<VaultState>((set, get) => ({
   /**
    * Bloquea el vault: elimina la clave de memoria. Se llama típicamente
    * al cerrar sesión, o si el usuario pide "bloquear" manualmente.
-   * Los datos ya cargados en dataStore volverán a mostrarse con el
-   * placeholder de "🔒 Bloqueado" (ver dataStore.ts, que escucha cambios
-   * de esta store para re-decidir qué mostrar).
    */
   lockVault: () => set({ key: null, isUnlocked: false }),
 

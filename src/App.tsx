@@ -47,6 +47,12 @@ function MainApp() {
     return () => unsubData();
   }, [user?.uid, subscribeToData]);
 
+  useEffect(() => {
+    if (user?.uid) {
+      useVaultStore.getState().checkVaultStatus(user.uid);
+    }
+  }, [user?.uid]);
+
   const mainContentRef = useRef<HTMLDivElement>(null);
 
   // Animar transición al cambiar de pestaña
