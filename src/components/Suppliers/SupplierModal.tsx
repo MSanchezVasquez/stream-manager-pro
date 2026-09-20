@@ -94,8 +94,14 @@ export const SupplierModal: React.FC<SupplierModalProps> = ({
       accounts: updatedAccounts,
     };
 
-    await saveSupplier(updatedSupplier);
     onClose();
+
+    const success = await saveSupplier(updatedSupplier);
+    if (!success) {
+      alert(
+        "No se pudo guardar la cuenta del proveedor. Verifica tu conexión e inténtalo de nuevo.",
+      );
+    }
   };
 
   return (
