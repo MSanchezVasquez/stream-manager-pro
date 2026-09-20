@@ -7,6 +7,7 @@ interface DatePickerProps {
   onChange: (value: string) => void;
   placeholder?: string;
   className?: string;
+  valueClassName?: string;
 }
 
 const MONTH_NAMES = [
@@ -78,6 +79,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
   onChange,
   placeholder = "DD/MM/YYYY",
   className = "",
+  valueClassName = "",
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const selectedDate = parseDate(value);
@@ -149,7 +151,11 @@ export const DatePicker: React.FC<DatePickerProps> = ({
       >
         <span className="flex items-center gap-2 min-w-0">
           <Calendar className="w-3.5 h-3.5 text-[#94949E] shrink-0" />
-          <span className={value ? "" : "text-slate-400 dark:text-[#5A5A64]"}>
+          <span
+            className={
+              value ? valueClassName : "text-slate-400 dark:text-[#5A5A64]"
+            }
+          >
             {value || placeholder}
           </span>
         </span>

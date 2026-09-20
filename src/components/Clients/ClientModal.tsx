@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { DatePicker } from "../common/DatePicker";
 import { createPortal } from "react-dom";
 import {
   X,
@@ -445,37 +446,25 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                           <label className="block text-[11px] font-semibold text-slate-600 dark:text-[#94949E] mb-1">
                             Fecha Contratación
                           </label>
-                          <input
-                            type="text"
-                            placeholder="DD/MM/YY"
+                          <DatePicker
                             value={sub.hireDate}
-                            onChange={(e) =>
-                              handleUpdateSubscription(
-                                sub.id,
-                                "hireDate",
-                                e.target.value,
-                              )
+                            onChange={(v) =>
+                              handleUpdateSubscription(sub.id, "hireDate", v)
                             }
-                            className="w-full p-2 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-xs"
+                            placeholder="DD/MM/YY"
                           />
                         </div>
-
                         <div>
                           <label className="block text-[11px] font-semibold text-slate-600 dark:text-[#94949E] mb-1">
                             Fecha de Corte *
                           </label>
-                          <input
-                            type="text"
-                            placeholder="DD/MM/YY"
+                          <DatePicker
                             value={sub.cutDate}
-                            onChange={(e) =>
-                              handleUpdateSubscription(
-                                sub.id,
-                                "cutDate",
-                                e.target.value,
-                              )
+                            onChange={(v) =>
+                              handleUpdateSubscription(sub.id, "cutDate", v)
                             }
-                            className="w-full p-2 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-xs font-semibold"
+                            placeholder="DD/MM/YY"
+                            valueClassName="font-semibold text-amber-600 dark:text-amber-400"
                           />
                         </div>
                       </div>

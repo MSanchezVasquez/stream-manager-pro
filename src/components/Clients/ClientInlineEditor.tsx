@@ -1,4 +1,5 @@
 import React from "react";
+import { DatePicker } from "../common/DatePicker";
 import { Edit2, Sidebar as SidebarIcon, Save, X } from "lucide-react";
 import { Client } from "../../types";
 import { getClientAccountHealth } from "../../utils/platformHelpers";
@@ -112,24 +113,20 @@ export const ClientInlineEditor: React.FC<ClientInlineEditorProps> = ({
                 <label className="block text-[10px] text-slate-500 mb-0.5">
                   Fecha Corte
                 </label>
-                <input
-                  type="text"
+                <DatePicker
                   value={sub.cutDate}
-                  onChange={(e) => {
+                  onChange={(v) => {
                     const newSubs = [...inlineClientData.subscriptions];
-                    newSubs[idx] = {
-                      ...newSubs[idx],
-                      cutDate: e.target.value,
-                    };
+                    newSubs[idx] = { ...newSubs[idx], cutDate: v };
                     setInlineClientData({
                       ...inlineClientData,
                       subscriptions: newSubs,
                     });
                   }}
-                  className="w-full px-2 py-1 rounded-lg border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] text-amber-600 dark:text-amber-400 text-[11px] font-cascadia font-light font-bold"
+                  placeholder="DD/MM/YY"
+                  valueClassName="font-cascadia font-bold text-amber-600 dark:text-amber-400"
                 />
               </div>
-
               <div>
                 <label className="block text-[10px] text-slate-500 mb-0.5">
                   Correo / Usuario
