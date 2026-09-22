@@ -668,29 +668,22 @@ export const ClientModal: React.FC<ClientModalProps> = ({
               <button
                 type="button"
                 disabled={isDeleting}
-                onClick={async () => {
-                  setIsDeleting(true);
-                  try {
-                    const success =
-                      activeClient.status === "active"
-                        ? await saveClient({
-                            ...activeClient,
-                            status: "inactive",
-                          })
-                        : await deleteClient(activeClient.id);
+                onClick={() => {
+                  setShowDeleteConfirm(false);
+                  onClose();
 
+                  const action =
+                    activeClient.status === "active"
+                      ? saveClient({ ...activeClient, status: "inactive" })
+                      : deleteClient(activeClient.id);
+
+                  action.then((success) => {
                     if (!success) {
                       alert(
                         "No se pudo completar la acción. Verifica tu conexión e inténtalo de nuevo.",
                       );
-                      return;
                     }
-
-                    setShowDeleteConfirm(false);
-                    onClose();
-                  } finally {
-                    setIsDeleting(false);
-                  }
+                  });
                 }}
                 className={`flex-1 py-2.5 rounded-xl text-white font-semibold text-xs shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer ${
                   activeClient.status === "active"

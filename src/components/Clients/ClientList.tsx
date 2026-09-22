@@ -60,7 +60,6 @@ export const ClientList: React.FC<ClientListProps> = ({
   const [editingClient, setEditingClient] = useState<Client | null>(null);
   const [isClientModalOpen, setIsClientModalOpen] = useState(false);
   const [clientToDelete, setClientToDelete] = useState<Client | null>(null);
-  const [isDeletingClient, setIsDeletingClient] = useState(false);
   const [whatsAppSub, setWhatsAppSub] = useState<{
     clientName: string;
     sub: ClientSubscription;
@@ -246,24 +245,22 @@ export const ClientList: React.FC<ClientListProps> = ({
 
   const confirmDeleteClient = async () => {
     if (!clientToDelete) return;
-    setIsDeletingClient(true);
-    try {
-      const success =
-        clientToDelete.status === "active"
-          ? await saveClient({ ...clientToDelete, status: "inactive" })
-          : await deleteClient(clientToDelete.id);
+    const client = clientToDelete;
 
+    setClientToDelete(null);
+
+    const action =
+      client.status === "active"
+        ? saveClient({ ...client, status: "inactive" })
+        : deleteClient(client.id);
+
+    action.then((success) => {
       if (!success) {
         alert(
           "No se pudo completar la acción. Verifica tu conexión e inténtalo de nuevo.",
         );
-        return;
       }
-
-      setClientToDelete(null);
-    } finally {
-      setIsDeletingClient(false);
-    }
+    });
   };
 
   const handleReactivateClient = async (client: Client) => {
@@ -420,9 +417,9 @@ export const ClientList: React.FC<ClientListProps> = ({
       <DeleteClientModal
         client={clientToDelete}
         isOpen={!!clientToDelete}
-        onClose={() => !isDeletingClient && setClientToDelete(null)}
+        onClose={() => setClientToDelete(null)}
         onConfirmDelete={confirmDeleteClient}
-        isDeleting={isDeletingClient}
+        isDeleting={false}
         freeProfiles={freeProfiles}
       />
     </div>
