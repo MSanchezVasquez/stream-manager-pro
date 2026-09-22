@@ -105,17 +105,40 @@ async function encryptSubscription(
   sub: ClientSubscription,
   key: CryptoKey | null,
 ): Promise<ClientSubscription> {
-  return {
-    ...sub,
-    password: await encryptField(sub.password, key),
-    pin: await encryptField(sub.pin, key),
-    freeProfileSnapshot: sub.freeProfileSnapshot
-      ? {
-          ...sub.freeProfileSnapshot,
-          password: await encryptField(sub.freeProfileSnapshot.password, key),
-        }
-      : sub.freeProfileSnapshot,
-  };
+  const result: ClientSubscription = { ...sub };
+
+  const encryptedPassword = await encryptField(sub.password, key);
+  if (encryptedPassword !== undefined) {
+    result.password = encryptedPassword;
+  } else {
+    delete result.password;
+  }
+
+  const encryptedPin = await encryptField(sub.pin, key);
+  if (encryptedPin !== undefined) {
+    result.pin = encryptedPin;
+  } else {
+    delete result.pin;
+  }
+
+  if (sub.freeProfileSnapshot) {
+    const encryptedSnapshotPassword = await encryptField(
+      sub.freeProfileSnapshot.password,
+      key,
+    );
+    result.freeProfileSnapshot = { ...sub.freeProfileSnapshot };
+    if (encryptedSnapshotPassword !== undefined) {
+      result.freeProfileSnapshot.password = encryptedSnapshotPassword;
+    } else {
+      delete result.freeProfileSnapshot.password;
+    }
+  }
+  // Si sub.freeProfileSnapshot no existía, no tocamos esa clave en
+  // `result` (el spread inicial `{ ...sub }` ya refleja fielmente si la
+  // propiedad existía o no) — evitamos introducir un valor `undefined`
+  // explícito ahí también.
+
+  return result;
 }
 
 async function decryptSubscription(
