@@ -12,6 +12,7 @@ import { useThemeStore } from "../../store/themeStore";
 import gsap from "gsap";
 
 import { LogoutConfirmModal } from "./LogoutConfirmModal";
+import { LANGUAGES } from "../../utils/languages";
 
 interface ProfilePopoverProps {
   isOpen: boolean;
@@ -23,33 +24,6 @@ interface ProfilePopoverProps {
   onOpenVaultModal?: () => void;
   triggerRef?: React.RefObject<HTMLElement | null>;
 }
-
-const LANGUAGES = [
-  { code: "es", shortCode: "ES", name: "Español" },
-  { code: "es-LATAM", shortCode: "MX", name: "Español (Latinoamérica)" },
-  { code: "en-US", shortCode: "US", name: "English (US)" },
-  { code: "en-UK", shortCode: "GB", name: "English (UK)" },
-  { code: "ar", shortCode: "SA", name: "العَرَبِيةُ" },
-  { code: "az", shortCode: "AZ", name: "Azərbaycan" },
-  { code: "bn", shortCode: "BD", name: "বাংলা" },
-  { code: "cs", shortCode: "CS", name: "Český" },
-  { code: "da", shortCode: "DA", name: "Dansk" },
-  { code: "de", shortCode: "DE", name: "Deutsch" },
-  { code: "el", shortCode: "GR", name: "Ελληνικά" },
-  { code: "fr", shortCode: "FR", name: "Français" },
-  { code: "hi", shortCode: "HI", name: "Hindī" },
-  { code: "hr", shortCode: "HR", name: "Hrvatski" },
-  { code: "hu", shortCode: "HU", name: "Magyar" },
-  { code: "it", shortCode: "IT", name: "Italiano" },
-  { code: "ja", shortCode: "JP", name: "日本語" },
-  { code: "ko", shortCode: "KR", name: "한국어" },
-  { code: "nl", shortCode: "NL", name: "Nederlands" },
-  { code: "pl", shortCode: "PL", name: "Polski" },
-  { code: "pt", shortCode: "PT", name: "Português" },
-  { code: "ru", shortCode: "RU", name: "Русский" },
-  { code: "tr", shortCode: "TR", name: "Türkçe" },
-  { code: "zh", shortCode: "ZH", name: "中文" },
-];
 
 export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
   isOpen,
@@ -197,7 +171,7 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
                 </button>
 
                 {showLangDropdown && (
-                  <div className="max-h-56 overflow-y-auto py-1 bg-white dark:bg-[#16161C] border-y border-slate-100 dark:border-[#25252D] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+                  <div className="max-h-56 overflow-y-auto py-1 bg-white dark:bg-[#16161C] border-y border-slate-100 dark:border-[#25252D] scrollbar-none [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                     {LANGUAGES.map((lang) => {
                       const isSelected = selectedLangCode === lang.code;
                       return (

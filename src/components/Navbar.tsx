@@ -27,6 +27,7 @@ interface NavbarProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
   onOpenAuthModal: () => void;
+  onOpenSettingsModal: () => void;
   onToggleSidebar?: () => void;
   onOpenVaultModal: () => void;
 }
@@ -52,6 +53,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   activeTab,
   setActiveTab,
   onOpenAuthModal,
+  onOpenSettingsModal,
   onToggleSidebar,
   onOpenVaultModal,
 }) => {
@@ -299,7 +301,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 isOpen={isPopoverOpen}
                 onClose={() => setIsPopoverOpen(false)}
                 triggerRef={avatarBtnRef}
-                onOpenSettings={onOpenAuthModal}
+                onOpenSettings={onOpenSettingsModal}
                 onOpenAuthModal={onOpenAuthModal}
                 onOpenProfile={() => setActiveTab("profile")}
                 onOpenVaultModal={onOpenVaultModal}

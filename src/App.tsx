@@ -5,6 +5,8 @@ import { useDataStore } from "./store/dataStore";
 import { Navbar } from "./components/Navbar";
 import { Footer } from "./components/Footer";
 import { Sidebar } from "./components/Sidebar";
+import { SettingsModal } from "./components/Settings/SettingsModal";
+
 import { FloatingSidebarDrawer } from "./components/FloatingSidebarDrawer";
 import { OverviewCards } from "./components/Dashboard/OverviewCards";
 import { PlatformDistributionChart } from "./components/Dashboard/PlatformDistributionChart";
@@ -51,6 +53,8 @@ function MainApp() {
 
   const { isUnlocked } = useVaultStore();
   const [isVaultModalOpen, setIsVaultModalOpen] = useState(false);
+
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
 
   useEffect(() => {
     const unsubAuth = initAuth();
@@ -132,6 +136,7 @@ function MainApp() {
         onOpenAuthModal={() => setIsAuthModalOpen(true)}
         onToggleSidebar={() => setIsMobileDrawerOpen(true)}
         onOpenVaultModal={() => setIsVaultModalOpen(true)}
+        onOpenSettingsModal={() => setIsSettingsModalOpen(true)}
       />
 
       {/* Floating Sidebar Drawer (ONLY for Tablet & Mobile, does not push content) */}
@@ -220,6 +225,13 @@ function MainApp() {
           isOpen={isVaultModalOpen}
           onClose={() => setIsVaultModalOpen(false)}
           allowSkip={true}
+        />
+      )}
+
+      {isSettingsModalOpen && (
+        <SettingsModal
+          isOpen={isSettingsModalOpen}
+          onClose={() => setIsSettingsModalOpen(false)}
         />
       )}
     </div>

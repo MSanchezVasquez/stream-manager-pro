@@ -1,12 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Calendar, ChevronLeft, ChevronRight, X } from "lucide-react";
 import gsap from "gsap";
+import { useSettingsStore } from "../../store/settingsStore";
 
 interface DatePickerProps {
+  /** Fecha en formato "DD/MM/YYYY" (o "DD/MM/YY"), igual que el resto de la app. */
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
   className?: string;
+  /** Clases adicionales para el texto del valor mostrado (ej. resaltar
+   * en ámbar una fecha de corte), sin afectar el color del placeholder. */
   valueClassName?: string;
 }
 
@@ -24,7 +28,8 @@ const MONTH_NAMES = [
   "Noviembre",
   "Diciembre",
 ];
-const WEEKDAY_LABELS = ["Lu", "Ma", "Mi", "Ju", "Vi", "Sá", "Do"];
+const WEEKDAY_LABELS_MONDAY = ["Lu", "Ma", "Mi", "Ju", "Vi", "Sá", "Do"];
+const WEEKDAY_LABELS_SUNDAY = ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sá"];
 
 function pad(n: number): string {
   return n.toString().padStart(2, "0");
@@ -56,10 +61,16 @@ function isSameDay(a: Date, b: Date): boolean {
   );
 }
 
-/** Genera una grilla de 42 días (6 semanas) empezando en lunes. */
-function buildCalendarGrid(year: number, month: number): Date[] {
+/** Genera una grilla de 42 días (6 semanas), iniciando en el día configurado por el usuario. */
+function buildCalendarGrid(
+  year: number,
+  month: number,
+  weekStartsOn: "monday" | "sunday",
+): Date[] {
   const firstOfMonth = new Date(year, month, 1);
-  const startWeekday = (firstOfMonth.getDay() + 6) % 7; // Lunes = 0
+  const jsWeekday = firstOfMonth.getDay(); // 0 = Domingo ... 6 = Sábado
+  const startWeekday =
+    weekStartsOn === "monday" ? (jsWeekday + 6) % 7 : jsWeekday;
   const gridStart = new Date(year, month, 1 - startWeekday);
   return Array.from({ length: 42 }, (_, i) => {
     const d = new Date(gridStart);
@@ -84,6 +95,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const selectedDate = parseDate(value);
   const [viewDate, setViewDate] = useState<Date>(selectedDate || new Date());
+  const weekStartsOn = useSettingsStore((s) => s.weekStartsOn);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -119,7 +131,13 @@ export const DatePicker: React.FC<DatePickerProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
-  const grid = buildCalendarGrid(viewDate.getFullYear(), viewDate.getMonth());
+  const grid = buildCalendarGrid(
+    viewDate.getFullYear(),
+    viewDate.getMonth(),
+    weekStartsOn,
+  );
+  const weekdayLabels =
+    weekStartsOn === "monday" ? WEEKDAY_LABELS_MONDAY : WEEKDAY_LABELS_SUNDAY;
   const today = new Date();
 
   const goToPrevMonth = () =>
@@ -200,7 +218,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
 
           {/* Días de la semana */}
           <div className="grid grid-cols-7 gap-0.5 mb-1 px-1">
-            {WEEKDAY_LABELS.map((wd) => (
+            {weekdayLabels.map((wd) => (
               <span
                 key={wd}
                 className="text-center text-[10px] font-bold text-slate-400 dark:text-[#6C6C78] py-1"
