@@ -132,11 +132,9 @@ async function encryptSubscription(
     } else {
       delete result.freeProfileSnapshot.password;
     }
+  } else {
+    delete result.freeProfileSnapshot;
   }
-  // Si sub.freeProfileSnapshot no existía, no tocamos esa clave en
-  // `result` (el spread inicial `{ ...sub }` ya refleja fielmente si la
-  // propiedad existía o no) — evitamos introducir un valor `undefined`
-  // explícito ahí también.
 
   return result;
 }
@@ -145,17 +143,22 @@ async function decryptSubscription(
   sub: ClientSubscription,
   key: CryptoKey | null,
 ): Promise<ClientSubscription> {
-  return {
+  const result: ClientSubscription = {
     ...sub,
     password: await decryptField(sub.password, key),
     pin: await decryptField(sub.pin, key),
-    freeProfileSnapshot: sub.freeProfileSnapshot
-      ? {
-          ...sub.freeProfileSnapshot,
-          password: await decryptField(sub.freeProfileSnapshot.password, key),
-        }
-      : sub.freeProfileSnapshot,
   };
+
+  if (sub.freeProfileSnapshot) {
+    result.freeProfileSnapshot = {
+      ...sub.freeProfileSnapshot,
+      password: await decryptField(sub.freeProfileSnapshot.password, key),
+    };
+  } else {
+    delete result.freeProfileSnapshot;
+  }
+
+  return result;
 }
 
 async function encryptClient(

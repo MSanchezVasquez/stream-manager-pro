@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { User, Search, ArrowRight } from "lucide-react";
+import { User } from "lucide-react";
 import { useDataStore } from "../../store/dataStore";
 import {
   getClientAccountHealth,
@@ -146,10 +146,7 @@ export const ClientList: React.FC<ClientListProps> = ({
       const hasWarning = subs.some((s) => {
         const d = getDaysRemaining(s.cutDate);
         return (
-          s.status !== "expired" &&
-          s.status !== "inactive" &&
-          d >= 0 &&
-          d <= 5
+          s.status !== "expired" && s.status !== "inactive" && d >= 0 && d <= 5
         );
       });
       const hasHealthy = subs.some((s) => {
@@ -251,16 +248,18 @@ export const ClientList: React.FC<ClientListProps> = ({
     if (!clientToDelete) return;
     setIsDeletingClient(true);
     try {
-      if (clientToDelete.status === "active") {
-        // Move active client to inactive tab
-        await saveClient({
-          ...clientToDelete,
-          status: "inactive",
-        });
-      } else {
-        // Permanently delete inactive client
-        await deleteClient(clientToDelete.id);
+      const success =
+        clientToDelete.status === "active"
+          ? await saveClient({ ...clientToDelete, status: "inactive" })
+          : await deleteClient(clientToDelete.id);
+
+      if (!success) {
+        alert(
+          "No se pudo completar la acción. Verifica tu conexión e inténtalo de nuevo.",
+        );
+        return;
       }
+
       setClientToDelete(null);
     } finally {
       setIsDeletingClient(false);
@@ -310,8 +309,8 @@ export const ClientList: React.FC<ClientListProps> = ({
                   healthFilter === "healthy"
                     ? "Al día"
                     : healthFilter === "warning"
-                    ? "Por vencer"
-                    : "Vencidos"
+                      ? "Por vencer"
+                      : "Vencidos"
                 }" con los filtros actuales.`
               : "Intenta cambiar el término de búsqueda o registra un nuevo cliente en el sistema."}
           </p>
@@ -330,9 +329,13 @@ export const ClientList: React.FC<ClientListProps> = ({
       ) : (
         <div className="columns-1 md:columns-2 xl:columns-3 gap-6 space-y-6">
           {filteredClients.map((client) => {
-            const visibleSubs = client.subscriptions.filter(isSubMatchingFilters);
+            const visibleSubs =
+              client.subscriptions.filter(isSubMatchingFilters);
             const health = hasActiveSubFilters
-              ? getClientAccountHealth({ ...client, subscriptions: visibleSubs })
+              ? getClientAccountHealth({
+                  ...client,
+                  subscriptions: visibleSubs,
+                })
               : getClientAccountHealth(client);
             const isInlineEditing =
               inlineEditingClientId === client.id && inlineClientData;
