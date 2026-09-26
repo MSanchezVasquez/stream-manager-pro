@@ -25,7 +25,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const { clients, suppliers, freeProfiles } = useDataStore();
 
-  // SOLUCIÓN: Memorizar los cálculos pesados
   const { activeClientsCount, inactiveClientsCount } = useMemo(() => {
     return {
       activeClientsCount: clients.filter((c) => c.status === "active").length,
