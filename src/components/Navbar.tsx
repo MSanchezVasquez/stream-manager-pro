@@ -17,8 +17,6 @@ import { useThemeStore } from "../store/themeStore";
 import { useAuthStore } from "../store/authStore";
 import { useDataStore } from "../store/dataStore";
 
-import { VaultStatusBadge } from "./common/VaultStatusBadge";
-
 import gsap from "gsap";
 
 interface NavbarProps {
@@ -270,8 +268,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <Moon className="w-4 h-4 text-white" />
               )}
             </button>
-
-            <VaultStatusBadge onClick={onOpenVaultModal} />
 
             {/* User Profile Avatar with Popover */}
             <div className="relative shrink-0 flex items-center justify-center">
