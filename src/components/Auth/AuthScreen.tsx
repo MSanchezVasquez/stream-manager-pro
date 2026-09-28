@@ -7,7 +7,6 @@ import {
   EyeOff,
   Sun,
   Moon,
-  ShieldCheck,
   Tv,
   Users,
   Bell,
@@ -403,16 +402,6 @@ export const AuthScreen: React.FC = () => {
                 </svg>
                 <span>Continuar con Google</span>
               </button>
-
-              <button
-                type="button"
-                onClick={handleGuestAuth}
-                disabled={isSubmitting}
-                className="w-full py-2 px-4 rounded-xl border border-dashed border-slate-300 dark:border-[#2F2F3D] text-slate-600 dark:text-slate-400 hover:bg-slate-100/50 dark:hover:bg-[#1E1E28] flex items-center justify-center gap-2 transition-all text-xs font-medium disabled:opacity-60"
-              >
-                <ShieldCheck className="w-3.5 h-3.5 text-indigo-500" />
-                <span>Explorar en Modo Demo / Invitado</span>
-              </button>
             </div>
 
             {/* Mobile switch trigger */}
@@ -603,16 +592,6 @@ export const AuthScreen: React.FC = () => {
                   />
                 </svg>
                 <span>Continuar con Google</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={handleGuestAuth}
-                disabled={isSubmitting}
-                className="w-full py-2 px-4 rounded-xl border border-dashed border-slate-300 dark:border-[#2F2F3D] text-slate-600 dark:text-slate-400 hover:bg-slate-100/50 dark:hover:bg-[#1E1E28] flex items-center justify-center gap-2 transition-all text-xs font-medium disabled:opacity-60"
-              >
-                <ShieldCheck className="w-3.5 h-3.5 text-indigo-500" />
-                <span>Explorar en Modo Demo / Invitado</span>
               </button>
             </div>
 
