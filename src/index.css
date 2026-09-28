@@ -3,6 +3,18 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Desactivar flechas / spinners de subir y bajar en todos los inputs numéricos */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
 /* @theme {
   --font-sans: "Inter", sans-serif;
   --font-space: "Space Grotesk", sans-serif;

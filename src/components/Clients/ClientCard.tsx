@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  Edit2,
   Sidebar as SidebarIcon,
   Trash2,
   Smartphone,
@@ -25,7 +24,7 @@ interface ClientCardProps {
   copiedField: string | null;
   onTogglePassword: (subId: string) => void;
   onCopy: (text: string, fieldId: string) => void;
-  onStartInlineEdit: (client: Client) => void;
+  onStartInlineEdit?: (client: Client) => void;
   onOpenDrawer: (client: Client) => void;
   onDelete: (client: Client) => void;
   onReactivate?: (client: Client) => void;
@@ -77,13 +76,6 @@ export const ClientCard: React.FC<ClientCardProps> = ({
                 <UserCheck className="w-3.5 h-3.5" />
               </button>
             )}
-            <button
-              onClick={() => onStartInlineEdit(client)}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-[#1A1A1E] transition-colors cursor-pointer"
-              title="Edición rápida en tarjeta"
-            >
-              <Edit2 className="w-3.5 h-3.5" />
-            </button>
             <button
               onClick={() => onOpenDrawer(client)}
               className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-[#1A1A1E] transition-colors cursor-pointer"

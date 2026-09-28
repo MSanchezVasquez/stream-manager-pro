@@ -262,6 +262,108 @@ export function getPlatformBadgeProps(platConfig: PlatformConfig) {
 }
 
 /**
+ * Parses date string in DD/MM/YYYY, DD/MM/YY or YYYY-MM-DD format
+ */
+export function parseDateString(dateStr: string): Date | null {
+  if (!dateStr || dateStr === "–/–/–" || dateStr === "//") return null;
+  if (dateStr.includes("/")) {
+    const parts = dateStr.split("/");
+    if (parts.length === 3) {
+      let day = parseInt(parts[0], 10);
+      let month = parseInt(parts[1], 10) - 1;
+      let year = parseInt(parts[2], 10);
+      if (year < 100) year += 2000;
+      const d = new Date(year, month, day);
+      return isNaN(d.getTime()) ? null : d;
+    }
+  }
+  const d = new Date(dateStr);
+  return isNaN(d.getTime()) ? null : d;
+}
+
+/**
+ * Formats a Date object to DD/MM/YYYY string
+ */
+export function formatDateToString(date: Date): string {
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+}
+
+/**
+ * Adds a given number of days to a date string (DD/MM/YYYY) and returns the formatted new date
+ */
+export function addDaysToDateString(dateStr: string, days: number): string {
+  const parsed = parseDateString(dateStr) || new Date();
+  const res = new Date(parsed.getTime() + days * 24 * 60 * 60 * 1000);
+  return formatDateToString(res);
+}
+
+export type PeriodUnit = "days" | "months" | "years";
+
+/**
+ * Adds a given quantity of days, months, or years to a date string (DD/MM/YYYY)
+ */
+export function addPeriodToDateString(
+  dateStr: string,
+  value: number,
+  unit: PeriodUnit,
+): string {
+  const parsed = parseDateString(dateStr) || new Date();
+  const res = new Date(parsed.getTime());
+
+  if (unit === "days") {
+    res.setDate(res.getDate() + value);
+  } else if (unit === "months") {
+    const originalDay = res.getDate();
+    res.setMonth(res.getMonth() + value);
+    if (res.getDate() < originalDay) {
+      res.setDate(0);
+    }
+  } else if (unit === "years") {
+    res.setFullYear(res.getFullYear() + value);
+  }
+
+  return formatDateToString(res);
+}
+
+/**
+ * Returns a human-friendly string for subscription period
+ */
+export function formatSubscriptionPeriod(
+  periodUnit?: "days" | "months" | "years",
+  periodValue?: number,
+  periodDays?: number,
+): string {
+  if (periodUnit === "months" && periodValue) {
+    return periodValue === 1 ? "1 mes" : `${periodValue} meses`;
+  }
+  if (periodUnit === "years" && periodValue) {
+    return periodValue === 1 ? "1 año" : `${periodValue} años`;
+  }
+  if (periodUnit === "days" && periodValue) {
+    return periodValue === 1 ? "1 día" : `${periodValue} días`;
+  }
+  const days = periodDays || 30;
+  return days === 1 ? "1 día" : `${days} días`;
+}
+
+/**
+ * Computes difference in days between two date strings (cutDate - hireDate)
+ */
+export function getDaysDifference(startDateStr: string, endDateStr: string): number {
+  const start = parseDateString(startDateStr);
+  const end = parseDateString(endDateStr);
+  if (!start || !end) return 30;
+  start.setHours(0, 0, 0, 0);
+  end.setHours(0, 0, 0, 0);
+  const diffTime = end.getTime() - start.getTime();
+  const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+  return diffDays > 0 ? diffDays : 0;
+}
+
+/**
  * Calculates remaining days from a date string formatted like DD/MM/YY or YYYY-MM-DD
  */
 export function getDaysRemaining(dateStr: string): number {

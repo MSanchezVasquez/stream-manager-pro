@@ -27,6 +27,9 @@ export interface ClientSubscription {
   serviceName: StreamingPlatform;
   hireDate: string; // YYYY-MM-DD or DD/MM/YY
   cutDate: string; // YYYY-MM-DD or DD/MM/YY
+  periodUnit?: "days" | "months" | "years"; // Type of subscription duration: days, months, or years
+  periodValue?: number; // Numeric quantity of days, months, or years
+  periodDays?: number; // Subscription duration in total days (computed)
   email?: string;
   password?: string;
   profileName?: string;
