@@ -200,7 +200,6 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
           </div>
 
-          {/* Sofascore-style Pill Search Bar (Desktop / Tablet md+) */}
           <div className="hidden md:flex flex-1 max-w-sm sm:max-w-md lg:max-w-lg mx-2 sm:mx-4">
             <div className="relative w-full">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/70 pointer-events-none" />
@@ -276,7 +275,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 ref={avatarBtnRef}
                 type="button"
                 onClick={() => setIsPopoverOpen(!isPopoverOpen)}
-                className="relative w-8 h-8 sm:w-9 sm:h-9 shrink-0 rounded-full border-2 border-white/40 hover:border-white flex items-center justify-center focus:outline-none cursor-pointer overflow-hidden transition-all hover:scale-105 shadow-sm"
+                className="relative w-8 h-8 sm:w-9 sm:h-9 shrink-0 rounded-full border-0 border-none outline-none flex items-center justify-center focus:outline-none cursor-pointer overflow-hidden select-none"
                 title="Mi Perfil"
                 aria-label="Mi Perfil"
               >
@@ -284,11 +283,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <img
                     src={user.photoURL}
                     alt="Perfil"
-                    className="w-full h-full rounded-full object-cover"
+                    className="w-full h-full rounded-full object-cover block border-0 border-none"
                     referrerPolicy="no-referrer"
                   />
                 ) : (
-                  <div className="w-full h-full rounded-full bg-white/20 flex items-center justify-center overflow-hidden shrink-0 text-white font-black text-xs">
+                  <div className="w-full h-full rounded-full bg-white/20 flex items-center justify-center overflow-hidden shrink-0 text-white font-black text-xs border-0 border-none">
                     {user?.email ? user.email.charAt(0).toUpperCase() : "U"}
                   </div>
                 )}
