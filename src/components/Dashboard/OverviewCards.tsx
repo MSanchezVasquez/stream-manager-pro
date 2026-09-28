@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Users, Tv, AlertTriangle, Truck, Sparkles } from 'lucide-react';
+import { Users, Tv, AlertTriangle, Truck, Sparkles, Coins } from 'lucide-react';
 import { useDataStore } from '../../store/dataStore';
 import { getDaysRemaining } from '../../utils/platformHelpers';
 import gsap from 'gsap';
@@ -16,6 +16,15 @@ export const OverviewCards: React.FC<{
   const totalActiveSubs = activeClients.reduce(
     (acc, c) =>
       acc + c.subscriptions.filter((s) => s.status === 'active').length,
+    0,
+  );
+
+  const totalMonthlyRevenue = activeClients.reduce(
+    (acc, c) =>
+      acc +
+      c.subscriptions
+        .filter((s) => s.status === 'active')
+        .reduce((sum, s) => sum + (typeof s.price === 'number' ? s.price : 0), 0),
     0,
   );
 
@@ -41,23 +50,33 @@ export const OverviewCards: React.FC<{
         { y: 0, opacity: 1, duration: 0.5, stagger: 0.08, ease: 'power2.out' },
       );
     }
-  }, [totalActiveClients, totalActiveSubs, upcomingExpirations]);
+  }, [totalActiveClients, totalActiveSubs, upcomingExpirations, totalMonthlyRevenue]);
 
   const cards = [
     {
-      title: 'Clientes Activos',
-      value: totalActiveClients,
-      icon: Users,
+      title: 'Facturación Mensual',
+      value: `S/ ${totalMonthlyRevenue.toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+      icon: Coins,
       color: 'from-emerald-500/20 to-teal-500/5 text-emerald-500',
       borderColor: 'border-emerald-500/30',
       iconBg: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
       tab: 'clients_active',
+      isPrice: true,
     },
     {
-      title: 'Suscripciones Contratadas',
+      title: 'Clientes Activos',
+      value: totalActiveClients,
+      icon: Users,
+      color: 'from-blue-500/20 to-indigo-500/5 text-blue-500',
+      borderColor: 'border-blue-500/30',
+      iconBg: 'bg-blue-500/10 text-blue-600 dark:text-blue-400',
+      tab: 'clients_active',
+    },
+    {
+      title: 'Suscripciones Activas',
       value: totalActiveSubs,
       icon: Tv,
-      color: 'from-indigo-500/20 to-blue-500/5 text-indigo-500',
+      color: 'from-indigo-500/20 to-purple-500/5 text-indigo-500',
       borderColor: 'border-indigo-500/30',
       iconBg: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400',
       tab: 'clients_active',
@@ -94,7 +113,7 @@ export const OverviewCards: React.FC<{
   return (
     <div
       ref={containerRef}
-      className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 sm:gap-4 mb-6 sm:mb-8"
+      className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-4 mb-6 sm:mb-8"
     >
       {cards.map((card, idx) => {
         const Icon = card.icon;
@@ -102,11 +121,7 @@ export const OverviewCards: React.FC<{
           <div
             key={idx}
             onClick={() => onNavigateTab(card.tab)}
-            className={`cursor-pointer p-3.5 sm:p-5 rounded-xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#1F1F23] shadow-sm hover:border-[#2D2D33] transition-all transform hover:-translate-y-0.5 relative overflow-hidden group ${
-              idx === 4
-                ? 'col-span-2 sm:col-span-2 lg:col-span-1'
-                : 'col-span-1'
-            }`}
+            className="cursor-pointer p-3.5 sm:p-4 rounded-xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#1F1F23] shadow-sm hover:border-[#2D2D33] transition-all transform hover:-translate-y-0.5 relative overflow-hidden group flex flex-col justify-between"
           >
             <div
               className={`absolute -right-4 -bottom-4 w-20 h-20 rounded-full bg-linear-to-br ${card.color} blur-2xl group-hover:scale-150 transition-transform`}
@@ -121,7 +136,12 @@ export const OverviewCards: React.FC<{
                 <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </div>
             </div>
-            <div className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-[#E4E4E7] font-cascadia">
+            <div
+              className={`font-bold text-slate-900 dark:text-[#E4E4E7] font-cascadia truncate ${
+                card.isPrice ? 'text-base sm:text-lg text-emerald-600 dark:text-emerald-400' : 'text-xl sm:text-2xl'
+              }`}
+              title={String(card.value)}
+            >
               {card.value}
             </div>
           </div>

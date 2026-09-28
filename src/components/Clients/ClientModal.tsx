@@ -469,7 +469,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
 
                         <div>
                           <label className="block text-[11px] font-semibold text-slate-600 dark:text-[#94949E] mb-1">
-                            Precio Mensual ($)
+                            Precio Mensual (S/)
                           </label>
                           <input
                             type="number"

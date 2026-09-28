@@ -98,7 +98,7 @@ export const ClientSubscriptionItem: React.FC<ClientSubscriptionItemProps> = ({
         <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-[#94949E] bg-white/60 dark:bg-[#0F0F12]/60 px-2 py-1 rounded-lg border border-slate-200/50 dark:border-[#2D2D33]/50">
           <span>Precio de suscripción:</span>
           <span className="font-bold font-cascadia text-emerald-600 dark:text-emerald-400">
-            ${sub.price.toFixed(2)}/mes
+            S/ {sub.price.toFixed(2)}/mes
           </span>
         </div>
       )}

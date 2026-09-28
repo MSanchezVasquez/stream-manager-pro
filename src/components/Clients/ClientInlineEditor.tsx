@@ -219,20 +219,24 @@ export const ClientInlineEditor: React.FC<ClientInlineEditorProps> = ({
 
               <div>
                 <label className="block text-[10px] text-slate-500 mb-0.5">
-                  Precio ($)
+                  Precio (S/)
                 </label>
                 <input
                   type="number"
                   step="0.01"
                   min="0"
-                  value={sub.price ?? ""}
+                  value={
+                    sub.price === undefined || sub.price === null
+                      ? ""
+                      : sub.price
+                  }
                   onChange={(e) => {
                     const newSubs = [...inlineClientData.subscriptions];
                     newSubs[idx] = {
                       ...newSubs[idx],
                       price:
                         e.target.value === ""
-                          ? 0
+                          ? undefined
                           : parseFloat(e.target.value) || 0,
                     };
                     setInlineClientData({
@@ -240,6 +244,7 @@ export const ClientInlineEditor: React.FC<ClientInlineEditorProps> = ({
                       subscriptions: newSubs,
                     });
                   }}
+                  onFocus={(e) => e.target.select()}
                   placeholder="0.00"
                   className="w-full px-2 py-1 rounded-lg border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-[11px] font-cascadia"
                 />

@@ -203,6 +203,11 @@ export const ExpirationAlerts: React.FC = () => {
                         {item.sub.pin && ` (PIN: ${item.sub.pin})`}
                       </div>
                     )}
+                    {typeof item.sub.price === "number" && item.sub.price > 0 && (
+                      <div className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 font-cascadia pt-0.5">
+                        Cuota mensual: S/ {item.sub.price.toFixed(2)}
+                      </div>
+                    )}
                   </div>
                 </div>
 

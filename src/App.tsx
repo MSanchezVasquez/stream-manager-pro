@@ -11,6 +11,7 @@ import { FloatingSidebarDrawer } from "./components/FloatingSidebarDrawer";
 import { OverviewCards } from "./components/Dashboard/OverviewCards";
 import { PlatformDistributionChart } from "./components/Dashboard/PlatformDistributionChart";
 import { ExpirationAlerts } from "./components/Dashboard/ExpirationAlerts";
+import { FinancialAndActivitySummary } from "./components/Dashboard/FinancialAndActivitySummary";
 import { ClientList } from "./components/Clients/ClientList";
 import { SupplierList } from "./components/Suppliers/SupplierList";
 import { FreeProfilesList } from "./components/Profiles/FreeProfilesList";
@@ -169,6 +170,10 @@ function MainApp() {
             {activeTab === "dashboard" && (
               <div className="space-y-8">
                 <OverviewCards onNavigateTab={(tab) => setActiveTab(tab)} />
+                <FinancialAndActivitySummary
+                  onNavigateTab={(tab) => setActiveTab(tab)}
+                  onOpenAddClientModal={() => setIsClientModalOpen(true)}
+                />
                 <ExpirationAlerts />
                 <PlatformDistributionChart />
               </div>
