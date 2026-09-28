@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ChevronDown, Search } from "lucide-react";
+import { ChevronDown, Search, Tv } from "lucide-react";
 import gsap from "gsap";
 import { StreamingPlatform } from "../../types";
 import {
@@ -9,9 +9,10 @@ import {
 import { PlatformIcon } from "./PlatformIcon";
 
 interface PlatformSelectProps {
-  value: StreamingPlatform;
+  value?: StreamingPlatform | "" | null;
   onChange: (platform: StreamingPlatform) => void;
   className?: string;
+  placeholder?: string;
 }
 
 /**
@@ -25,6 +26,7 @@ export const PlatformSelect: React.FC<PlatformSelectProps> = ({
   value,
   onChange,
   className = "",
+  placeholder = "Seleccionar plataforma...",
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -108,8 +110,20 @@ export const PlatformSelect: React.FC<PlatformSelectProps> = ({
         aria-expanded={isOpen}
       >
         <span className="flex items-center gap-2 min-w-0">
-          <PlatformIcon platform={value} className="w-4 h-4 shrink-0" />
-          <span className="truncate">{getPlatformDisplayName(value)}</span>
+          {value ? (
+            <PlatformIcon platform={value} className="w-4 h-4 shrink-0" />
+          ) : (
+            <Tv className="w-4 h-4 text-slate-400 dark:text-slate-500 shrink-0" />
+          )}
+          <span
+            className={`truncate ${
+              value
+                ? "text-slate-900 dark:text-[#E4E4E7]"
+                : "text-slate-400 dark:text-[#71717A]"
+            }`}
+          >
+            {value ? getPlatformDisplayName(value) : placeholder}
+          </span>
         </span>
         <ChevronDown
           ref={chevronRef}

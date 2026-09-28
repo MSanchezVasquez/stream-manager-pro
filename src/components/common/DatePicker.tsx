@@ -165,23 +165,23 @@ export const DatePicker: React.FC<DatePickerProps> = ({
       <button
         type="button"
         onClick={() => setIsOpen((o) => !o)}
-        className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-xs font-medium flex items-center justify-between gap-2 hover:border-indigo-400 dark:hover:border-indigo-500 transition-colors shadow-sm"
+        className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-xs font-medium flex items-center justify-between gap-2.5 hover:border-indigo-400 dark:hover:border-indigo-500 transition-colors shadow-sm"
       >
-        <span className="flex items-center gap-2 min-w-0">
+        <div className="flex items-center gap-2 min-w-0 flex-1 text-left">
           <Calendar className="w-3.5 h-3.5 text-[#94949E] shrink-0" />
           <span
-            className={
+            className={`truncate tracking-wide ${
               value ? valueClassName : "text-slate-400 dark:text-[#5A5A64]"
-            }
+            }`}
           >
             {value || placeholder}
           </span>
-        </span>
+        </div>
         {value && (
           <span
             role="button"
             onClick={handleClear}
-            className="text-slate-400 hover:text-red-500 p-0.5 shrink-0 cursor-pointer"
+            className="text-slate-400 hover:text-red-500 hover:bg-slate-100 dark:hover:bg-white/10 p-1 rounded-md shrink-0 cursor-pointer ml-auto transition-colors"
             title="Limpiar fecha"
           >
             <X className="w-3.5 h-3.5" />

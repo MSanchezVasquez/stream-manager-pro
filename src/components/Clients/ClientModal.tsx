@@ -33,6 +33,22 @@ interface ClientModalProps {
   initialClient?: Client | null;
 }
 
+function getTodayFormatted(): string {
+  const d = new Date();
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const year = d.getFullYear();
+  return `${day}/${month}/${year}`;
+}
+
+function getFutureDateFormatted(daysAhead: number = 30): string {
+  const d = new Date(Date.now() + daysAhead * 24 * 60 * 60 * 1000);
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const year = d.getFullYear();
+  return `${day}/${month}/${year}`;
+}
+
 export const ClientModal: React.FC<ClientModalProps> = ({
   isOpen,
   onClose,
@@ -80,17 +96,15 @@ export const ClientModal: React.FC<ClientModalProps> = ({
           id: crypto.randomUUID(),
           clientId: "",
           clientName: "",
-          serviceName: "Netflix Premium",
-          hireDate: new Date().toLocaleDateString("es-ES"),
-          cutDate: new Date(
-            Date.now() + 30 * 24 * 60 * 60 * 1000,
-          ).toLocaleDateString("es-ES"),
+          serviceName: "" as any,
+          hireDate: getTodayFormatted(),
+          cutDate: getFutureDateFormatted(30),
           email: "",
           password: "",
           profileName: "",
           pin: "",
           status: "active",
-          price: 0,
+          price: undefined,
         },
       ]);
     }
@@ -105,17 +119,15 @@ export const ClientModal: React.FC<ClientModalProps> = ({
         id: crypto.randomUUID(),
         clientId: activeClient?.id || "",
         clientName: name || "Cliente",
-        serviceName: "Disney+ Estándar",
-        hireDate: new Date().toLocaleDateString("es-ES"),
-        cutDate: new Date(
-          Date.now() + 30 * 24 * 60 * 60 * 1000,
-        ).toLocaleDateString("es-ES"),
+        serviceName: "" as any,
+        hireDate: getTodayFormatted(),
+        cutDate: getFutureDateFormatted(30),
         email: "",
         password: "",
         profileName: "",
         pin: "",
         status: "active",
-        price: 0,
+        price: undefined,
       },
     ]);
   };
@@ -157,6 +169,10 @@ export const ClientModal: React.FC<ClientModalProps> = ({
       ...s,
       clientId,
       clientName: name,
+      price:
+        s.price !== undefined && s.price !== null && !isNaN(Number(s.price))
+          ? Number(s.price)
+          : 0,
     }));
 
     const clientToSave: Client = {
@@ -183,6 +199,13 @@ export const ClientModal: React.FC<ClientModalProps> = ({
     e.preventDefault();
     if (!name.trim()) {
       alert("Por favor ingrese el nombre del cliente");
+      return;
+    }
+    const hasEmptyPlatform = subscriptions.some(
+      (s) => !s.serviceName || s.serviceName.trim() === "",
+    );
+    if (hasEmptyPlatform) {
+      alert("Por favor selecciona una plataforma de streaming para cada servicio contratado.");
       return;
     }
     if (duplicateClient && !confirmDuplicateAnyway) {
@@ -427,10 +450,10 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                         )}
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                         <div>
                           <label className="block text-[11px] font-semibold text-slate-600 dark:text-[#94949E] mb-1">
-                            Plataforma Streaming
+                            Plataforma Streaming *
                           </label>
                           <PlatformSelect
                             value={sub.serviceName}
@@ -446,6 +469,33 @@ export const ClientModal: React.FC<ClientModalProps> = ({
 
                         <div>
                           <label className="block text-[11px] font-semibold text-slate-600 dark:text-[#94949E] mb-1">
+                            Precio Mensual ($)
+                          </label>
+                          <input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            value={
+                              sub.price === undefined || sub.price === null
+                                ? ""
+                                : sub.price
+                            }
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              handleUpdateSubscription(
+                                sub.id,
+                                "price",
+                                val === "" ? undefined : parseFloat(val),
+                              );
+                            }}
+                            onFocus={(e) => e.target.select()}
+                            placeholder="0.00"
+                            className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-xs font-cascadia focus:border-indigo-500 outline-none transition-colors shadow-sm"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] font-semibold text-slate-600 dark:text-[#94949E] mb-1">
                             Fecha Contratación
                           </label>
                           <DatePicker
@@ -453,9 +503,10 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                             onChange={(v) =>
                               handleUpdateSubscription(sub.id, "hireDate", v)
                             }
-                            placeholder="DD/MM/YY"
+                            placeholder="DD/MM/YYYY"
                           />
                         </div>
+
                         <div>
                           <label className="block text-[11px] font-semibold text-slate-600 dark:text-[#94949E] mb-1">
                             Fecha de Corte *
@@ -465,28 +516,8 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                             onChange={(v) =>
                               handleUpdateSubscription(sub.id, "cutDate", v)
                             }
-                            placeholder="DD/MM/YY"
+                            placeholder="DD/MM/YYYY"
                             valueClassName="font-semibold text-amber-600 dark:text-amber-400"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-[11px] font-semibold text-slate-600 dark:text-[#94949E] mb-1">
-                            Precio Mensual ($)
-                          </label>
-                          <input
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            value={sub.price ?? ""}
-                            onChange={(e) =>
-                              handleUpdateSubscription(
-                                sub.id,
-                                "price",
-                                e.target.value === "" ? 0 : parseFloat(e.target.value) || 0,
-                              )
-                            }
-                            placeholder="0.00"
-                            className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-xs font-cascadia"
                           />
                         </div>
                       </div>
