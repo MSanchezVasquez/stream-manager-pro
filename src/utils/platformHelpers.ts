@@ -19,7 +19,6 @@ export const ALL_STREAMING_PLATFORMS: StreamingPlatform[] = [
   "Flujo TV",
   "Telelatino",
   "Movistar TV",
-  "NBA League Pass",
   "Otro",
 ];
 
@@ -168,14 +167,6 @@ export const PLATFORM_CONFIGS: Record<string, PlatformConfig> = {
     textColor: "text-sky-600 dark:text-sky-400",
     borderColor: "border-sky-500/30",
     iconName: "Tv",
-  },
-  "NBA League Pass": {
-    name: "NBA League Pass",
-    color: "#1D428A",
-    bgColor: "bg-indigo-600/10 dark:bg-indigo-900/40",
-    textColor: "text-indigo-600 dark:text-indigo-400",
-    borderColor: "border-indigo-500/30",
-    iconName: "Trophy",
   },
   Otro: {
     name: "Otro",

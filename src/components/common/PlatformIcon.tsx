@@ -618,24 +618,6 @@ export const PlatformIcon: React.FC<PlatformIconProps> = ({
     );
   }
 
-  // 15. NBA League Pass / NBA
-  if (norm.includes("nba")) {
-    return (
-      <svg viewBox="0 0 24 24" fill="none" className={className}>
-        <rect width="24" height="24" rx="5" fill="#1D428A" />
-        {/* Right red block */}
-        <path d="M12 2h7a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5h-7V2z" fill="#C8102E" />
-        {/* Jerry West basketball player silhouette */}
-        <circle cx="11" cy="5.8" r="1.3" fill="#FFFFFF" />
-        <path
-          d="M10.2 7.8c-.8.8-1.3 2-1.8 3.5l1.6.8c.4-1.2.8-2.2 1.4-2.8l-1.2-1.5zm2.8 1.2l-1.8 3.2 2 3.8-1.6 5h1.8l1.4-4.2-1.8-3.5 1.4-2.8c.6.6 1 1.4 1.4 2.2l1.5-.9c-.6-1.3-1.3-2.3-2.2-3l-2.1-1z"
-          fill="#FFFFFF"
-        />
-        <circle cx="6.8" cy="15.8" r="1.4" fill="#FFFFFF" />
-      </svg>
-    );
-  }
-
   // Generic fallback: Lucide Tv
   return <Tv className={className} />;
 };

@@ -41,10 +41,7 @@ const STREAMING_PLATFORMS = [
   { id: "DGO", label: "DGO" },
   { id: "Apple TV", label: "Apple TV" },
   { id: "Vix Premium", label: "Vix Premium" },
-  { id: "Flujo TV", label: "Flujo TV" },
-  { id: "Telelatino", label: "Telelatino" },
   { id: "Movistar TV", label: "Movistar TV" },
-  { id: "NBA League Pass", label: "NBA League Pass" },
 ];
 
 export const Navbar: React.FC<NavbarProps> = ({

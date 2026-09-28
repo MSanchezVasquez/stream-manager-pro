@@ -9,7 +9,6 @@ export type StreamingPlatform =
   | "HBO Max Estándar"
   | "HBO Max Platino"
   | "Movistar TV"
-  | "NBA League Pass"
   | "Netflix Premium"
   | "Netflix Perfil Privado"
   | "Paramount Plus"
