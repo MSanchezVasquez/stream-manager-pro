@@ -151,7 +151,7 @@ export const ClientInlineEditor: React.FC<ClientInlineEditorProps> = ({
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               <div>
                 <label className="block text-[10px] text-slate-500 mb-0.5">
                   Contraseña
@@ -195,7 +195,7 @@ export const ClientInlineEditor: React.FC<ClientInlineEditorProps> = ({
                       });
                     }}
                     placeholder="Perfil"
-                    className="w-2/3 px-2 py-1 rounded-lg border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-[11px]"
+                    className="w-3/5 px-2 py-1 rounded-lg border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-[11px]"
                   />
                   <input
                     type="text"
@@ -212,9 +212,37 @@ export const ClientInlineEditor: React.FC<ClientInlineEditorProps> = ({
                       });
                     }}
                     placeholder="PIN"
-                    className="w-1/3 px-1.5 py-1 rounded-lg border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-[11px] font-cascadia font-light"
+                    className="w-2/5 px-1 rounded-lg border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-[11px] font-cascadia font-light"
                   />
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] text-slate-500 mb-0.5">
+                  Precio ($)
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={sub.price ?? ""}
+                  onChange={(e) => {
+                    const newSubs = [...inlineClientData.subscriptions];
+                    newSubs[idx] = {
+                      ...newSubs[idx],
+                      price:
+                        e.target.value === ""
+                          ? 0
+                          : parseFloat(e.target.value) || 0,
+                    };
+                    setInlineClientData({
+                      ...inlineClientData,
+                      subscriptions: newSubs,
+                    });
+                  }}
+                  placeholder="0.00"
+                  className="w-full px-2 py-1 rounded-lg border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-[11px] font-cascadia"
+                />
               </div>
             </div>
           </div>

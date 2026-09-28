@@ -8,12 +8,14 @@ import {
   CheckCircle2,
   ShieldCheck,
   UserCheck,
+  KeyRound,
 } from "lucide-react";
 import { useAuthStore } from "../../store/authStore";
 import { CircularSpinner } from "../common/LoadingSpinners";
 import gsap from "gsap";
 
 import { LogoutConfirmModal } from "./LogoutConfirmModal";
+import { SetAccountPasswordModal } from "./SetAccountPasswordModal";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -21,13 +23,21 @@ interface AuthModalProps {
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
-  const { user, loginWithEmail, loginWithGoogle, logout } = useAuthStore();
+  const {
+    user,
+    loginWithEmail,
+    loginWithGoogle,
+    logout,
+    hasPasswordProvider,
+    hasGoogleProvider,
+  } = useAuthStore();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isVisible, setIsVisible] = useState(isOpen);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
 
   const modalRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
@@ -221,13 +231,25 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
               <div className="p-4 rounded-2xl border border-slate-200 dark:border-[#25252D] bg-white dark:bg-[#141418] space-y-3">
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-[#94949E]">Autenticación</span>
-                  <span className="font-medium text-slate-800 dark:text-white">
-                    {user.providerData?.[0]?.providerId === "google.com"
-                      ? "Google"
-                      : "Correo / Contraseña"}
-                  </span>
+                  <div className="flex items-center gap-1.5 flex-wrap justify-end">
+                    {hasGoogleProvider() && (
+                      <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+                        Google
+                      </span>
+                    )}
+                    {hasPasswordProvider() && (
+                      <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
+                        Contraseña
+                      </span>
+                    )}
+                    {!hasGoogleProvider() && !hasPasswordProvider() && (
+                      <span className="font-medium text-slate-800 dark:text-white">
+                        {user.isAnonymous ? "Invitado" : "Correo"}
+                      </span>
+                    )}
+                  </div>
                 </div>
-                <div className="flex items-center justify-between text-xs">
+                <div className="flex items-center justify-between text-xs pt-1 border-t border-slate-100 dark:border-[#25252D]">
                   <span className="text-[#94949E]">Guardado Cloud</span>
                   <span className="text-emerald-500 font-medium flex items-center gap-1">
                     <ShieldCheck className="w-3.5 h-3.5" /> En tiempo real
@@ -236,9 +258,32 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 </div>
               </div>
 
+              {/* Opción de crear contraseña EXCLUSIVA para usuarios de Google sin contraseña */}
+              {hasGoogleProvider() && !hasPasswordProvider() && (
+                <div className="p-3.5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/20 border border-indigo-200/80 dark:border-indigo-900/40 flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="text-xs font-bold text-slate-800 dark:text-white flex items-center gap-1.5">
+                      <KeyRound className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 shrink-0" />
+                      <span>Acceso con contraseña</span>
+                    </p>
+                    <p className="text-[11px] text-slate-500 dark:text-[#94949E] mt-0.5 leading-snug">
+                      Crea una contraseña para iniciar sesión también con tu
+                      correo sin depender de Google.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowPasswordModal(true)}
+                    className="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-xs transition-all shrink-0 cursor-pointer"
+                  >
+                    Crear clave
+                  </button>
+                </div>
+              )}
+
               <button
                 onClick={() => setShowLogoutConfirm(true)}
-                className="w-full py-3 px-4 rounded-xl bg-red-600/10 hover:bg-red-600/20 text-red-600 dark:text-red-400 border border-red-500/20 font-semibold text-xs flex items-center justify-center gap-2 transition-all"
+                className="w-full py-3 px-4 rounded-xl bg-red-600/10 hover:bg-red-600/20 text-red-600 dark:text-red-400 border border-red-500/20 font-semibold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
               >
                 <LogOut className="w-4 h-4" />
                 <span>Cerrar Sesión</span>
@@ -357,6 +402,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
           Gestor de Cuentas • Guardado permanente de clientes en la nube
         </div>
       </div>
+
+      <SetAccountPasswordModal
+        isOpen={showPasswordModal}
+        onClose={() => setShowPasswordModal(false)}
+      />
     </div>
   );
 };

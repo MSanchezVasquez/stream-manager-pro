@@ -145,6 +145,46 @@ export const PLATFORM_CONFIGS: Record<string, PlatformConfig> = {
     borderColor: "border-orange-500/30",
     iconName: "Tv",
   },
+  "Flujo TV": {
+    name: "Flujo TV",
+    color: "#06B6D4",
+    bgColor: "bg-cyan-500/10 dark:bg-cyan-950/40",
+    textColor: "text-cyan-600 dark:text-cyan-400",
+    borderColor: "border-cyan-500/30",
+    iconName: "Tv",
+  },
+  Telelatino: {
+    name: "Telelatino",
+    color: "#F59E0B",
+    bgColor: "bg-amber-500/10 dark:bg-amber-950/40",
+    textColor: "text-amber-600 dark:text-amber-400",
+    borderColor: "border-amber-500/30",
+    iconName: "Tv",
+  },
+  "Movistar TV": {
+    name: "Movistar TV",
+    color: "#00A9E0",
+    bgColor: "bg-sky-500/10 dark:bg-sky-950/40",
+    textColor: "text-sky-600 dark:text-sky-400",
+    borderColor: "border-sky-500/30",
+    iconName: "Tv",
+  },
+  "NBA League Pass": {
+    name: "NBA League Pass",
+    color: "#1D428A",
+    bgColor: "bg-indigo-600/10 dark:bg-indigo-900/40",
+    textColor: "text-indigo-600 dark:text-indigo-400",
+    borderColor: "border-indigo-500/30",
+    iconName: "Trophy",
+  },
+  Otro: {
+    name: "Otro",
+    color: "#6B7280",
+    bgColor: "bg-slate-500/10 dark:bg-slate-800/40",
+    textColor: "text-slate-600 dark:text-slate-400",
+    borderColor: "border-slate-500/30",
+    iconName: "Tv",
+  },
 };
 
 export function getPlatformConfig(platformName: string): PlatformConfig {

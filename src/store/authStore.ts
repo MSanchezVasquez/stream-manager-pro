@@ -9,6 +9,10 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
   signInAnonymously,
+  EmailAuthProvider,
+  linkWithCredential,
+  updatePassword,
+  reauthenticateWithPopup,
   User,
 } from "../lib/firebase";
 import { useVaultStore } from "./vaultStore";
@@ -31,10 +35,14 @@ interface AuthState {
   ) => Promise<AuthResponse>;
   loginWithGoogle: () => Promise<AuthResponse>;
   loginAsGuest: () => Promise<AuthResponse>;
+  createAccountPassword: (password: string) => Promise<AuthResponse>;
+  changeAccountPassword: (password: string) => Promise<AuthResponse>;
+  hasPasswordProvider: () => boolean;
+  hasGoogleProvider: () => boolean;
   logout: () => Promise<void>;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   loading: true,
 
@@ -64,7 +72,8 @@ export const useAuthStore = create<AuthState>((set) => ({
         case "auth/invalid-credential":
         case "auth/user-not-found":
         case "auth/wrong-password":
-          errorMessage = "Correo o contraseña incorrectos. Verifica tus datos.";
+          errorMessage =
+            "Correo o contraseña incorrectos. Si te registraste con Google y aún no creaste una contraseña, ingresa primero con Google.";
           break;
         case "auth/invalid-email":
           errorMessage = "El formato del correo electrónico no es válido.";
@@ -160,6 +169,135 @@ export const useAuthStore = create<AuthState>((set) => ({
           err.code === "auth/operation-not-allowed"
             ? "El acceso anónimo no está habilitado en Firebase Console. Por favor regístrate o inicia sesión con correo."
             : err.message || "Error al acceder como invitado.",
+      };
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  hasPasswordProvider: () => {
+    const user = get().user || auth.currentUser;
+    if (!user || !user.providerData) return false;
+    return user.providerData.some((p) => p.providerId === "password");
+  },
+
+  hasGoogleProvider: () => {
+    const user = get().user || auth.currentUser;
+    if (!user || !user.providerData) return false;
+    return user.providerData.some((p) => p.providerId === "google.com");
+  },
+
+  createAccountPassword: async (password: string) => {
+    const currentUser = auth.currentUser;
+    if (!currentUser || !currentUser.email) {
+      return {
+        success: false,
+        error: "No se encontró un usuario autenticado con correo electrónico.",
+      };
+    }
+    set({ loading: true });
+    try {
+      const credential = EmailAuthProvider.credential(
+        currentUser.email,
+        password,
+      );
+      await linkWithCredential(currentUser, credential);
+      await currentUser.reload();
+      set({ user: auth.currentUser });
+      return { success: true };
+    } catch (err: any) {
+      console.error("Error creating password for account:", err);
+      if (err.code === "auth/requires-recent-login") {
+        try {
+          const provider = new GoogleAuthProvider();
+          await reauthenticateWithPopup(currentUser, provider);
+          const credential = EmailAuthProvider.credential(
+            currentUser.email,
+            password,
+          );
+          await linkWithCredential(currentUser, credential);
+          await currentUser.reload();
+          set({ user: auth.currentUser });
+          return { success: true };
+        } catch (reauthErr: any) {
+          return {
+            success: false,
+            code: reauthErr.code,
+            error:
+              "Por seguridad, confirma tu identidad con Google e inténtalo de nuevo.",
+          };
+        }
+      }
+      if (err.code === "auth/provider-already-linked") {
+        try {
+          await updatePassword(currentUser, password);
+          await currentUser.reload();
+          set({ user: auth.currentUser });
+          return { success: true };
+        } catch (upErr: any) {
+          return {
+            success: false,
+            error: upErr?.message || "Error al actualizar la contraseña.",
+          };
+        }
+      }
+      if (err.code === "auth/weak-password") {
+        return {
+          success: false,
+          error: "La contraseña debe tener al menos 6 caracteres.",
+        };
+      }
+      return {
+        success: false,
+        error: err?.message || "No se pudo crear la contraseña.",
+      };
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  changeAccountPassword: async (password: string) => {
+    const currentUser = auth.currentUser;
+    if (!currentUser) {
+      return {
+        success: false,
+        error: "No hay una sesión activa.",
+      };
+    }
+    set({ loading: true });
+    try {
+      await updatePassword(currentUser, password);
+      await currentUser.reload();
+      set({ user: auth.currentUser });
+      return { success: true };
+    } catch (err: any) {
+      console.error("Error changing password:", err);
+      if (err.code === "auth/requires-recent-login") {
+        try {
+          const provider = new GoogleAuthProvider();
+          await reauthenticateWithPopup(currentUser, provider);
+          await updatePassword(currentUser, password);
+          await currentUser.reload();
+          set({ user: auth.currentUser });
+          return { success: true };
+        } catch (reauthErr: any) {
+          return {
+            success: false,
+            code: reauthErr.code,
+            error:
+              "Por seguridad, confirma tu identidad con Google e inténtalo de nuevo.",
+          };
+        }
+      }
+      if (err.code === "auth/weak-password") {
+        return {
+          success: false,
+          error: "La contraseña debe tener al menos 6 caracteres.",
+        };
+      }
+      return {
+        success: false,
+        error: err?.message || "No se pudo cambiar la contraseña.",
       };
     } finally {
       set({ loading: false });

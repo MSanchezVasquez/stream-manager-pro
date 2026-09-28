@@ -24,6 +24,7 @@ import gsap from "gsap";
 import { ThemeController } from "./components/ThemeController";
 import { useVaultStore } from "./store/vaultStore";
 import { VaultUnlockModal } from "./components/Vault/VaultUnlockModal";
+import { SetAccountPasswordModal } from "./components/Auth/SetAccountPasswordModal";
 
 function useDelayedLoading(isLoading: boolean, delay = 400): boolean {
   const [showLoader, setShowLoader] = useState(false);
@@ -55,6 +56,7 @@ function MainApp() {
   const [isVaultModalOpen, setIsVaultModalOpen] = useState(false);
 
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const [isSetPasswordModalOpen, setIsSetPasswordModalOpen] = useState(false);
 
   useEffect(() => {
     const unsubAuth = initAuth();
@@ -135,7 +137,6 @@ function MainApp() {
         setActiveTab={setActiveTab}
         onOpenAuthModal={() => setIsAuthModalOpen(true)}
         onToggleSidebar={() => setIsMobileDrawerOpen(true)}
-        onOpenVaultModal={() => setIsVaultModalOpen(true)}
         onOpenSettingsModal={() => setIsSettingsModalOpen(true)}
       />
 
@@ -232,6 +233,21 @@ function MainApp() {
         <SettingsModal
           isOpen={isSettingsModalOpen}
           onClose={() => setIsSettingsModalOpen(false)}
+          onOpenVaultModal={() => {
+            setIsSettingsModalOpen(false);
+            setIsVaultModalOpen(true);
+          }}
+          onOpenSetPasswordModal={() => {
+            setIsSettingsModalOpen(false);
+            setIsSetPasswordModalOpen(true);
+          }}
+        />
+      )}
+
+      {isSetPasswordModalOpen && (
+        <SetAccountPasswordModal
+          isOpen={isSetPasswordModalOpen}
+          onClose={() => setIsSetPasswordModalOpen(false)}
         />
       )}
     </div>

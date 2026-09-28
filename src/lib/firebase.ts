@@ -19,6 +19,13 @@ import {
   onAuthStateChanged,
   GoogleAuthProvider,
   signInWithPopup,
+  EmailAuthProvider,
+  linkWithCredential,
+  updatePassword,
+  reauthenticateWithPopup,
+  sendPasswordResetEmail,
+  confirmPasswordReset,
+  verifyPasswordResetCode,
   User,
 } from "firebase/auth";
 
@@ -272,5 +279,12 @@ export {
   GoogleAuthProvider,
   signInWithPopup,
   signInAnonymously,
+  EmailAuthProvider,
+  linkWithCredential,
+  updatePassword,
+  reauthenticateWithPopup,
+  sendPasswordResetEmail,
+  confirmPasswordReset,
+  verifyPasswordResetCode,
 };
 export type { User };

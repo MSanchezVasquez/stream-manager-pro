@@ -100,21 +100,21 @@ export const UserProfile: React.FC = () => {
               <div className="flex items-center gap-2 shrink-0">
                 <button
                   type="button"
-                  className="px-3.5 py-1.5 rounded-full border border-white/30 hover:bg-white/10 text-xs font-semibold text-white transition-colors"
+                  className="px-3.5 py-1.5 rounded-full border border-white/30 hover:bg-white/10 text-xs font-semibold text-white transition-colors cursor-pointer"
                 >
                   Editar
                 </button>
                 <button
                   type="button"
                   title="Compartir perfil"
-                  className="p-2 rounded-full border border-white/30 hover:bg-white/10 text-white transition-colors"
+                  className="p-2 rounded-full border border-white/30 hover:bg-white/10 text-white transition-colors cursor-pointer"
                 >
                   <Share2 className="w-4 h-4" />
                 </button>
                 <button
                   type="button"
                   title="Más opciones"
-                  className="p-2 rounded-full border border-white/30 hover:bg-white/10 text-white transition-colors"
+                  className="p-2 rounded-full border border-white/30 hover:bg-white/10 text-white transition-colors cursor-pointer"
                 >
                   <MoreVertical className="w-4 h-4" />
                 </button>

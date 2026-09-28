@@ -90,6 +90,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
           profileName: "",
           pin: "",
           status: "active",
+          price: 0,
         },
       ]);
     }
@@ -114,6 +115,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
         profileName: "",
         pin: "",
         status: "active",
+        price: 0,
       },
     ]);
   };
@@ -425,7 +427,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                         )}
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                         <div>
                           <label className="block text-[11px] font-semibold text-slate-600 dark:text-[#94949E] mb-1">
                             Plataforma Streaming
@@ -465,6 +467,26 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                             }
                             placeholder="DD/MM/YY"
                             valueClassName="font-semibold text-amber-600 dark:text-amber-400"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-semibold text-slate-600 dark:text-[#94949E] mb-1">
+                            Precio Mensual ($)
+                          </label>
+                          <input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            value={sub.price ?? ""}
+                            onChange={(e) =>
+                              handleUpdateSubscription(
+                                sub.id,
+                                "price",
+                                e.target.value === "" ? 0 : parseFloat(e.target.value) || 0,
+                              )
+                            }
+                            placeholder="0.00"
+                            className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-xs font-cascadia"
                           />
                         </div>
                       </div>

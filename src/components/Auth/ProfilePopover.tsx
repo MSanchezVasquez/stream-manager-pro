@@ -5,7 +5,6 @@ import {
   Settings,
   LogOut,
   Check,
-  Lock,
 } from "lucide-react";
 import { useAuthStore } from "../../store/authStore";
 import { useThemeStore } from "../../store/themeStore";
@@ -21,7 +20,6 @@ interface ProfilePopoverProps {
   onRequestLogout?: () => void;
   onOpenAuthModal?: () => void;
   onOpenProfile?: () => void;
-  onOpenVaultModal?: () => void;
   triggerRef?: React.RefObject<HTMLElement | null>;
 }
 
@@ -32,7 +30,6 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
   onRequestLogout,
   onOpenAuthModal,
   onOpenProfile,
-  onOpenVaultModal,
   triggerRef,
 }) => {
   const { user, logout } = useAuthStore();
@@ -276,19 +273,6 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
 
       {/*  Options & Logout Section */}
       <div className="py-0">
-        {onOpenVaultModal && (
-          <button
-            onClick={() => {
-              onOpenVaultModal();
-              onClose();
-            }}
-            className="hover:cursor-pointer w-full flex items-center gap-3.5 px-5 py-3 text-sm font-normal text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-[#1F1F26] transition-colors border-b border-slate-100 dark:border-[#25252D]"
-          >
-            <Lock className="w-5 h-5 text-indigo-500 shrink-0" />
-            <span>Seguridad y Cifrado (Vault)</span>
-          </button>
-        )}
-
         <button
           onClick={() => {
             if (onOpenSettings) onOpenSettings();

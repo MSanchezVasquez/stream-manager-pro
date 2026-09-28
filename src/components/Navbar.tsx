@@ -27,22 +27,24 @@ interface NavbarProps {
   onOpenAuthModal: () => void;
   onOpenSettingsModal: () => void;
   onToggleSidebar?: () => void;
-  onOpenVaultModal: () => void;
 }
 
 const STREAMING_PLATFORMS = [
-  { id: "Netflix", label: "Netflix" },
-  { id: "Disney+", label: "Disney+" },
-  { id: "HBO Max", label: "HBO Max" },
+  { id: "Netflix Premium", label: "Netflix Premium" },
+  { id: "Disney+ Premium", label: "Disney+ Premium" },
+  { id: "HBO Max Estándar", label: "HBO Max Estándar" },
   { id: "Prime Video", label: "Prime Video" },
-  { id: "Spotify", label: "Spotify" },
-  { id: "Paramount+", label: "Paramount+" },
-  { id: "Crunchyroll", label: "Crunchyroll" },
-  { id: "YouTube Premium", label: "YouTube Premium" },
+  { id: "Youtube Premium", label: "Youtube Premium" },
+  { id: "Paramount Plus", label: "Paramount Plus" },
+  { id: "Spotify Premium", label: "Spotify Premium" },
+  { id: "Crunchyroll Fan", label: "Crunchyroll Fan" },
+  { id: "DGO", label: "DGO" },
   { id: "Apple TV", label: "Apple TV" },
-  { id: "Star+", label: "Star+" },
-  { id: "Vix", label: "Vix" },
-  { id: "IPTV", label: "IPTV" },
+  { id: "Vix Premium", label: "Vix Premium" },
+  { id: "Flujo TV", label: "Flujo TV" },
+  { id: "Telelatino", label: "Telelatino" },
+  { id: "Movistar TV", label: "Movistar TV" },
+  { id: "NBA League Pass", label: "NBA League Pass" },
 ];
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -53,7 +55,6 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenAuthModal,
   onOpenSettingsModal,
   onToggleSidebar,
-  onOpenVaultModal,
 }) => {
   const { themeMode: theme, toggleTheme } = useThemeStore();
   const { user, logout } = useAuthStore();
@@ -300,7 +301,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                 onOpenSettings={onOpenSettingsModal}
                 onOpenAuthModal={onOpenAuthModal}
                 onOpenProfile={() => setActiveTab("profile")}
-                onOpenVaultModal={onOpenVaultModal}
                 onRequestLogout={() => {
                   setIsPopoverOpen(false);
                   setIsLogoutModalOpen(true);

@@ -8,14 +8,20 @@ import {
   CalendarDays,
   Languages,
   Palette,
+  KeyRound,
+  Lock,
+  ShieldCheck,
 } from "lucide-react";
 import { useThemeStore } from "../../store/themeStore";
 import { useSettingsStore, WeekStart } from "../../store/settingsStore";
+import { useAuthStore } from "../../store/authStore";
 import { LANGUAGES } from "../../utils/languages";
 
 interface SettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onOpenVaultModal?: () => void;
+  onOpenSetPasswordModal?: () => void;
 }
 
 const ACCENT = "#374df5";
@@ -78,7 +84,10 @@ function SettingsCard({
 export const SettingsModal: React.FC<SettingsModalProps> = ({
   isOpen,
   onClose,
+  onOpenVaultModal,
+  onOpenSetPasswordModal,
 }) => {
+  const { user, hasGoogleProvider, hasPasswordProvider } = useAuthStore();
   const { themeMode, setThemeMode } = useThemeStore();
   const {
     language,
@@ -252,6 +261,66 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               (contratación, corte, expiración).
             </p>
           </SettingsCard>
+
+          {/* Seguridad y Contraseña */}
+          {user && onOpenSetPasswordModal && (
+            <SettingsCard
+              icon={KeyRound}
+              title={
+                hasGoogleProvider() && !hasPasswordProvider()
+                  ? "Crear Contraseña de Acceso"
+                  : "Seguridad y Contraseña"
+              }
+            >
+              <div className="space-y-3">
+                <p className="text-xs text-slate-600 dark:text-[#94949E] leading-relaxed">
+                  {hasGoogleProvider() && !hasPasswordProvider()
+                    ? `Iniciaste sesión con tu cuenta de Google (${user.email}). Puedes crear una contraseña para acceder también directamente con correo y contraseña.`
+                    : `Para cambiar tu contraseña de forma segura, te enviaremos un código de verificación a tu Gmail (${user.email}).`}
+                </p>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose();
+                    onOpenSetPasswordModal();
+                  }}
+                  className="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md shadow-indigo-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <KeyRound className="w-3.5 h-3.5" />
+                  <span>
+                    {hasGoogleProvider() && !hasPasswordProvider()
+                      ? "Crear Contraseña"
+                      : "Cambiar Contraseña"}
+                  </span>
+                </button>
+              </div>
+            </SettingsCard>
+          )}
+
+          {/* Bóveda y Cifrado (Vault) */}
+          {onOpenVaultModal && (
+            <SettingsCard icon={Lock} title="Bóveda y Cifrado (Vault)">
+              <div className="space-y-3">
+                <p className="text-xs text-slate-600 dark:text-[#94949E] leading-relaxed">
+                  Protege y encripta las contraseñas de tus proveedores y
+                  perfiles con una clave maestra local.
+                </p>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose();
+                    onOpenVaultModal();
+                  }}
+                  className="w-full py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#202028] dark:hover:bg-[#282832] text-slate-800 dark:text-white font-bold text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer border border-slate-200 dark:border-[#2D2D35]"
+                >
+                  <Lock className="w-3.5 h-3.5 text-indigo-500" />
+                  <span>Abrir Bóveda (Vault)</span>
+                </button>
+              </div>
+            </SettingsCard>
+          )}
         </div>
       </div>
     </div>,
