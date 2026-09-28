@@ -1,15 +1,8 @@
-import React, { useEffect, useRef } from "react";
-import {
-  Users,
-  Tv,
-  AlertTriangle,
-  Truck,
-  Sparkles,
-  DollarSign,
-} from "lucide-react";
-import { useDataStore } from "../../store/dataStore";
-import { getDaysRemaining } from "../../utils/platformHelpers";
-import gsap from "gsap";
+import React, { useEffect, useRef } from 'react';
+import { Users, Tv, AlertTriangle, Truck, Sparkles } from 'lucide-react';
+import { useDataStore } from '../../store/dataStore';
+import { getDaysRemaining } from '../../utils/platformHelpers';
+import gsap from 'gsap';
 
 export const OverviewCards: React.FC<{
   onNavigateTab: (tab: string) => void;
@@ -17,35 +10,14 @@ export const OverviewCards: React.FC<{
   const { clients, suppliers, freeProfiles } = useDataStore();
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const activeClients = clients.filter((c) => c.status === "active");
+  const activeClients = clients.filter((c) => c.status === 'active');
   const totalActiveClients = activeClients.length;
 
   const totalActiveSubs = activeClients.reduce(
     (acc, c) =>
-      acc + c.subscriptions.filter((s) => s.status === "active").length,
+      acc + c.subscriptions.filter((s) => s.status === 'active').length,
     0,
   );
-
-  // Sum of active client subscription prices
-  const totalMonthlyRevenue = activeClients.reduce((acc, c) => {
-    const clientRevenue = (c.subscriptions || []).reduce((subAcc, s) => {
-      const isActiveSub =
-        s.status === "active" ||
-        s.status === "warning" ||
-        (!s.status && s.status !== "expired" && s.status !== "inactive");
-
-      if (isActiveSub) {
-        const rawPrice = s.price;
-        const numPrice =
-          typeof rawPrice === "number"
-            ? rawPrice
-            : parseFloat(String(rawPrice || 0));
-        return subAcc + (isNaN(numPrice) ? 0 : numPrice);
-      }
-      return subAcc;
-    }, 0);
-    return acc + clientRevenue;
-  }, 0);
 
   const upcomingExpirations = activeClients.reduce((acc, c) => {
     const warningSubs = c.subscriptions.filter((s) => {
@@ -66,82 +38,63 @@ export const OverviewCards: React.FC<{
       gsap.fromTo(
         containerRef.current.children,
         { y: 20, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.5, stagger: 0.08, ease: "power2.out" },
+        { y: 0, opacity: 1, duration: 0.5, stagger: 0.08, ease: 'power2.out' },
       );
     }
-  }, [
-    totalActiveClients,
-    totalActiveSubs,
-    totalMonthlyRevenue,
-    upcomingExpirations,
-  ]);
-
-  const formattedRevenue = `$${totalMonthlyRevenue.toLocaleString("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })}`;
+  }, [totalActiveClients, totalActiveSubs, upcomingExpirations]);
 
   const cards = [
     {
-      title: "Clientes Activos",
+      title: 'Clientes Activos',
       value: totalActiveClients,
       icon: Users,
-      color: "from-blue-500/20 to-indigo-500/5 text-blue-500",
-      borderColor: "border-blue-500/30",
-      iconBg: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
-      tab: "clients_active",
+      color: 'from-emerald-500/20 to-teal-500/5 text-emerald-500',
+      borderColor: 'border-emerald-500/30',
+      iconBg: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+      tab: 'clients_active',
     },
     {
-      title: "Suscripciones Contratadas",
+      title: 'Suscripciones Contratadas',
       value: totalActiveSubs,
       icon: Tv,
-      color: "from-indigo-500/20 to-blue-500/5 text-indigo-500",
-      borderColor: "border-indigo-500/30",
-      iconBg: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400",
-      tab: "clients_active",
+      color: 'from-indigo-500/20 to-blue-500/5 text-indigo-500',
+      borderColor: 'border-indigo-500/30',
+      iconBg: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400',
+      tab: 'clients_active',
     },
     {
-      title: "Total Monthly Revenue",
-      value: formattedRevenue,
-      icon: DollarSign,
-      color: "from-emerald-500/20 to-teal-500/5 text-emerald-500",
-      borderColor: "border-emerald-500/30",
-      iconBg: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-      tab: "clients_active",
-    },
-    {
-      title: "Vencen en ≤ 5 Días",
+      title: 'Vencen en ≤ 5 Días',
       value: upcomingExpirations,
       icon: AlertTriangle,
-      color: "from-amber-500/20 to-orange-500/5 text-amber-500",
-      borderColor: "border-amber-500/30",
-      iconBg: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
-      tab: "alerts",
+      color: 'from-amber-500/20 to-orange-500/5 text-amber-500',
+      borderColor: 'border-amber-500/30',
+      iconBg: 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
+      tab: 'alerts',
     },
     {
-      title: "Proveedores Activos",
+      title: 'Proveedores Activos',
       value: totalSuppliers,
       icon: Truck,
-      color: "from-purple-500/20 to-pink-500/5 text-purple-500",
-      borderColor: "border-purple-500/30",
-      iconBg: "bg-purple-500/10 text-purple-600 dark:text-purple-400",
-      tab: "suppliers",
+      color: 'from-purple-500/20 to-pink-500/5 text-purple-500',
+      borderColor: 'border-purple-500/30',
+      iconBg: 'bg-purple-500/10 text-purple-600 dark:text-purple-400',
+      tab: 'suppliers',
     },
     {
-      title: "Perfiles Libres",
+      title: 'Perfiles Libres',
       value: totalFreeProfiles,
       icon: Sparkles,
-      color: "from-sky-500/20 to-cyan-500/5 text-sky-500",
-      borderColor: "border-sky-500/30",
-      iconBg: "bg-sky-500/10 text-sky-600 dark:text-sky-400",
-      tab: "free_profiles",
+      color: 'from-sky-500/20 to-cyan-500/5 text-sky-500',
+      borderColor: 'border-sky-500/30',
+      iconBg: 'bg-sky-500/10 text-sky-600 dark:text-sky-400',
+      tab: 'free_profiles',
     },
   ];
 
   return (
     <div
       ref={containerRef}
-      className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-2.5 sm:gap-4 mb-6 sm:mb-8"
+      className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 sm:gap-4 mb-6 sm:mb-8"
     >
       {cards.map((card, idx) => {
         const Icon = card.icon;
@@ -149,10 +102,14 @@ export const OverviewCards: React.FC<{
           <div
             key={idx}
             onClick={() => onNavigateTab(card.tab)}
-            className="cursor-pointer p-3.5 sm:p-5 rounded-xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#1F1F23] shadow-sm hover:border-[#2D2D33] transition-all transform hover:-translate-y-0.5 relative overflow-hidden group col-span-1"
+            className={`cursor-pointer p-3.5 sm:p-5 rounded-xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#1F1F23] shadow-sm hover:border-[#2D2D33] transition-all transform hover:-translate-y-0.5 relative overflow-hidden group ${
+              idx === 4
+                ? 'col-span-2 sm:col-span-2 lg:col-span-1'
+                : 'col-span-1'
+            }`}
           >
             <div
-              className={`absolute -right-4 -bottom-4 w-20 h-20 rounded-full bg-gradient-to-br ${card.color} blur-2xl group-hover:scale-150 transition-transform`}
+              className={`absolute -right-4 -bottom-4 w-20 h-20 rounded-full bg-linear-to-br ${card.color} blur-2xl group-hover:scale-150 transition-transform`}
             />
             <div className="flex items-start justify-between gap-1.5 mb-1.5 sm:mb-2">
               <span className="text-[10px] sm:text-xs font-semibold text-slate-500 dark:text-[#94949E] uppercase tracking-wider font-space line-clamp-2 leading-tight">
@@ -164,7 +121,7 @@ export const OverviewCards: React.FC<{
                 <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </div>
             </div>
-            <div className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-[#E4E4E7] font-cascadia font-light truncate">
+            <div className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-[#E4E4E7] font-cascadia">
               {card.value}
             </div>
           </div>
