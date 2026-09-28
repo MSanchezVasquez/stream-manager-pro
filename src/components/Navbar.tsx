@@ -352,7 +352,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 >
                   <PlatformIcon
                     platform={platform.label}
-                    className="w-5 h-5 sm:w-6 sm:h-6 shrink-0"
+                    className="h-5 sm:h-6 w-auto max-w-[48px] shrink-0 object-contain"
                   />
                 </div>
               ))}
@@ -366,7 +366,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 >
                   <PlatformIcon
                     platform={platform.label}
-                    className="w-5 h-5 sm:w-6 sm:h-6 shrink-0"
+                    className="h-5 sm:h-6 w-auto max-w-[48px] shrink-0 object-contain"
                   />
                 </div>
               ))}
