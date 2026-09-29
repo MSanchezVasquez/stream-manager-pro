@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { DatePicker } from "../common/DatePicker";
 import { createPortal } from "react-dom";
 import {
@@ -17,6 +17,7 @@ import {
   Clock,
   CheckCircle2,
   UserX,
+  RefreshCw,
 } from "lucide-react";
 import { Client, ClientSubscription } from "../../types";
 import {
@@ -30,6 +31,7 @@ import {
   addDaysToDateString,
   addPeriodToDateString,
   getDaysDifference,
+  getDaysRemaining,
   formatSubscriptionPeriod,
 } from "../../utils/platformHelpers";
 
@@ -72,6 +74,11 @@ export const ClientModal: React.FC<ClientModalProps> = ({
   const [duplicateClient, setDuplicateClient] = useState<Client | null>(null);
   const [confirmDuplicateAnyway, setConfirmDuplicateAnyway] = useState(false);
 
+  const initialCutDatesRef = useRef<Record<string, string>>({});
+  const [renewalBaseMap, setRenewalBaseMap] = useState<
+    Record<string, "today" | "cutDate">
+  >({});
+
   // Cliente "activo" del formulario. Empieza siendo initialClient, pero
   // puede cambiar internamente (ej. al elegir "Editar cliente existente"
   // en el aviso de duplicado) sin depender de que el componente padre
@@ -92,8 +99,10 @@ export const ClientModal: React.FC<ClientModalProps> = ({
       setName(activeClient.name);
       setPhone(activeClient.phone || "");
       setStatus(activeClient.status);
-      setSubscriptions(
-        (activeClient.subscriptions || []).map((s) => ({
+      const cuts: Record<string, string> = {};
+      const subs = (activeClient.subscriptions || []).map((s) => {
+        cuts[s.id] = s.cutDate;
+        return {
           ...s,
           periodUnit: s.periodUnit || "months",
           periodValue:
@@ -108,12 +117,15 @@ export const ClientModal: React.FC<ClientModalProps> = ({
             (s.hireDate && s.cutDate
               ? getDaysDifference(s.hireDate, s.cutDate)
               : 30),
-        })),
-      );
+        };
+      });
+      initialCutDatesRef.current = cuts;
+      setSubscriptions(subs);
     } else {
       setName("");
       setPhone("");
       setStatus("active");
+      initialCutDatesRef.current = {};
       setSubscriptions([
         {
           id: crypto.randomUUID(),
@@ -179,19 +191,39 @@ export const ClientModal: React.FC<ClientModalProps> = ({
     subId: string,
     value: number,
     unit: "days" | "months" | "years",
+    forcedBase?: "today" | "cutDate",
   ) => {
     const validVal = Math.max(1, value);
     setSubscriptions((prev) =>
       prev.map((s) => {
         if (s.id !== subId) return s;
-        const baseHire = s.hireDate || getTodayFormatted();
-        const newCutDate = addPeriodToDateString(baseHire, validVal, unit);
-        const totalDays = getDaysDifference(baseHire, newCutDate);
+
+        // Base de cálculo para renovación:
+        // NUNCA usamos hireDate (fecha de contratación inicial).
+        // Si el corte inicial está activo (> 0 días restantes), se puede extender ese corte o renovar desde hoy.
+        // Si el corte inicial ya está vencido (<= 0 días) o no existe, SIEMPRE se renueva a partir de HOY.
+        const originalCut = initialCutDatesRef.current[subId] || s.cutDate;
+        const isOriginalCutActive = originalCut
+          ? getDaysRemaining(originalCut) > 0
+          : false;
+        const chosenBase =
+          forcedBase ||
+          renewalBaseMap[subId] ||
+          (isOriginalCutActive ? "cutDate" : "today");
+
+        const baseDateStr =
+          chosenBase === "cutDate" && isOriginalCutActive && originalCut
+            ? originalCut
+            : getTodayFormatted();
+
+        const newCutDate = addPeriodToDateString(baseDateStr, validVal, unit);
+        const totalDays = getDaysDifference(getTodayFormatted(), newCutDate);
+
         return {
           ...s,
           periodUnit: unit,
           periodValue: validVal,
-          periodDays: totalDays,
+          periodDays: totalDays > 0 ? totalDays : 30,
           cutDate: newCutDate,
         };
       }),
@@ -202,17 +234,10 @@ export const ClientModal: React.FC<ClientModalProps> = ({
     setSubscriptions((prev) =>
       prev.map((s) => {
         if (s.id !== subId) return s;
-        const unit = s.periodUnit || "months";
-        const val =
-          s.periodValue ||
-          (unit === "months" ? 1 : unit === "years" ? 1 : 30);
-        const newCutDate = addPeriodToDateString(newHireDate, val, unit);
-        const totalDays = getDaysDifference(newHireDate, newCutDate);
+        // Solo actualizamos la fecha de contratación; NO modificamos la fecha de corte
         return {
           ...s,
           hireDate: newHireDate,
-          cutDate: newCutDate,
-          periodDays: totalDays,
         };
       }),
     );
@@ -222,8 +247,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
     setSubscriptions((prev) =>
       prev.map((s) => {
         if (s.id !== subId) return s;
-        const baseHire = s.hireDate || getTodayFormatted();
-        const diff = getDaysDifference(baseHire, newCutDate);
+        const diff = getDaysDifference(getTodayFormatted(), newCutDate);
         return {
           ...s,
           cutDate: newCutDate,
@@ -722,6 +746,90 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                               )}
                             </span>
                           </div>
+
+                          {/* Base information for renewal */}
+                          {(() => {
+                            const originalCut =
+                              initialCutDatesRef.current[sub.id] || sub.cutDate;
+                            const isOriginalCutActive = originalCut
+                              ? getDaysRemaining(originalCut) > 0
+                              : false;
+                            const currentBase =
+                              renewalBaseMap[sub.id] ||
+                              (isOriginalCutActive ? "cutDate" : "today");
+
+                            if (isOriginalCutActive && originalCut) {
+                              return (
+                                <div className="flex items-center justify-between text-[11px] pt-1.5 border-t border-slate-200/60 dark:border-[#25252E] flex-wrap gap-2">
+                                  <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                                    <RefreshCw className="w-3 h-3 text-indigo-500" />
+                                    Renovar calculando desde:
+                                  </span>
+                                  <div className="inline-flex rounded-lg border border-slate-200 dark:border-[#2D2D33] p-0.5 bg-white dark:bg-[#0F0F12]">
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setRenewalBaseMap((prev) => ({
+                                          ...prev,
+                                          [sub.id]: "cutDate",
+                                        }));
+                                        handlePeriodChange(
+                                          sub.id,
+                                          sub.periodValue ||
+                                            (sub.periodUnit === "days"
+                                              ? 30
+                                              : 1),
+                                          sub.periodUnit || "months",
+                                          "cutDate",
+                                        );
+                                      }}
+                                      className={`px-2.5 py-0.5 rounded text-[10px] font-semibold transition-all cursor-pointer ${
+                                        currentBase === "cutDate"
+                                          ? "bg-indigo-600 text-white font-bold shadow-xs"
+                                          : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                                      }`}
+                                    >
+                                      Corte actual ({originalCut})
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setRenewalBaseMap((prev) => ({
+                                          ...prev,
+                                          [sub.id]: "today",
+                                        }));
+                                        handlePeriodChange(
+                                          sub.id,
+                                          sub.periodValue ||
+                                            (sub.periodUnit === "days"
+                                              ? 30
+                                              : 1),
+                                          sub.periodUnit || "months",
+                                          "today",
+                                        );
+                                      }}
+                                      className={`px-2.5 py-0.5 rounded text-[10px] font-semibold transition-all cursor-pointer ${
+                                        currentBase === "today"
+                                          ? "bg-indigo-600 text-white font-bold shadow-xs"
+                                          : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                                      }`}
+                                    >
+                                      Hoy ({getTodayFormatted()})
+                                    </button>
+                                  </div>
+                                </div>
+                              );
+                            }
+
+                            return (
+                              <div className="flex items-center justify-between text-[11px] pt-1.5 border-t border-slate-200/60 dark:border-[#25252E] flex-wrap gap-2 text-emerald-600 dark:text-emerald-400">
+                                <span className="flex items-center gap-1.5 font-medium">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                                  Renovación calculada a partir de hoy ({getTodayFormatted()})
+                                </span>
+                              </div>
+                            );
+                          })()}
                         </div>
 
                         <div>
@@ -740,8 +848,15 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                             <label className="block text-[11px] font-semibold text-slate-600 dark:text-[#94949E]">
                               Fecha de Corte *
                             </label>
-                            <span className="text-[10px] text-slate-400 font-mono">
-                              ({sub.periodDays || 30}d)
+                            <span className="text-[10px] font-medium text-indigo-500 font-cascadia">
+                              {(() => {
+                                const days = getDaysRemaining(sub.cutDate);
+                                if (days === 999) return "";
+                                if (days < 0)
+                                  return `Vencido (${Math.abs(days)}d)`;
+                                if (days === 0) return "¡Vence hoy!";
+                                return `${days} días restantes`;
+                              })()}
                             </span>
                           </div>
                           <DatePicker
