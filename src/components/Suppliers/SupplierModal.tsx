@@ -12,7 +12,8 @@ import {
   Globe,
 } from "lucide-react";
 import { Supplier, SupplierAccount, StreamingPlatform } from "../../types";
-import { useDataStore } from "@/src/store/dataStore";
+import { useDataStore } from "../../store/dataStore";
+import { useTranslation } from "../../utils/translations";
 
 interface SupplierModalProps {
   isOpen: boolean;
@@ -28,6 +29,7 @@ export const SupplierModal: React.FC<SupplierModalProps> = ({
   accountToEdit,
 }) => {
   const { saveSupplier } = useDataStore();
+  const { t } = useTranslation();
 
   const [serviceName, setServiceName] = useState<StreamingPlatform>("DGO");
   const [email, setEmail] = useState("");
@@ -121,11 +123,11 @@ export const SupplierModal: React.FC<SupplierModalProps> = ({
           <div>
             <h3 className="font-bold text-lg text-slate-900 dark:text-[#E4E4E7]">
               {accountToEdit
-                ? "Editar Cuenta de Proveedor"
-                : "Añadir Cuenta a Proveedor"}
+                ? t("suppliers.modalTitleEdit")
+                : t("suppliers.modalTitleAdd")}
             </h3>
             <p className="text-xs text-slate-500 dark:text-[#94949E]">
-              Proveedor:{" "}
+              {t("suppliers.modalSupplier")}:{" "}
               <strong className="text-purple-600 dark:text-purple-400">
                 {supplier.name}
               </strong>
@@ -136,7 +138,7 @@ export const SupplierModal: React.FC<SupplierModalProps> = ({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-xs font-semibold text-slate-700 dark:text-[#94949E] mb-1">
-              Plataforma Streaming *
+              {t("suppliers.platform")}
             </label>
             <PlatformSelect value={serviceName} onChange={setServiceName} />
           </div>
@@ -145,7 +147,7 @@ export const SupplierModal: React.FC<SupplierModalProps> = ({
             <div>
               <label className=" text-xs font-semibold text-slate-700 dark:text-[#94949E] mb-1 flex items-center gap-1">
                 <Mail className="w-3.5 h-3.5 text-[#94949E]" />
-                Correo de Cuenta *
+                {t("suppliers.email")}
               </label>
               <input
                 type="email"
@@ -160,14 +162,14 @@ export const SupplierModal: React.FC<SupplierModalProps> = ({
             <div>
               <label className=" text-xs font-semibold text-slate-700 dark:text-[#94949E] mb-1 flex items-center gap-1">
                 <Key className="w-3.5 h-3.5 text-[#94949E]" />
-                Contraseña *
+                {t("suppliers.password")}
               </label>
               <input
                 type="text"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Contraseña"
+                placeholder={t("clientModal.password")}
                 className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-slate-50 dark:bg-[#1A1A1E] text-slate-900 dark:text-[#E4E4E7] text-xs font-mono"
               />
             </div>
@@ -177,7 +179,7 @@ export const SupplierModal: React.FC<SupplierModalProps> = ({
             <div>
               <label className=" text-xs font-semibold text-slate-700 dark:text-[#94949E] mb-1 flex items-center gap-1">
                 <Calendar className="w-3.5 h-3.5 text-[#94949E]" />
-                Fecha de Expiración
+                {t("suppliers.expirationDate")}
               </label>
               <DatePicker value={expirationDate} onChange={setExpirationDate} />
             </div>
@@ -185,7 +187,7 @@ export const SupplierModal: React.FC<SupplierModalProps> = ({
             <div>
               <label className=" text-xs font-semibold text-slate-700 dark:text-[#94949E] mb-1 flex items-center gap-1">
                 <Compass className="w-3.5 h-3.5 text-[#94949E]" />
-                Navegador Asignado
+                {t("suppliers.recommendedBrowser")}
               </label>
               <select
                 value={browser}
@@ -205,7 +207,7 @@ export const SupplierModal: React.FC<SupplierModalProps> = ({
           <div>
             <label className=" text-xs font-semibold text-slate-700 dark:text-[#94949E] mb-1 flex items-center gap-1">
               <Globe className="w-3.5 h-3.5 text-[#94949E]" />
-              Enlace Webmail / Validación
+              {t("suppliers.webmailUrl")}
             </label>
             <input
               type="text"
@@ -220,15 +222,15 @@ export const SupplierModal: React.FC<SupplierModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl border border-slate-200 dark:border-[#2D2D33] text-slate-600 dark:text-[#94949E] text-xs font-semibold hover:bg-slate-100 dark:hover:bg-[#1A1A1E] transition-colors"
+              className="px-4 py-2 rounded-xl border border-slate-200 dark:border-[#2D2D33] text-slate-600 dark:text-[#94949E] text-xs font-semibold hover:bg-slate-100 dark:hover:bg-[#1A1A1E] transition-colors cursor-pointer"
             >
-              Cancelar
+              {t("suppliers.cancel")}
             </button>
             <button
               type="submit"
-              className="px-5 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold shadow-lg shadow-purple-600/20 transition-all"
+              className="px-5 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold shadow-lg shadow-purple-600/20 transition-all cursor-pointer"
             >
-              Guardar Cuenta
+              {t("suppliers.saveAccount")}
             </button>
           </div>
         </form>

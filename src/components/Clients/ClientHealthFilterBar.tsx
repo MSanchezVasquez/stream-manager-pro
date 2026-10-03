@@ -1,5 +1,6 @@
 import React from "react";
 import { Activity } from "lucide-react";
+import { useTranslation } from "../../utils/translations";
 
 interface ClientHealthFilterBarProps {
   healthFilter: "all" | "healthy" | "warning" | "expired";
@@ -18,12 +19,14 @@ export const ClientHealthFilterBar: React.FC<ClientHealthFilterBarProps> = ({
   totalInPlatformFilter,
   healthStats,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 p-3 rounded-xl bg-slate-50/80 dark:bg-[#15151A] border border-slate-200/80 dark:border-[#22222A]">
       <div className="flex items-center gap-1.5 flex-wrap">
         <span className="text-xs font-semibold text-slate-500 dark:text-[#94949E] mr-1 flex items-center gap-1">
           <Activity className="w-3.5 h-3.5 text-indigo-500" />
-          Salud de Cuenta:
+          {t("clients.health")}
         </span>
 
         {/* Todos */}
@@ -35,7 +38,7 @@ export const ClientHealthFilterBar: React.FC<ClientHealthFilterBarProps> = ({
               : "text-slate-600 dark:text-[#94949E] hover:bg-slate-200/60 dark:hover:bg-[#1E1E26]"
           }`}
         >
-          <span>Todos</span>
+          <span>{t("clients.all")}</span>
           <span className="text-[10px] font-cascadia px-1.5 py-0.2 rounded-full bg-slate-200 dark:bg-slate-700/60 text-slate-700 dark:text-slate-300">
             {totalInPlatformFilter}
           </span>
@@ -51,7 +54,7 @@ export const ClientHealthFilterBar: React.FC<ClientHealthFilterBarProps> = ({
           }`}
         >
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-          <span>Al día</span>
+          <span>{t("clients.healthy")}</span>
           <span className="text-[10px] font-cascadia px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300">
             {healthStats.healthy}
           </span>
@@ -67,7 +70,7 @@ export const ClientHealthFilterBar: React.FC<ClientHealthFilterBarProps> = ({
           }`}
         >
           <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-          <span>Por vencer (≤5d)</span>
+          <span>{t("clients.warning")}</span>
           <span className="text-[10px] font-cascadia px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-800 dark:text-amber-300">
             {healthStats.warning}
           </span>
@@ -83,7 +86,7 @@ export const ClientHealthFilterBar: React.FC<ClientHealthFilterBarProps> = ({
           }`}
         >
           <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
-          <span>Vencidos</span>
+          <span>{t("clients.expired")}</span>
           <span className="text-[10px] font-cascadia px-1.5 py-0.2 rounded-full bg-red-500/20 text-red-700 dark:text-red-300">
             {healthStats.expired}
           </span>
@@ -95,7 +98,7 @@ export const ClientHealthFilterBar: React.FC<ClientHealthFilterBarProps> = ({
           onClick={() => onSelectFilter("all")}
           className="text-[11px] text-indigo-600 dark:text-indigo-400 hover:underline font-semibold cursor-pointer"
         >
-          Restablecer filtro de salud
+          {t("clients.showAll")}
         </button>
       )}
     </div>

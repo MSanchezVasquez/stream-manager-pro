@@ -2,9 +2,11 @@ import React from "react";
 import { useDataStore } from "../../store/dataStore";
 import { getPlatformConfig, getPlatformDisplayName } from "../../utils/platformHelpers";
 import { PlatformIcon } from "../common/PlatformIcon";
+import { useTranslation } from "../../utils/translations";
 import { Tv, Coins } from "lucide-react";
 
 export const PlatformDistributionChart: React.FC = () => {
+  const { t } = useTranslation();
   const { clients } = useDataStore();
 
   // Count active subscriptions and revenue per platform in Soles (PEN)
@@ -37,17 +39,17 @@ export const PlatformDistributionChart: React.FC = () => {
         <div>
           <h3 className="text-base font-bold text-slate-900 dark:text-[#E4E4E7] flex items-center gap-2">
             <Tv className="w-5 h-5 text-indigo-500" />
-            Distribución por Plataforma
+            {t("chart.title")}
           </h3>
           <p className="text-xs text-slate-500 dark:text-[#94949E]">
-            Total de {totalSubs} suscripciones activas registradas
+            {t("chart.subtitle", { total: totalSubs })}
           </p>
         </div>
         {totalRevenue > 0 && (
           <div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-xl self-start sm:self-auto">
             <Coins className="w-4 h-4 text-emerald-500" />
             <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 font-cascadia">
-              Total: S/ {totalRevenue.toFixed(2)}/mes
+              {t("chart.totalRevenue", { amount: totalRevenue.toFixed(2) })}
             </span>
           </div>
         )}
@@ -55,7 +57,7 @@ export const PlatformDistributionChart: React.FC = () => {
 
       {sortedPlatforms.length === 0 ? (
         <p className="text-sm text-[#94949E] italic py-4">
-          No hay datos suficientes.
+          {t("chart.noData")}
         </p>
       ) : (
         <div className="space-y-4">

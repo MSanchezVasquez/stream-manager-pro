@@ -4,6 +4,7 @@ import { Trash2, UserX, Sparkles } from "lucide-react";
 import { Client } from "../../types";
 import { isSubscriptionFromFreeProfile } from "../../store/dataStore";
 import { CircularSpinner } from "../common/LoadingSpinners";
+import { useTranslation } from "../../utils/translations";
 
 interface DeleteClientModalProps {
   client: Client | null;
@@ -22,6 +23,7 @@ export const DeleteClientModal: React.FC<DeleteClientModalProps> = ({
   isDeleting,
   freeProfiles,
 }) => {
+  const { t } = useTranslation();
   if (!isOpen || !client) return null;
 
   const isDeactivating = client.status === "active";
@@ -47,30 +49,14 @@ export const DeleteClientModal: React.FC<DeleteClientModalProps> = ({
           )}
         </div>
         <h3 className="text-lg font-bold text-center text-slate-900 dark:text-[#E4E4E7] mb-2 font-space">
-          {isDeactivating ? "¿Desactivar Cliente?" : "¿Eliminar Definitivamente?"}
+          {isDeactivating
+            ? t("deleteModal.deactivateTitle")
+            : t("deleteModal.deleteTitle")}
         </h3>
         <p className="text-sm text-center text-slate-500 dark:text-[#94949E] mb-4 leading-relaxed">
-          {isDeactivating ? (
-            <>
-              ¿Estás seguro de que deseas desactivar a{" "}
-              <strong className="text-slate-800 dark:text-white font-semibold">
-                {client.name}
-              </strong>
-              ? Se moverá a la pestaña de{" "}
-              <strong className="text-amber-600 dark:text-amber-400">
-                Clientes Inactivos
-              </strong>
-              . Podrás consultarlo y reactivarlo en cualquier momento.
-            </>
-          ) : (
-            <>
-              ¿Estás seguro de que deseas eliminar permanentemente a{" "}
-              <strong className="text-slate-800 dark:text-white font-semibold">
-                {client.name}
-              </strong>
-              ? Esta acción no se puede deshacer y borrará al cliente de la base de datos.
-            </>
-          )}
+          {isDeactivating
+            ? t("deleteModal.deactivateDesc", { name: client.name })
+            : t("deleteModal.deleteDesc", { name: client.name })}
         </p>
 
         {!isDeactivating &&
@@ -81,11 +67,10 @@ export const DeleteClientModal: React.FC<DeleteClientModalProps> = ({
               <Sparkles className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
               <div>
                 <span className="font-bold block text-amber-700 dark:text-amber-300 mb-0.5">
-                  Restauración de inventario
+                  {t("deleteModal.inventoryRestoreTitle")}
                 </span>
                 <span>
-                  Los perfiles asignados desde <em>Perfiles Libres</em> se
-                  restaurarán y sumarán de vuelta automáticamente.
+                  {t("deleteModal.inventoryRestoreDesc")}
                 </span>
               </div>
             </div>
@@ -98,7 +83,7 @@ export const DeleteClientModal: React.FC<DeleteClientModalProps> = ({
             onClick={onClose}
             className="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-[#2D2D35] text-slate-700 dark:text-slate-300 font-semibold text-xs hover:bg-slate-100 dark:hover:bg-[#1F1F26] transition-colors cursor-pointer"
           >
-            Cancelar
+            {t("deleteModal.cancel")}
           </button>
           <button
             type="button"
@@ -111,7 +96,9 @@ export const DeleteClientModal: React.FC<DeleteClientModalProps> = ({
             }`}
           >
             {isDeleting && <CircularSpinner size={16} className="text-white" />}
-            {isDeactivating ? "Mover a Inactivos" : "Eliminar"}
+            {isDeactivating
+              ? t("deleteModal.moveToInactive")
+              : t("deleteModal.delete")}
           </button>
         </div>
       </div>

@@ -13,6 +13,7 @@ import { ClientHealthFilterBar } from "./ClientHealthFilterBar";
 import { ClientCard } from "./ClientCard";
 import { ClientInlineEditor } from "./ClientInlineEditor";
 import { DeleteClientModal } from "./DeleteClientModal";
+import { useTranslation } from "../../utils/translations";
 
 interface ClientListProps {
   statusFilter: "active" | "inactive";
@@ -39,6 +40,7 @@ export const ClientList: React.FC<ClientListProps> = ({
   onSwitchTab,
 }) => {
   const { clients, freeProfiles, deleteClient, saveClient } = useDataStore();
+  const { t } = useTranslation();
 
   const [platformFilter, setPlatformFilter] = useState<string>("Todos");
   const [healthFilter, setHealthFilter] = useState<
@@ -298,18 +300,18 @@ export const ClientList: React.FC<ClientListProps> = ({
         <div className="text-center py-12 p-6 rounded-xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#1F1F23] shadow-sm">
           <User className="w-12 h-12 text-[#94949E] mx-auto mb-3 opacity-50" />
           <h3 className="text-base font-bold text-slate-700 dark:text-[#E4E4E7] mb-1 font-space">
-            No se encontraron clientes
+            {t("clients.noClientsTitle")}
           </h3>
           <p className="text-xs text-slate-500 dark:text-[#94949E] max-w-sm mx-auto mb-3">
             {healthFilter !== "all"
-              ? `No hay clientes con estado "${
+              ? `${t("clients.noClientsTitle")} (${
                   healthFilter === "healthy"
-                    ? "Al día"
+                    ? t("clients.healthy")
                     : healthFilter === "warning"
-                      ? "Por vencer"
-                      : "Vencidos"
-                }" con los filtros actuales.`
-              : "Intenta cambiar el término de búsqueda o registra un nuevo cliente en el sistema."}
+                      ? t("clients.warning")
+                      : t("clients.expired")
+                }).`
+              : t("clients.noClientsDesc")}
           </p>
           {(healthFilter !== "all" || platformFilter !== "Todos") && (
             <button
@@ -319,7 +321,7 @@ export const ClientList: React.FC<ClientListProps> = ({
               }}
               className="px-3 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-300 text-xs font-semibold hover:bg-indigo-100 transition-colors cursor-pointer"
             >
-              Mostrar todos los clientes
+              {t("clients.showAll")}
             </button>
           )}
         </div>

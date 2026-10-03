@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useDataStore } from "../store/dataStore";
 import { AppLogo } from "./AppLogo";
+import { useTranslation } from "../utils/translations";
 
 interface FloatingSidebarDrawerProps {
   isOpen: boolean;
@@ -29,6 +30,7 @@ export const FloatingSidebarDrawer: React.FC<FloatingSidebarDrawerProps> = ({
   onOpenAddClientModal,
 }) => {
   const { clients, suppliers, freeProfiles } = useDataStore();
+  const { t } = useTranslation();
 
   // Bloquear el scroll del fondo cuando el drawer flotante está abierto
   useEffect(() => {
@@ -67,13 +69,13 @@ export const FloatingSidebarDrawer: React.FC<FloatingSidebarDrawerProps> = ({
   const menuItems = [
     {
       id: "dashboard",
-      label: "Resumen General",
+      label: t("nav.overview"),
       icon: LayoutDashboard,
       badge: null,
     },
     {
       id: "clients_active",
-      label: "Clientes Activos",
+      label: t("nav.activeClients"),
       icon: Users,
       badge: activeClientsCount,
       badgeColor:
@@ -81,14 +83,14 @@ export const FloatingSidebarDrawer: React.FC<FloatingSidebarDrawerProps> = ({
     },
     {
       id: "clients_inactive",
-      label: "Clientes Inactivos",
+      label: t("nav.inactiveClients"),
       icon: UserX,
       badge: inactiveClientsCount,
       badgeColor: "bg-slate-500/10 text-slate-500 border border-slate-500/20",
     },
     {
       id: "suppliers",
-      label: "Proveedores",
+      label: t("nav.suppliers"),
       icon: Truck,
       badge: suppliersCount,
       badgeColor:
@@ -96,7 +98,7 @@ export const FloatingSidebarDrawer: React.FC<FloatingSidebarDrawerProps> = ({
     },
     {
       id: "free_profiles",
-      label: "Perfiles Libres",
+      label: t("nav.freeProfiles"),
       icon: Sparkles,
       badge: freeProfilesCount,
       badgeColor:
@@ -104,13 +106,13 @@ export const FloatingSidebarDrawer: React.FC<FloatingSidebarDrawerProps> = ({
     },
     {
       id: "alerts",
-      label: "Alertas & WhatsApp",
+      label: t("nav.alertsWhatsapp"),
       icon: BellRing,
       badge: null,
     },
     {
       id: "links",
-      label: "Enlaces Rápidos",
+      label: t("nav.quickLinks"),
       icon: ExternalLink,
       badge: null,
     },
@@ -177,7 +179,7 @@ export const FloatingSidebarDrawer: React.FC<FloatingSidebarDrawerProps> = ({
           className="w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white font-semibold text-sm shadow-md shadow-indigo-600/20 transition-all transform active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
         >
           <PlusCircle className="w-4 h-4" />
-          <span>Nuevo Cliente / Servicio</span>
+          <span>{t("nav.newClientService")}</span>
         </button>
 
         {/* Menú de navegación */}

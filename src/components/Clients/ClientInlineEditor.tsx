@@ -3,6 +3,7 @@ import { DatePicker } from "../common/DatePicker";
 import { Edit2, Sidebar as SidebarIcon, Save, X } from "lucide-react";
 import { Client } from "../../types";
 import { getClientAccountHealth } from "../../utils/platformHelpers";
+import { useTranslation } from "../../utils/translations";
 
 interface ClientInlineEditorProps {
   client: Client;
@@ -22,6 +23,8 @@ export const ClientInlineEditor: React.FC<ClientInlineEditorProps> = ({
   onCancel,
   onOpenDrawer,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="break-inside-avoid mb-6 p-5 rounded-2xl bg-white dark:bg-[#141418] border-2 border-indigo-500/50 shadow-xl transition-all flex flex-col space-y-4 relative">
       {/* Inline Edit Header */}
@@ -29,7 +32,7 @@ export const ClientInlineEditor: React.FC<ClientInlineEditorProps> = ({
         <div className="flex items-center gap-2 flex-wrap">
           <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
             <Edit2 className="w-3.5 h-3.5" />
-            Edición Rápida en Tarjeta
+            {t("inline.quickEdit")}
           </span>
           <span
             className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold ${health.badgeClass} select-none`}
@@ -43,10 +46,10 @@ export const ClientInlineEditor: React.FC<ClientInlineEditorProps> = ({
           <button
             onClick={onOpenDrawer}
             className="px-2 py-1 rounded-lg bg-slate-100 dark:bg-[#1A1A20] hover:bg-slate-200 dark:hover:bg-[#25252E] text-[11px] font-semibold text-slate-600 dark:text-[#E4E4E7] flex items-center gap-1 transition-colors cursor-pointer"
-            title="Abrir panel lateral completo"
+            title={t("inline.sidePanelTooltip")}
           >
             <SidebarIcon className="w-3 h-3 text-indigo-500" />
-            <span>Panel Lateral</span>
+            <span>{t("inline.sidePanel")}</span>
           </button>
         </div>
       </div>
@@ -55,7 +58,7 @@ export const ClientInlineEditor: React.FC<ClientInlineEditorProps> = ({
       <div className="space-y-3">
         <div>
           <label className="block text-[11px] font-semibold text-slate-600 dark:text-[#94949E] mb-1">
-            Nombre del Cliente
+            {t("inline.clientName")}
           </label>
           <input
             type="text"
@@ -72,7 +75,7 @@ export const ClientInlineEditor: React.FC<ClientInlineEditorProps> = ({
 
         <div>
           <label className="block text-[11px] font-semibold text-slate-600 dark:text-[#94949E] mb-1">
-            Teléfono / WhatsApp
+            {t("inline.phone")}
           </label>
           <input
             type="text"
@@ -92,7 +95,7 @@ export const ClientInlineEditor: React.FC<ClientInlineEditorProps> = ({
       {/* Subscriptions Inline Form */}
       <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-[#1F1F23]">
         <h4 className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-[#94949E]">
-          Servicios
+          {t("inline.services")}
         </h4>
         {inlineClientData.subscriptions.map((sub, idx) => (
           <div
@@ -104,14 +107,14 @@ export const ClientInlineEditor: React.FC<ClientInlineEditorProps> = ({
                 {sub.serviceName}
               </span>
               <span className="text-[10px] text-indigo-500 font-semibold">
-                Servicio #{idx + 1}
+                {t("inline.serviceNumber", { num: idx + 1 })}
               </span>
             </div>
 
             <div className="grid grid-cols-2 gap-2">
               <div>
                 <label className="block text-[10px] text-slate-500 mb-0.5">
-                  Fecha Corte
+                  {t("inline.cutDate")}
                 </label>
                 <DatePicker
                   value={sub.cutDate}
@@ -129,7 +132,7 @@ export const ClientInlineEditor: React.FC<ClientInlineEditorProps> = ({
               </div>
               <div>
                 <label className="block text-[10px] text-slate-500 mb-0.5">
-                  Correo / Usuario
+                  {t("inline.email")}
                 </label>
                 <input
                   type="text"
@@ -154,7 +157,7 @@ export const ClientInlineEditor: React.FC<ClientInlineEditorProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               <div>
                 <label className="block text-[10px] text-slate-500 mb-0.5">
-                  Contraseña
+                  {t("inline.password")}
                 </label>
                 <input
                   type="text"
@@ -177,7 +180,7 @@ export const ClientInlineEditor: React.FC<ClientInlineEditorProps> = ({
 
               <div>
                 <label className="block text-[10px] text-slate-500 mb-0.5">
-                  Perfil / PIN
+                  {t("inline.profile")} / {t("inline.pin")}
                 </label>
                 <div className="flex gap-1">
                   <input
@@ -194,7 +197,7 @@ export const ClientInlineEditor: React.FC<ClientInlineEditorProps> = ({
                         subscriptions: newSubs,
                       });
                     }}
-                    placeholder="Perfil"
+                    placeholder={t("inline.profile")}
                     className="w-3/5 px-2 py-1 rounded-lg border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-[11px]"
                   />
                   <input
@@ -211,7 +214,7 @@ export const ClientInlineEditor: React.FC<ClientInlineEditorProps> = ({
                         subscriptions: newSubs,
                       });
                     }}
-                    placeholder="PIN"
+                    placeholder={t("inline.pin")}
                     className="w-2/5 px-1 rounded-lg border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-[11px] font-cascadia font-light"
                   />
                 </div>
@@ -219,7 +222,7 @@ export const ClientInlineEditor: React.FC<ClientInlineEditorProps> = ({
 
               <div>
                 <label className="block text-[10px] text-slate-500 mb-0.5">
-                  Precio (S/)
+                  {t("inline.price")}
                 </label>
                 <input
                   type="number"
@@ -261,14 +264,14 @@ export const ClientInlineEditor: React.FC<ClientInlineEditorProps> = ({
           className="px-3 py-1.5 rounded-xl border border-slate-200 dark:border-[#2D2D35] text-slate-600 dark:text-slate-300 text-xs font-semibold hover:bg-slate-100 dark:hover:bg-[#1F1F26] transition-colors flex items-center gap-1 cursor-pointer"
         >
           <X className="w-3.5 h-3.5" />
-          <span>Cancelar</span>
+          <span>{t("inline.cancel")}</span>
         </button>
         <button
           onClick={onSave}
           className="px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-md shadow-indigo-600/20 transition-all flex items-center gap-1.5 cursor-pointer"
         >
           <Save className="w-3.5 h-3.5" />
-          <span>Guardar</span>
+          <span>{t("inline.save")}</span>
         </button>
       </div>
     </div>

@@ -4,6 +4,7 @@ import { PlatformIcon } from "../common/PlatformIcon";
 import { FreeProfile } from "../../types";
 import { useDataStore } from "../../store/dataStore";
 import { CircularSpinner } from "../common/LoadingSpinners";
+import { useTranslation } from "../../utils/translations";
 
 interface AssignProfileModalProps {
   isOpen: boolean;
@@ -17,6 +18,7 @@ export const AssignProfileModal: React.FC<AssignProfileModalProps> = ({
   profile,
 }) => {
   const { clients, assignFreeProfileToClient } = useDataStore();
+  const { t } = useTranslation();
   const [selectedClientId, setSelectedClientId] = useState<string>("");
   const [isAssigning, setIsAssigning] = useState<boolean>(false);
 
@@ -51,7 +53,7 @@ export const AssignProfileModal: React.FC<AssignProfileModalProps> = ({
       <div className="w-full max-w-md rounded-xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#1F1F23] shadow-2xl p-6 relative">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-1.5 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-[#E4E4E7] hover:bg-slate-100 dark:hover:bg-[#1A1A1E] transition-colors"
+          className="absolute top-4 right-4 p-1.5 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-[#E4E4E7] hover:bg-slate-100 dark:hover:bg-[#1A1A1E] transition-colors cursor-pointer"
         >
           <X className="w-5 h-5" />
         </button>
@@ -62,7 +64,7 @@ export const AssignProfileModal: React.FC<AssignProfileModalProps> = ({
           </div>
           <div>
             <h3 className="font-bold text-lg text-slate-900 dark:text-[#E4E4E7]">
-              Asignar Perfil Libre
+              {t("profiles.assignTitle")}
             </h3>
             <p className="text-xs text-slate-500 dark:text-[#94949E] flex items-center gap-1.5">
               <PlatformIcon
@@ -79,46 +81,45 @@ export const AssignProfileModal: React.FC<AssignProfileModalProps> = ({
         <div className="space-y-4 mb-6">
           <div>
             <label className="block text-xs font-semibold text-slate-700 dark:text-[#94949E] mb-1.5">
-              Seleccionar Cliente Activo:
+              {t("profiles.selectClient")}
             </label>
             <select
               value={selectedClientId}
               onChange={(e) => setSelectedClientId(e.target.value)}
               className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-slate-50 dark:bg-[#1A1A1E] text-slate-900 dark:text-[#E4E4E7] text-xs font-medium focus:ring-2 focus:ring-amber-500"
             >
-              <option value="">-- Elija un cliente --</option>
+              <option value="">{t("profiles.chooseClientPlaceholder")}</option>
               {activeClients.map((c) => (
                 <option key={c.id} value={c.id}>
-                  {c.name} ({c.subscriptions.length} servicios)
+                  {c.name} ({c.subscriptions.length} {t("inline.services")})
                 </option>
               ))}
             </select>
           </div>
 
           <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-700 dark:text-amber-300">
-            💡 Al asignar, se creará un servicio para este cliente y se reducirá
-            el stock disponible ({profile.quantity} disponible(s)).
+            💡 {t("profiles.assignNotice", { count: profile.quantity })}
           </div>
         </div>
 
         <div className="flex items-center justify-end gap-3">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-xl border border-slate-200 dark:border-[#2D2D33] text-slate-600 dark:text-[#94949E] text-xs font-semibold hover:bg-slate-100 dark:hover:bg-[#1A1A1E] transition-colors"
+            className="px-4 py-2 rounded-xl border border-slate-200 dark:border-[#2D2D33] text-slate-600 dark:text-[#94949E] text-xs font-semibold hover:bg-slate-100 dark:hover:bg-[#1A1A1E] transition-colors cursor-pointer"
           >
-            Cancelar
+            {t("profiles.cancel")}
           </button>
           <button
             onClick={handleAssign}
             disabled={isAssigning}
-            className="px-5 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold shadow-lg shadow-amber-600/20 transition-all flex items-center gap-1.5 disabled:opacity-60"
+            className="px-5 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold shadow-lg shadow-amber-600/20 transition-all flex items-center gap-1.5 disabled:opacity-60 cursor-pointer"
           >
             {isAssigning ? (
               <CircularSpinner size={16} className="text-white" />
             ) : (
               <UserCheck className="w-4 h-4" />
             )}
-            <span>Confirmar Asignación</span>
+            <span>{t("profiles.confirmAssign")}</span>
           </button>
         </div>
       </div>

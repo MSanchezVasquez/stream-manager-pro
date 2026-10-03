@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
 import gsap from "gsap";
 import { CircularSpinner } from "../common/LoadingSpinners";
+import { useTranslation } from "../../utils/translations";
 
 interface LogoutConfirmModalProps {
   isOpen: boolean;
@@ -14,6 +15,7 @@ export const LogoutConfirmModal: React.FC<LogoutConfirmModalProps> = ({
   onClose,
   onConfirm,
 }) => {
+  const { t } = useTranslation();
   const modalRef = useRef<HTMLDivElement>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -90,11 +92,11 @@ export const LogoutConfirmModal: React.FC<LogoutConfirmModalProps> = ({
         className="relative z-10 w-full max-w-[360px] bg-white dark:bg-[#1E1E26] rounded-[28px] p-6 shadow-2xl border border-slate-100 dark:border-[#2D2D38] space-y-4"
       >
         <h3 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
-          Cerrar sesión
+          {t("profile.logoutConfirmTitle")}
         </h3>
 
         <p className="text-sm text-slate-700 dark:text-[#D4D4DC] font-normal leading-relaxed">
-          ¿Estás seguro de que quieres cerrar sesión?
+          {t("profile.logoutConfirmText")}
         </p>
 
         <div className="flex items-center justify-end gap-2 pt-3">
@@ -104,7 +106,7 @@ export const LogoutConfirmModal: React.FC<LogoutConfirmModalProps> = ({
             onClick={onClose}
             className="px-4 py-2.5 rounded-xl text-xs font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 active:scale-95 transition-all uppercase tracking-wider hover:cursor-pointer"
           >
-            CERRAR
+            {t("profile.cancel")}
           </button>
           <button
             type="button"
@@ -115,7 +117,7 @@ export const LogoutConfirmModal: React.FC<LogoutConfirmModalProps> = ({
             {isLoggingOut && (
               <CircularSpinner size={14} className="text-blue-500" />
             )}
-            CERRAR SESIÓN
+            {t("profile.confirmLogout")}
           </button>
         </div>
       </div>

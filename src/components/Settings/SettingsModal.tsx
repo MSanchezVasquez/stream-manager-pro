@@ -16,6 +16,7 @@ import { useThemeStore } from "../../store/themeStore";
 import { useSettingsStore, WeekStart } from "../../store/settingsStore";
 import { useAuthStore } from "../../store/authStore";
 import { LANGUAGES } from "../../utils/languages";
+import { useTranslation } from "../../utils/translations";
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -90,13 +91,14 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const { user, hasGoogleProvider, hasPasswordProvider } = useAuthStore();
   const { themeMode, setThemeMode } = useThemeStore();
   const {
-    language,
-    autoDetectLanguage,
-    weekStartsOn,
+    t,
+    resolvedLanguage,
+    isAutoDetect,
+    detectedBrowserLanguage,
     setLanguage,
     setAutoDetectLanguage,
-    setWeekStartsOn,
-  } = useSettingsStore();
+  } = useTranslation();
+  const { weekStartsOn, setWeekStartsOn } = useSettingsStore();
 
   const [showLangDropdown, setShowLangDropdown] = useState(false);
   const overlayRef = useRef<HTMLDivElement>(null);
@@ -132,7 +134,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   if (!isOpen) return null;
 
   const currentLang =
-    LANGUAGES.find((l) => l.code === language) || LANGUAGES[0];
+    LANGUAGES.find((l) => l.code === resolvedLanguage) || LANGUAGES[0];
 
   return ReactDOM.createPortal(
     <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
@@ -150,7 +152,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         {/* Header */}
         <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-5 border-b border-slate-100 dark:border-[#25252D] bg-white/95 dark:bg-[#141418]/95 backdrop-blur-sm">
           <h3 className="text-xl font-bold text-slate-900 dark:text-white">
-            Ajustes
+            {t("settings.title")}
           </h3>
           <button
             onClick={onClose}
@@ -163,7 +165,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         {/* Grid de tarjetas de ajustes */}
         <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Idioma */}
-          <SettingsCard icon={Languages} title="Idioma">
+          <SettingsCard icon={Languages} title={t("settings.language")}>
             <div className="relative">
               <button
                 type="button"
@@ -182,9 +184,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               </button>
 
               {showLangDropdown && (
-                <div className="absolute z-20 mt-1.5 w-full max-h-56 overflow-y-auto rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] shadow-xl scrollbar-thin">
+                <div className="absolute z-20 mt-1.5 w-full rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] shadow-xl py-1">
                   {LANGUAGES.map((lang) => {
-                    const isSelected = lang.code === language;
+                    const isSelected = lang.code === resolvedLanguage;
                     return (
                       <button
                         key={lang.code}
@@ -213,52 +215,53 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             </div>
 
             <button
-              onClick={() => setAutoDetectLanguage(!autoDetectLanguage)}
+              onClick={() => setAutoDetectLanguage(!isAutoDetect)}
               className={`mt-3 w-full py-1.5 px-3.5 rounded-full border text-xs font-medium text-center transition-all cursor-pointer ${
-                autoDetectLanguage
+                isAutoDetect
                   ? "text-[#374df5] dark:text-[#6d84ff]"
                   : "border-slate-300 dark:border-[#2D2D35] text-slate-600 dark:text-[#94949E]"
               }`}
-              style={autoDetectLanguage ? { borderColor: ACCENT } : undefined}
+              style={isAutoDetect ? { borderColor: ACCENT } : undefined}
             >
-              Detecta automáticamente el idioma
+              {isAutoDetect
+                ? `${t("profile.autoDetect")} (${t("profile.detected")}: ${detectedBrowserLanguage === "es" ? "Español" : "English"})`
+                : t("profile.autoDetect")}
             </button>
           </SettingsCard>
 
           {/* Tema */}
-          <SettingsCard icon={Palette} title="Tema">
+          <SettingsCard icon={Palette} title={t("settings.theme")}>
             <RadioRow
-              label="Sistema"
+              label={t("profile.themeSystem")}
               selected={themeMode === "system"}
               onClick={() => setThemeMode("system")}
             />
             <RadioRow
-              label="Claro"
+              label={t("profile.themeLight")}
               selected={themeMode === "light"}
               onClick={() => setThemeMode("light")}
             />
             <RadioRow
-              label="Oscuro"
+              label={t("profile.themeDark")}
               selected={themeMode === "dark"}
               onClick={() => setThemeMode("dark")}
             />
           </SettingsCard>
 
           {/* Primer día de la semana */}
-          <SettingsCard icon={CalendarDays} title="Primer Día de la Semana">
+          <SettingsCard icon={CalendarDays} title={t("settings.weekStart")}>
             <RadioRow
-              label="Lunes"
+              label={t("settings.monday")}
               selected={weekStartsOn === "monday"}
               onClick={() => setWeekStartsOn("monday" as WeekStart)}
             />
             <RadioRow
-              label="Domingo"
+              label={t("settings.sunday")}
               selected={weekStartsOn === "sunday"}
               onClick={() => setWeekStartsOn("sunday" as WeekStart)}
             />
             <p className="mt-2 text-[11px] text-slate-500 dark:text-[#94949E] leading-relaxed">
-              Afecta cómo se muestra el calendario en los selectores de fecha
-              (contratación, corte, expiración).
+              {t("settings.langDesc")}
             </p>
           </SettingsCard>
 
@@ -268,14 +271,14 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               icon={KeyRound}
               title={
                 hasGoogleProvider() && !hasPasswordProvider()
-                  ? "Crear Contraseña de Acceso"
+                  ? t("settings.createPassword")
                   : "Seguridad y Contraseña"
               }
             >
               <div className="space-y-3">
                 <p className="text-xs text-slate-600 dark:text-[#94949E] leading-relaxed">
                   {hasGoogleProvider() && !hasPasswordProvider()
-                    ? `Iniciaste sesión con tu cuenta de Google (${user.email}). Puedes crear una contraseña para acceder también directamente con correo y contraseña.`
+                    ? t("settings.createPasswordDesc")
                     : `Para cambiar tu contraseña de forma segura, te enviaremos un código de verificación a tu Gmail (${user.email}).`}
                 </p>
 
@@ -290,7 +293,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   <KeyRound className="w-3.5 h-3.5" />
                   <span>
                     {hasGoogleProvider() && !hasPasswordProvider()
-                      ? "Crear Contraseña"
+                      ? t("settings.createPasswordBtn")
                       : "Cambiar Contraseña"}
                   </span>
                 </button>
@@ -300,11 +303,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
           {/* Bóveda y Cifrado (Vault) */}
           {onOpenVaultModal && (
-            <SettingsCard icon={Lock} title="Bóveda y Cifrado (Vault)">
+            <SettingsCard icon={Lock} title={t("settings.vault")}>
               <div className="space-y-3">
                 <p className="text-xs text-slate-600 dark:text-[#94949E] leading-relaxed">
-                  Protege y encripta las contraseñas de tus proveedores y
-                  perfiles con una clave maestra local.
+                  {t("settings.vaultDesc")}
                 </p>
 
                 <button
@@ -316,7 +318,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   className="w-full py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#202028] dark:hover:bg-[#282832] text-slate-800 dark:text-white font-bold text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer border border-slate-200 dark:border-[#2D2D35]"
                 >
                   <Lock className="w-3.5 h-3.5 text-indigo-500" />
-                  <span>Abrir Bóveda (Vault)</span>
+                  <span>{t("settings.openVault")}</span>
                 </button>
               </div>
             </SettingsCard>

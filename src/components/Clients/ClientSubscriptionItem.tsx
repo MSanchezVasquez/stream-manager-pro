@@ -20,6 +20,7 @@ import {
   formatSubscriptionPeriod,
 } from "../../utils/platformHelpers";
 import { PlatformIcon } from "../common/PlatformIcon";
+import { useTranslation } from "../../utils/translations";
 
 interface ClientSubscriptionItemProps {
   sub: ClientSubscription;
@@ -44,9 +45,10 @@ export const ClientSubscriptionItem: React.FC<ClientSubscriptionItemProps> = ({
   onCopy,
   onNotifyWhatsApp,
 }) => {
+  const { t, resolvedLanguage } = useTranslation();
   const platConfig = getPlatformConfig(sub.serviceName);
   const badgeProps = getPlatformBadgeProps(platConfig);
-  const statusInfo = formatCutDateStatus(sub.cutDate);
+  const statusInfo = formatCutDateStatus(sub.cutDate, resolvedLanguage);
   const durationLabel = formatSubscriptionPeriod(
     sub.periodUnit,
     sub.periodValue,
@@ -54,6 +56,7 @@ export const ClientSubscriptionItem: React.FC<ClientSubscriptionItemProps> = ({
       (sub.hireDate && sub.cutDate
         ? getDaysDifference(sub.hireDate, sub.cutDate)
         : 30),
+    resolvedLanguage,
   );
 
   return (
@@ -74,10 +77,10 @@ export const ClientSubscriptionItem: React.FC<ClientSubscriptionItemProps> = ({
           {isSubscriptionFromFreeProfile(sub, freeProfiles) && (
             <span
               className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/20 whitespace-nowrap"
-              title="Asignado desde Perfiles Libres (se restaurará al eliminar)"
+              title={t("sub.freeProfileTitle")}
             >
               <Sparkles className="w-2.5 h-2.5 text-amber-500 shrink-0" />
-              <span>Perfil Libre</span>
+              <span>{t("sub.freeProfileBadge")}</span>
             </span>
           )}
           <span
@@ -91,13 +94,13 @@ export const ClientSubscriptionItem: React.FC<ClientSubscriptionItemProps> = ({
       {/* Dates */}
       <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-500 dark:text-[#94949E] pt-1">
         <div>
-          Contratado:{" "}
+          {t("sub.contracted")}{" "}
           <span className="font-medium text-slate-700 dark:text-[#E4E4E7] font-cascadia font-light">
             {sub.hireDate || "N/A"}
           </span>
         </div>
         <div>
-          Fecha Corte:{" "}
+          {t("sub.cutDate")}{" "}
           <span className="font-bold text-slate-900 dark:text-[#E4E4E7] font-cascadia font-light">
             {sub.cutDate || "N/A"}
           </span>
@@ -106,11 +109,11 @@ export const ClientSubscriptionItem: React.FC<ClientSubscriptionItemProps> = ({
 
       {typeof sub.price === "number" && sub.price > 0 && (
         <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-[#94949E] bg-white/60 dark:bg-[#0F0F12]/60 px-2.5 py-1.5 rounded-lg border border-slate-200/50 dark:border-[#2D2D33]/50">
-          <span>Precio de suscripción:</span>
+          <span>{t("sub.subPrice")}</span>
           <span className="font-bold font-cascadia text-emerald-600 dark:text-emerald-400">
             S/ {sub.price.toFixed(2)}{" "}
             <span className="text-[10px] text-slate-500 dark:text-slate-400 font-normal">
-              por {durationLabel}
+              {resolvedLanguage === "en" ? `for ${durationLabel}` : `por ${durationLabel}`}
             </span>
           </span>
         </div>
@@ -130,7 +133,7 @@ export const ClientSubscriptionItem: React.FC<ClientSubscriptionItemProps> = ({
               <button
                 onClick={() => onCopy(sub.email!, `email-${sub.id}`)}
                 className="text-slate-400 hover:text-indigo-500 p-0.5 shrink-0"
-                title="Copiar correo"
+                title={t("sub.copyEmail")}
               >
                 {copiedField === `email-${sub.id}` ? (
                   <Check className="w-3.5 h-3.5 text-emerald-500" />
@@ -155,8 +158,8 @@ export const ClientSubscriptionItem: React.FC<ClientSubscriptionItemProps> = ({
                   className="text-slate-400 hover:text-slate-600 dark:hover:text-[#E4E4E7] p-0.5"
                   title={
                     isPasswordVisible
-                      ? "Ocultar contraseña"
-                      : "Mostrar contraseña"
+                      ? resolvedLanguage === "en" ? "Hide password" : "Ocultar contraseña"
+                      : resolvedLanguage === "en" ? "Show password" : "Mostrar contraseña"
                   }
                 >
                   {isPasswordVisible ? (
@@ -168,7 +171,7 @@ export const ClientSubscriptionItem: React.FC<ClientSubscriptionItemProps> = ({
                 <button
                   onClick={() => onCopy(sub.password!, `pass-${sub.id}`)}
                   className="text-slate-400 hover:text-indigo-500 p-0.5"
-                  title="Copiar contraseña"
+                  title={t("sub.copyPassword")}
                 >
                   {copiedField === `pass-${sub.id}` ? (
                     <Check className="w-3.5 h-3.5 text-emerald-500" />
@@ -185,7 +188,7 @@ export const ClientSubscriptionItem: React.FC<ClientSubscriptionItemProps> = ({
             <div className="flex items-center justify-between text-[11px] text-slate-600 dark:text-slate-300 pt-1">
               {sub.profileName && (
                 <span>
-                  Perfil:{" "}
+                  {t("sub.assignedProfile")}{" "}
                   <strong className="text-indigo-600 dark:text-indigo-400">
                     {sub.profileName}
                   </strong>
@@ -193,7 +196,7 @@ export const ClientSubscriptionItem: React.FC<ClientSubscriptionItemProps> = ({
               )}
               {sub.pin && (
                 <span className="font-cascadia font-light tracking-widest bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 px-1.5 py-0.5 rounded border border-indigo-500/20">
-                  PIN: {sub.pin}
+                  {t("sub.pin")} {sub.pin}
                 </span>
               )}
             </div>
@@ -207,7 +210,7 @@ export const ClientSubscriptionItem: React.FC<ClientSubscriptionItemProps> = ({
         className="w-full mt-2 py-1 px-2 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
       >
         <MessageSquare className="w-3 h-3" />
-        <span>Notificar Renovación</span>
+        <span>{t("sub.notifyWhatsApp")}</span>
       </button>
     </div>
   );

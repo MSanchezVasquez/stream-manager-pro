@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 
 import { useDataStore } from "../store/dataStore";
+import { useTranslation } from "../utils/translations";
 
 interface SidebarProps {
   activeTab: string;
@@ -24,6 +25,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onOpenAddClientModal,
 }) => {
   const { clients, suppliers, freeProfiles } = useDataStore();
+  const { t } = useTranslation();
 
   const { activeClientsCount, inactiveClientsCount } = useMemo(() => {
     return {
@@ -43,13 +45,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const menuItems = [
     {
       id: "dashboard",
-      label: "Resumen General",
+      label: t("nav.overview"),
       icon: LayoutDashboard,
       badge: null,
     },
     {
       id: "clients_active",
-      label: "Clientes Activos",
+      label: t("nav.activeClients"),
       icon: Users,
       badge: activeClientsCount,
       badgeColor:
@@ -57,14 +59,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
     },
     {
       id: "clients_inactive",
-      label: "Clientes Inactivos",
+      label: t("nav.inactiveClients"),
       icon: UserX,
       badge: inactiveClientsCount,
       badgeColor: "bg-slate-500/10 text-slate-500 border border-slate-500/20",
     },
     {
       id: "suppliers",
-      label: "Proveedores",
+      label: t("nav.suppliers"),
       icon: Truck,
       badge: suppliersCount,
       badgeColor:
@@ -72,7 +74,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     },
     {
       id: "free_profiles",
-      label: "Perfiles Libres",
+      label: t("nav.freeProfiles"),
       icon: Sparkles,
       badge: freeProfilesCount,
       badgeColor:
@@ -80,13 +82,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
     },
     {
       id: "alerts",
-      label: "Alertas & WhatsApp",
+      label: t("nav.alertsWhatsapp"),
       icon: BellRing,
       badge: null,
     },
     {
       id: "links",
-      label: "Enlaces Rápidos",
+      label: t("nav.quickLinks"),
       icon: ExternalLink,
       badge: null,
     },
@@ -98,7 +100,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between px-1.5 pb-0.5">
           <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-[#80808C] font-space">
-            Menú de navegación
+            {t("nav.menu")}
           </span>
         </div>
 
@@ -108,7 +110,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           className="w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm shadow-lg shadow-indigo-600/20 transition-all transform active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
         >
           <PlusCircle className="w-4 h-4" />
-          <span>Nuevo Cliente / Servicio</span>
+          <span>{t("nav.newClientService")}</span>
         </button>
 
         {/* Navigation items */}

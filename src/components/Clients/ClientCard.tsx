@@ -13,6 +13,7 @@ import {
 import { Client, ClientSubscription } from "../../types";
 import { getClientAccountHealth } from "../../utils/platformHelpers";
 import { ClientSubscriptionItem } from "./ClientSubscriptionItem";
+import { useTranslation } from "../../utils/translations";
 
 interface ClientCardProps {
   client: Client;
@@ -47,6 +48,8 @@ export const ClientCard: React.FC<ClientCardProps> = ({
   onReactivate,
   onNotifyWhatsApp,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="break-inside-avoid mb-6 p-5 rounded-2xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#1F1F23] shadow-sm hover:border-slate-300 dark:hover:border-[#2D2D33] transition-all flex flex-col relative group">
       {/* Header */}
@@ -71,7 +74,7 @@ export const ClientCard: React.FC<ClientCardProps> = ({
               <button
                 onClick={() => onReactivate(client)}
                 className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors cursor-pointer"
-                title="Reactivar cliente (Mover a Clientes Activos)"
+                title={t("clients.cardReactivateTooltip")}
               >
                 <UserCheck className="w-3.5 h-3.5" />
               </button>
@@ -79,7 +82,7 @@ export const ClientCard: React.FC<ClientCardProps> = ({
             <button
               onClick={() => onOpenDrawer(client)}
               className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-[#1A1A1E] transition-colors cursor-pointer"
-              title="Abrir panel lateral"
+              title={t("clients.cardDrawerTooltip")}
             >
               <SidebarIcon className="w-3.5 h-3.5" />
             </button>
@@ -88,8 +91,8 @@ export const ClientCard: React.FC<ClientCardProps> = ({
               className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-500/10 transition-colors cursor-pointer"
               title={
                 client.status === "active"
-                  ? "Desactivar (Mover a Clientes Inactivos)"
-                  : "Eliminar cliente definitivamente"
+                  ? t("clients.cardDeactivateTooltip")
+                  : t("clients.cardDeleteTooltip")
               }
             >
               <Trash2 className="w-3.5 h-3.5" />
@@ -145,11 +148,15 @@ export const ClientCard: React.FC<ClientCardProps> = ({
               <span className="font-cascadia font-bold text-slate-700 dark:text-slate-300">
                 {visibleSubs.length}
               </span>
-              <span>{visibleSubs.length === 1 ? "perfil" : "perfiles"}</span>
+              <span>
+                {visibleSubs.length === 1
+                  ? t("clients.profileCountSingular")
+                  : t("clients.profileCountPlural")}
+              </span>
               {hasActiveSubFilters &&
                 visibleSubs.length !== client.subscriptions.length && (
                   <span className="text-[10px] text-slate-400 dark:text-[#94949E] font-normal ml-0.5">
-                    (de {client.subscriptions.length})
+                    {t("clients.ofTotal", { total: client.subscriptions.length })}
                   </span>
                 )}
             </span>
@@ -176,7 +183,7 @@ export const ClientCard: React.FC<ClientCardProps> = ({
 
         {visibleSubs.length === 0 && (
           <div className="py-4 px-3 text-center text-xs text-slate-400 dark:text-[#94949E] rounded-xl border border-dashed border-slate-200 dark:border-[#2D2D33]">
-            Sin perfiles coincidentes
+            {t("clients.noMatchingProfiles")}
           </div>
         )}
       </div>

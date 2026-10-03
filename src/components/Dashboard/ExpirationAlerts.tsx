@@ -18,8 +18,10 @@ import {
 } from "lucide-react";
 import { WhatsAppModal } from "../WhatsAppModal";
 import { ClientSubscription } from "../../types";
+import { useTranslation } from "../../utils/translations";
 
 export const ExpirationAlerts: React.FC = () => {
+  const { t, resolvedLanguage } = useTranslation();
   const { clients } = useDataStore();
   const [filter, setFilter] = useState<"all" | "warning" | "expired">("all");
   const [search, setSearch] = useState("");
@@ -81,10 +83,12 @@ export const ExpirationAlerts: React.FC = () => {
         <div>
           <h3 className="text-base font-bold text-slate-900 dark:text-[#E4E4E7] flex items-center gap-2">
             <ShieldAlert className="w-5 h-5 text-amber-500" />
-            Alertas de Vencimiento & Renovaciones
+            {t("alerts.title")}
           </h3>
           <p className="text-xs text-slate-500 dark:text-[#94949E]">
-            Suscripciones que vencen en los próximos 7 días o ya expiraron
+            {resolvedLanguage === "en"
+              ? "Subscriptions expiring in the next 7 days or already expired"
+              : "Suscripciones que vencen en los próximos 7 días o ya expiraron"}
           </p>
         </div>
 
@@ -94,7 +98,7 @@ export const ExpirationAlerts: React.FC = () => {
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#94949E]" />
             <input
               type="text"
-              placeholder="Filtrar por cliente..."
+              placeholder={t("alerts.searchPlaceholder")}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-8 pr-3 py-1 text-xs rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-slate-50 dark:bg-[#1A1A1E] text-slate-900 dark:text-[#E4E4E7]"
@@ -109,7 +113,7 @@ export const ExpirationAlerts: React.FC = () => {
                 : "bg-slate-100 dark:bg-[#1A1A1E] text-slate-600 dark:text-[#94949E] border border-transparent dark:border-[#2D2D33]"
             }`}
           >
-            Todos ({allAlertItems.length})
+            {t("alerts.filterAll")} ({allAlertItems.length})
           </button>
           <button
             onClick={() => setFilter("warning")}
@@ -119,7 +123,7 @@ export const ExpirationAlerts: React.FC = () => {
                 : "bg-slate-100 dark:bg-[#1A1A1E] text-slate-600 dark:text-[#94949E] border border-transparent dark:border-[#2D2D33]"
             }`}
           >
-            Por Vencer
+            {t("alerts.filterWarning")}
           </button>
           <button
             onClick={() => setFilter("expired")}
@@ -129,7 +133,7 @@ export const ExpirationAlerts: React.FC = () => {
                 : "bg-slate-100 dark:bg-[#1A1A1E] text-slate-600 dark:text-[#94949E] border border-transparent dark:border-[#2D2D33]"
             }`}
           >
-            Vencidos
+            {t("alerts.filterExpired")}
           </button>
         </div>
       </div>
@@ -138,10 +142,10 @@ export const ExpirationAlerts: React.FC = () => {
         <div className="text-center py-8 border border-dashed border-slate-200 dark:border-[#1F1F23] rounded-xl">
           <AlertCircle className="w-8 h-8 text-emerald-500 mx-auto mb-2 opacity-80" />
           <p className="text-sm font-semibold text-slate-700 dark:text-[#E4E4E7]">
-            ¡Todo al día!
+            {t("alerts.noAlerts")}
           </p>
           <p className="text-xs text-slate-500 dark:text-[#94949E]">
-            No se encontraron cuentas por vencer en este rango de filtro.
+            {t("alerts.noAlertsDesc")}
           </p>
         </div>
       ) : (
@@ -149,7 +153,7 @@ export const ExpirationAlerts: React.FC = () => {
           {filteredItems.map((item) => {
             const platformConfig = getPlatformConfig(item.sub.serviceName);
             const badgeProps = getPlatformBadgeProps(platformConfig);
-            const statusInfo = formatCutDateStatus(item.sub.cutDate);
+            const statusInfo = formatCutDateStatus(item.sub.cutDate, resolvedLanguage);
 
             return (
               <div
@@ -183,7 +187,7 @@ export const ExpirationAlerts: React.FC = () => {
                     <div className="flex items-center gap-1.5">
                       <Calendar className="w-3.5 h-3.5 text-slate-400" />
                       <span>
-                        Corte:{" "}
+                        {t("alerts.cutDate")}:{" "}
                         <strong className="text-slate-700 dark:text-slate-200">
                           {item.sub.cutDate}
                         </strong>
@@ -196,7 +200,7 @@ export const ExpirationAlerts: React.FC = () => {
                     )}
                     {item.sub.profileName && (
                       <div className="text-[11px]">
-                        Perfil:{" "}
+                        {t("sub.assignedProfile")}{" "}
                         <span className="font-medium text-slate-800 dark:text-slate-200">
                           {item.sub.profileName}
                         </span>
@@ -205,7 +209,7 @@ export const ExpirationAlerts: React.FC = () => {
                     )}
                     {typeof item.sub.price === "number" && item.sub.price > 0 && (
                       <div className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 font-cascadia pt-0.5">
-                        Cuota mensual: S/ {item.sub.price.toFixed(2)}
+                        {t("sub.subPrice")}: S/ {item.sub.price.toFixed(2)}
                       </div>
                     )}
                   </div>
@@ -218,7 +222,7 @@ export const ExpirationAlerts: React.FC = () => {
                   className="w-full py-1.5 px-3 rounded-xl bg-emerald-600/10 hover:bg-emerald-600 text-emerald-600 dark:text-emerald-400 hover:text-white border border-emerald-500/20 text-xs font-semibold transition-all flex items-center justify-center gap-2 group"
                 >
                   <MessageSquare className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />
-                  <span>Enviar WhatsApp</span>
+                  <span>{t("alerts.notifyWhatsApp")}</span>
                 </button>
               </div>
             );

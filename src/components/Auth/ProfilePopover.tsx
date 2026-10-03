@@ -12,6 +12,7 @@ import gsap from "gsap";
 
 import { LogoutConfirmModal } from "./LogoutConfirmModal";
 import { LANGUAGES } from "../../utils/languages";
+import { useTranslation } from "../../utils/translations";
 
 interface ProfilePopoverProps {
   isOpen: boolean;
@@ -34,9 +35,15 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
 }) => {
   const { user, logout } = useAuthStore();
   const { themeMode, setThemeMode } = useThemeStore();
+  const {
+    t,
+    resolvedLanguage,
+    isAutoDetect,
+    detectedBrowserLanguage,
+    setLanguage,
+    setAutoDetectLanguage,
+  } = useTranslation();
 
-  const [selectedLangCode, setSelectedLangCode] = useState<string>("es");
-  const [autoDetectLang, setAutoDetectLang] = useState<boolean>(true);
   const [showLangDropdown, setShowLangDropdown] = useState<boolean>(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState<boolean>(false);
 
@@ -126,7 +133,7 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
               className="text-xs font-medium mt-0.5 flex items-center gap-1 text-[#374df5]"
               style={{ color: "#374df5" }}
             >
-              Perfil
+              {t("profile.profile")}
             </p>
           </div>
         </div>
@@ -136,13 +143,13 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
       {/* 2. Idioma Section */}
       <div className="py-3 border-b border-slate-100 dark:border-[#25252D]">
         <label className="block px-5 text-xs font-bold text-slate-900 dark:text-white mb-1">
-          Idioma
+          {t("profile.language")}
         </label>
 
         <div>
           {(() => {
             const currentLang =
-              LANGUAGES.find((l) => l.code === selectedLangCode) ||
+              LANGUAGES.find((l) => l.code === resolvedLanguage) ||
               LANGUAGES[0];
             return (
               <>
@@ -168,17 +175,17 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
                 </button>
 
                 {showLangDropdown && (
-                  <div className="max-h-56 overflow-y-auto py-1 bg-white dark:bg-[#16161C] border-y border-slate-100 dark:border-[#25252D] scrollbar-none [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+                  <div className="py-1 bg-white dark:bg-[#16161C] border-y border-slate-100 dark:border-[#25252D]">
                     {LANGUAGES.map((lang) => {
-                      const isSelected = selectedLangCode === lang.code;
+                      const isSelected = resolvedLanguage === lang.code;
                       return (
                         <button
                           key={lang.code}
                           onClick={() => {
-                            setSelectedLangCode(lang.code);
+                            setLanguage(lang.code);
                             setShowLangDropdown(false);
                           }}
-                          className={`w-full px-5 py-2 text-sm flex items-center justify-between transition-colors ${
+                          className={`w-full px-5 py-2 text-sm flex items-center justify-between transition-colors cursor-pointer ${
                             isSelected
                               ? "bg-indigo-100/80 dark:bg-[#202038] text-slate-900 dark:text-white font-medium"
                               : "text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-[#1F1F26]"
@@ -205,16 +212,18 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
           })()}
         </div>
 
-        <div className="px-5 pt-2 ">
+        <div className="px-5 pt-2">
           <button
-            onClick={() => setAutoDetectLang(!autoDetectLang)}
+            onClick={() => setAutoDetectLanguage(!isAutoDetect)}
             className={`hover:cursor-pointer w-full py-1.5 px-3.5 rounded-full border text-xs font-medium text-center transition-all ${
-              autoDetectLang
+              isAutoDetect
                 ? "border-[#374df5] text-[#374df5] dark:border-indigo-400 dark:text-[#374df5] bg-transparent"
                 : "border-slate-300 dark:border-[#2D2D35] text-slate-600 dark:text-[#94949E] bg-transparent"
             }`}
           >
-            Detecta automáticamente el idioma
+            {isAutoDetect
+              ? `${t("profile.autoDetect")} (${t("profile.detected")}: ${detectedBrowserLanguage === "es" ? "Español" : "English"})`
+              : t("profile.autoDetect")}
           </button>
         </div>
       </div>
@@ -222,7 +231,7 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
       {/* 3. Tema Section */}
       <div className="py-3 border-b border-slate-100 dark:border-[#25252D]">
         <label className="block px-5 text-xs font-bold text-slate-900 dark:text-white mb-1">
-          Tema
+          {t("profile.theme")}
         </label>
 
         {/* Sistema */}
@@ -237,7 +246,7 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
               <div className="w-2.5 h-2.5 rounded-full bg-[#374df5]" />
             )}
           </div>
-          <span>Sistema</span>
+          <span>{t("profile.themeSystem")}</span>
         </button>
 
         {/* Claro */}
@@ -252,7 +261,7 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
               <div className="w-2.5 h-2.5 rounded-full bg-[#374df5]" />
             )}
           </div>
-          <span>Claro</span>
+          <span>{t("profile.themeLight")}</span>
         </button>
 
         {/* Oscuro */}
@@ -267,7 +276,7 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
               <div className="w-2.5 h-2.5 rounded-full bg-[#374df5]" />
             )}
           </div>
-          <span>Oscuro</span>
+          <span>{t("profile.themeDark")}</span>
         </button>
       </div>
 
@@ -281,7 +290,7 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
           className="hover:cursor-pointer w-full flex items-center gap-3.5 px-5 py-3 text-sm font-normal text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-[#1F1F26] transition-colors border-b border-slate-100 dark:border-[#25252D]"
         >
           <Settings className="w-5 h-5 text-slate-900 dark:text-white shrink-0" />
-          <span>Todos los ajustes</span>
+          <span>{t("profile.allSettings")}</span>
         </button>
 
         {user && (
@@ -298,7 +307,7 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
               className="hover:cursor-pointer w-full flex items-center gap-3.5 px-5 py-3 text-sm font-normal text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-[#1F1F26] transition-colors"
             >
               <LogOut className="w-5 h-5 text-red-500 shrink-0" />
-              <span className="text-red-500 font-medium">Cerrar sesión</span>
+              <span className="text-red-500 font-medium">{t("profile.logout")}</span>
             </button>
 
             {!onRequestLogout && (

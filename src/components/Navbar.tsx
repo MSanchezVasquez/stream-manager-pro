@@ -16,6 +16,7 @@ import { LogoutConfirmModal } from "./Auth/LogoutConfirmModal";
 import { useThemeStore } from "../store/themeStore";
 import { useAuthStore } from "../store/authStore";
 import { useDataStore } from "../store/dataStore";
+import { useTranslation } from "../utils/translations";
 
 import gsap from "gsap";
 
@@ -56,6 +57,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   const { themeMode: theme, toggleTheme } = useThemeStore();
   const { user, logout } = useAuthStore();
   const { clients, freeProfiles } = useDataStore();
+  const { t } = useTranslation();
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
@@ -203,7 +205,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <input
                 ref={searchInputRef}
                 type="text"
-                placeholder="Buscar cliente, correo o cuenta..."
+                placeholder={t("nav.searchPlaceholder")}
                 value={searchQuery}
                 onChange={(e) => handleSearchChange(e.target.value)}
                 onKeyDown={handleSearchKeyDown}
@@ -318,7 +320,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/70 pointer-events-none" />
             <input
               type="text"
-              placeholder="Buscar cliente, correo o cuenta..."
+              placeholder={t("nav.searchPlaceholder")}
               value={searchQuery}
               onChange={(e) => handleSearchChange(e.target.value)}
               onKeyDown={handleSearchKeyDown}
@@ -381,7 +383,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               className="hover:text-white transition-colors flex items-center gap-1.5 cursor-pointer"
             >
               <Zap className="w-3.5 h-3.5 text-amber-300" />
-              <span>Vencimientos ({alertCount})</span>
+              <span>{t("nav.expirations")} ({alertCount})</span>
             </button>
 
             <button
@@ -390,7 +392,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               className="hover:text-white transition-colors flex items-center gap-1.5 cursor-pointer"
             >
               <Star className="w-3.5 h-3.5 text-emerald-300" />
-              <span>{activeClientsCount} Activos</span>
+              <span>{activeClientsCount} {t("nav.active")}</span>
             </button>
 
             <button
@@ -399,7 +401,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               className="hover:text-white transition-colors flex items-center gap-1.5 cursor-pointer"
             >
               <Sparkles className="w-3.5 h-3.5 text-cyan-300" />
-              <span>{freeProfilesCount} Perfiles Libres</span>
+              <span>{freeProfilesCount} {t("nav.freeProfiles")}</span>
             </button>
           </div>
         </div>

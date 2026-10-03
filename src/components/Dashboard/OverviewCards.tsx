@@ -2,11 +2,13 @@ import React, { useEffect, useRef } from 'react';
 import { Users, Tv, AlertTriangle, Truck, Sparkles, Coins } from 'lucide-react';
 import { useDataStore } from '../../store/dataStore';
 import { getDaysRemaining } from '../../utils/platformHelpers';
+import { useTranslation } from '../../utils/translations';
 import gsap from 'gsap';
 
 export const OverviewCards: React.FC<{
   onNavigateTab: (tab: string) => void;
 }> = ({ onNavigateTab }) => {
+  const { t } = useTranslation();
   const { clients, suppliers, freeProfiles } = useDataStore();
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -54,7 +56,7 @@ export const OverviewCards: React.FC<{
 
   const cards = [
     {
-      title: 'Facturación Mensual',
+      title: t('dash.monthlyRevenueTitle'),
       value: `S/ ${totalMonthlyRevenue.toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
       icon: Coins,
       color: 'from-emerald-500/20 to-teal-500/5 text-emerald-500',
@@ -64,7 +66,7 @@ export const OverviewCards: React.FC<{
       isPrice: true,
     },
     {
-      title: 'Clientes Activos',
+      title: t('dash.activeClientsTitle'),
       value: totalActiveClients,
       icon: Users,
       color: 'from-blue-500/20 to-indigo-500/5 text-blue-500',
@@ -73,7 +75,7 @@ export const OverviewCards: React.FC<{
       tab: 'clients_active',
     },
     {
-      title: 'Suscripciones Activas',
+      title: t('dash.activeSubsTitle'),
       value: totalActiveSubs,
       icon: Tv,
       color: 'from-indigo-500/20 to-purple-500/5 text-indigo-500',
@@ -82,7 +84,7 @@ export const OverviewCards: React.FC<{
       tab: 'clients_active',
     },
     {
-      title: 'Vencen en ≤ 5 Días',
+      title: t('dash.upcomingExpirationsTitle'),
       value: upcomingExpirations,
       icon: AlertTriangle,
       color: 'from-amber-500/20 to-orange-500/5 text-amber-500',
@@ -91,7 +93,7 @@ export const OverviewCards: React.FC<{
       tab: 'alerts',
     },
     {
-      title: 'Proveedores Activos',
+      title: t('dash.registeredSuppliersTitle'),
       value: totalSuppliers,
       icon: Truck,
       color: 'from-purple-500/20 to-pink-500/5 text-purple-500',
@@ -100,7 +102,7 @@ export const OverviewCards: React.FC<{
       tab: 'suppliers',
     },
     {
-      title: 'Perfiles Libres',
+      title: t('dash.freeProfilesTitle'),
       value: totalFreeProfiles,
       icon: Sparkles,
       color: 'from-sky-500/20 to-cyan-500/5 text-sky-500',

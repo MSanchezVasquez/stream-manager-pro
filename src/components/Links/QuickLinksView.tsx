@@ -3,9 +3,11 @@ import { useDataStore } from "../../store/dataStore";
 import { CircularSpinner } from "../common/LoadingSpinners";
 import { ExternalLink, Globe, Plus, Trash2, Copy, Check } from "lucide-react";
 import { QuickLink } from "../../types";
+import { useTranslation } from "../../utils/translations";
 
 export const QuickLinksView: React.FC = () => {
   const { quickLinks, saveQuickLink, deleteQuickLink } = useDataStore();
+  const { t } = useTranslation();
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -71,10 +73,10 @@ export const QuickLinksView: React.FC = () => {
           </div>
           <div>
             <h2 className="text-lg font-bold text-slate-900 dark:text-[#E4E4E7]">
-              Enlaces Rápidos & Validación de Códigos
+              {t("links.title")}
             </h2>
             <p className="text-xs text-slate-500 dark:text-[#94949E]">
-              Páginas de consulta externa y activación de cuentas
+              {t("links.subtitle")}
             </p>
           </div>
         </div>
@@ -84,7 +86,7 @@ export const QuickLinksView: React.FC = () => {
           className="px-3.5 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-md shadow-sky-600/20 transition-all shrink-0 cursor-pointer"
         >
           <Plus className="w-4 h-4" />
-          <span>Agregar Enlace</span>
+          <span>{t("links.addLink")}</span>
         </button>
       </div>
 
@@ -95,18 +97,17 @@ export const QuickLinksView: React.FC = () => {
             <Globe className="w-7 h-7" />
           </div>
           <h3 className="text-base font-bold text-slate-800 dark:text-[#E4E4E7] mb-1">
-            No tienes enlaces rápidos guardados
+            {t("links.noLinks")}
           </h3>
           <p className="text-xs text-slate-500 dark:text-[#94949E] max-w-md mx-auto mb-6">
-            Guarda accesos directos a paneles de streaming, páginas de
-            validación de códigos o herramientas externas frecuentes.
+            {t("links.noLinksDesc")}
           </p>
           <button
             onClick={() => setIsAddModalOpen(true)}
             className="px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold flex items-center gap-2 shadow-md shadow-sky-600/20 transition-all cursor-pointer"
           >
             <Plus className="w-4 h-4" />
-            <span>Crear Primer Enlace Rápido</span>
+            <span>{t("links.addLink")}</span>
           </button>
         </div>
       ) : (
@@ -124,7 +125,7 @@ export const QuickLinksView: React.FC = () => {
                   <button
                     onClick={() => setLinkToDelete(link)}
                     className="p-1 rounded text-slate-400 hover:text-red-500 opacity-80 group-hover:opacity-100 transition-opacity cursor-pointer"
-                    title="Eliminar Enlace"
+                    title={t("links.deleteTitle")}
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
@@ -146,13 +147,13 @@ export const QuickLinksView: React.FC = () => {
                   className="flex-1 py-1.5 px-3 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-sm"
                 >
                   <ExternalLink className="w-3.5 h-3.5" />
-                  <span>Abrir Sitio</span>
+                  <span>{t("links.open")}</span>
                 </a>
 
                 <button
                   onClick={() => copyLink(link.url, link.id)}
                   className="p-2 rounded-xl border border-slate-200 dark:border-[#2D2D33] text-slate-600 dark:text-[#94949E] hover:bg-slate-100 dark:hover:bg-[#1A1A1E] transition-colors cursor-pointer"
-                  title="Copiar URL"
+                  title={t("links.copy")}
                 >
                   {copiedId === link.id ? (
                     <Check className="w-3.5 h-3.5 text-emerald-500" />
@@ -171,13 +172,13 @@ export const QuickLinksView: React.FC = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
           <div className="w-full max-w-md rounded-xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#1F1F23] shadow-2xl p-6 relative">
             <h3 className="font-bold text-lg text-slate-900 dark:text-[#E4E4E7] mb-4">
-              Añadir Enlace Rápido
+              {t("links.modalTitle")}
             </h3>
 
             <form onSubmit={handleAddLink} className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 dark:text-[#94949E] mb-1">
-                  Título del Enlace
+                  {t("links.nameLabel")}
                 </label>
                 <input
                   type="text"
@@ -191,7 +192,7 @@ export const QuickLinksView: React.FC = () => {
 
               <div>
                 <label className="block text-xs font-semibold text-slate-700 dark:text-[#94949E] mb-1">
-                  Dirección URL
+                  {t("links.urlLabel")}
                 </label>
                 <input
                   type="text"
@@ -207,15 +208,15 @@ export const QuickLinksView: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsAddModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-slate-200 dark:border-[#2D2D33] text-slate-600 dark:text-[#94949E] text-xs font-semibold"
+                  className="px-4 py-2 rounded-xl border border-slate-200 dark:border-[#2D2D33] text-slate-600 dark:text-[#94949E] text-xs font-semibold cursor-pointer"
                 >
-                  Cancelar
+                  {t("links.cancel")}
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold shadow-lg shadow-sky-600/20"
+                  className="px-5 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold shadow-lg shadow-sky-600/20 cursor-pointer"
                 >
-                  Guardar Enlace
+                  {t("links.save")}
                 </button>
               </div>
             </form>
@@ -231,34 +232,30 @@ export const QuickLinksView: React.FC = () => {
               <Trash2 className="w-6 h-6" />
             </div>
             <h3 className="text-lg font-bold text-center text-slate-900 dark:text-[#E4E4E7] mb-2">
-              ¿Eliminar Enlace Rápido?
+              {t("links.deleteTitle")}
             </h3>
             <p className="text-xs text-center text-slate-500 dark:text-[#94949E] mb-6">
-              ¿Deseas eliminar el enlace{" "}
-              <strong className="text-slate-800 dark:text-white font-semibold">
-                {linkToDelete.title}
-              </strong>
-              ?
+              {t("links.deleteDesc", { title: linkToDelete.title })}
             </p>
             <div className="flex items-center gap-3">
               <button
                 type="button"
                 disabled={isDeleting}
                 onClick={() => setLinkToDelete(null)}
-                className="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-[#2D2D35] text-slate-700 dark:text-slate-300 font-semibold text-xs hover:bg-slate-100 dark:hover:bg-[#1F1F26] transition-colors"
+                className="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-[#2D2D35] text-slate-700 dark:text-slate-300 font-semibold text-xs hover:bg-slate-100 dark:hover:bg-[#1F1F26] transition-colors cursor-pointer"
               >
-                Cancelar
+                {t("links.cancel")}
               </button>
               <button
                 type="button"
                 disabled={isDeleting}
                 onClick={confirmDeleteLink}
-                className="flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-semibold text-xs shadow-md shadow-red-600/20 transition-all flex items-center justify-center gap-2"
+                className="flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-semibold text-xs shadow-md shadow-red-600/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 {isDeleting && (
                   <CircularSpinner size={16} className="text-white" />
                 )}
-                Eliminar
+                {t("deleteModal.delete")}
               </button>
             </div>
           </div>

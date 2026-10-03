@@ -1,5 +1,15 @@
 import { CSSProperties } from "react";
 import { StreamingPlatform, Client } from "../types";
+import { useSettingsStore } from "../store/settingsStore";
+
+function resolveLang(lang?: "es" | "en"): "es" | "en" {
+  if (lang) return lang;
+  try {
+    return useSettingsStore.getState().getResolvedLanguage() || "es";
+  } catch {
+    return "es";
+  }
+}
 
 export const ALL_STREAMING_PLATFORMS: StreamingPlatform[] = [
   "Netflix Premium",
@@ -335,17 +345,33 @@ export function formatSubscriptionPeriod(
   periodUnit?: "days" | "months" | "years",
   periodValue?: number,
   periodDays?: number,
+  lang?: "es" | "en",
 ): string {
+  const l = resolveLang(lang);
+  const isEn = l === "en";
+
   if (periodUnit === "months" && periodValue) {
+    if (isEn) {
+      return periodValue === 1 ? "1 month" : `${periodValue} months`;
+    }
     return periodValue === 1 ? "1 mes" : `${periodValue} meses`;
   }
   if (periodUnit === "years" && periodValue) {
+    if (isEn) {
+      return periodValue === 1 ? "1 year" : `${periodValue} years`;
+    }
     return periodValue === 1 ? "1 año" : `${periodValue} años`;
   }
   if (periodUnit === "days" && periodValue) {
+    if (isEn) {
+      return periodValue === 1 ? "1 day" : `${periodValue} days`;
+    }
     return periodValue === 1 ? "1 día" : `${periodValue} días`;
   }
   const days = periodDays || 30;
+  if (isEn) {
+    return days === 1 ? "1 day" : `${days} days`;
+  }
   return days === 1 ? "1 día" : `${days} días`;
 }
 
@@ -396,17 +422,22 @@ export function getDaysRemaining(dateStr: string): number {
   return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 }
 
-export function formatCutDateStatus(dateStr: string): {
+export function formatCutDateStatus(
+  dateStr: string,
+  lang?: "es" | "en",
+): {
   label: string;
   days: number;
   colorClass: string;
   badge: string;
 } {
+  const l = resolveLang(lang);
+  const isEn = l === "en";
   const days = getDaysRemaining(dateStr);
 
   if (days === 999) {
     return {
-      label: "Sin fecha de corte",
+      label: isEn ? "No cut date" : "Sin fecha de corte",
       days,
       colorClass: "text-slate-500 dark:text-slate-400",
       badge:
@@ -416,9 +447,17 @@ export function formatCutDateStatus(dateStr: string): {
 
   if (days < 0) {
     const absDays = Math.abs(days);
-    const dayWord = absDays === 1 ? "día" : "días";
+    const dayWord = isEn
+      ? absDays === 1
+        ? "day"
+        : "days"
+      : absDays === 1
+        ? "día"
+        : "días";
     return {
-      label: `Vencido hace ${absDays} ${dayWord}`,
+      label: isEn
+        ? `Expired ${absDays} ${dayWord} ago`
+        : `Vencido hace ${absDays} ${dayWord}`,
       days,
       colorClass: "text-red-600 dark:text-red-400 font-bold",
       badge:
@@ -428,7 +467,7 @@ export function formatCutDateStatus(dateStr: string): {
 
   if (days === 0) {
     return {
-      label: "¡Vence Hoy!",
+      label: isEn ? "Expires Today!" : "¡Vence Hoy!",
       days,
       colorClass: "text-amber-600 dark:text-amber-400 font-bold animate-pulse",
       badge:
@@ -437,7 +476,12 @@ export function formatCutDateStatus(dateStr: string): {
   }
 
   if (days <= 5) {
-    const dayWord = days === 1 ? "Vence mañana" : `Vence en ${days} días`;
+    let dayWord = "";
+    if (isEn) {
+      dayWord = days === 1 ? "Expires tomorrow" : `Expires in ${days} days`;
+    } else {
+      dayWord = days === 1 ? "Vence mañana" : `Vence en ${days} días`;
+    }
     return {
       label: dayWord,
       days,
@@ -448,7 +492,7 @@ export function formatCutDateStatus(dateStr: string): {
   }
 
   return {
-    label: `${days} días restantes`,
+    label: isEn ? `${days} days remaining` : `${days} días restantes`,
     days,
     colorClass: "text-emerald-600 dark:text-emerald-400",
     badge:
@@ -467,8 +511,31 @@ export function generateWhatsAppMessage(
   password?: string,
   profileName?: string,
   pin?: string,
+  lang?: "es" | "en",
 ): string {
+  const l = resolveLang(lang);
+  const isEn = l === "en";
   const days = getDaysRemaining(cutDate);
+
+  if (isEn) {
+    let timeAlert = "";
+    if (days < 0) {
+      timeAlert = `your *${serviceName}* service *EXPIRED* on ${cutDate}.`;
+    } else if (days === 0) {
+      timeAlert = `your *${serviceName}* service expires *TODAY* (${cutDate}).`;
+    } else {
+      timeAlert = `your *${serviceName}* service expires in *${days} days* (Cut date: ${cutDate}).`;
+    }
+
+    let credentialsText = "";
+    if (email) credentialsText += `\n📧 *Email:* ${email}`;
+    if (password) credentialsText += `\n🔑 *Password:* ${password}`;
+    if (profileName) credentialsText += `\n👤 *Profile:* ${profileName}`;
+    if (pin) credentialsText += `\n🔒 *PIN:* ${pin}`;
+
+    return `Hello *${clientName}* 👋\n\nThis is a friendly reminder that ${timeAlert}\n${credentialsText}\n\nTo renew or for any inquiries, simply reply to this message. Thank you for choosing our service! 🚀`;
+  }
+
   let timeAlert = "";
   if (days < 0) {
     timeAlert = `su servicio *${serviceName}* ha *VENCIDO* el ${cutDate}.`;
@@ -511,16 +578,24 @@ export interface ClientAccountHealth {
 /**
  * Evaluates the overall health status of a client based on their linked profiles and cut-off dates
  */
-export function getClientAccountHealth(client: Client): ClientAccountHealth {
+export function getClientAccountHealth(
+  client: Client,
+  lang?: "es" | "en",
+): ClientAccountHealth {
+  const l = resolveLang(lang);
+  const isEn = l === "en";
+
   if (client.status === "inactive") {
     return {
       level: "inactive",
-      label: "Inactivo",
+      label: isEn ? "Inactive" : "Inactivo",
       badgeClass:
         "bg-slate-100 text-slate-600 dark:bg-[#1A1A20] dark:text-[#94949E] border border-slate-200 dark:border-[#2D2D33]",
       dotClass: "bg-slate-400 dark:bg-slate-500",
       borderClass: "border-slate-200 dark:border-[#1F1F23]",
-      tooltip: "Cliente marcado como inactivo o cancelado",
+      tooltip: isEn
+        ? "Client marked as inactive or cancelled"
+        : "Cliente marcado como inactivo o cancelado",
       minDaysRemaining: 999,
       expiredCount: 0,
       expiringCount: 0,
@@ -533,12 +608,14 @@ export function getClientAccountHealth(client: Client): ClientAccountHealth {
   if (subs.length === 0) {
     return {
       level: "no_profiles",
-      label: "Sin perfiles",
+      label: isEn ? "No profiles" : "Sin perfiles",
       badgeClass:
         "bg-slate-100 text-slate-500 dark:bg-[#1A1A20] dark:text-[#94949E] border border-slate-200 dark:border-[#2D2D33]",
       dotClass: "bg-slate-400",
       borderClass: "border-slate-200 dark:border-[#1F1F23]",
-      tooltip: "Sin servicios ni perfiles vinculados",
+      tooltip: isEn
+        ? "No services or profiles linked"
+        : "Sin servicios ni perfiles vinculados",
       minDaysRemaining: 999,
       expiredCount: 0,
       expiringCount: 0,
@@ -584,13 +661,24 @@ export function getClientAccountHealth(client: Client): ClientAccountHealth {
   // 1. Any expired profiles?
   if (expiredCount > 0) {
     const isSingle = subs.length === 1;
-    const label = isSingle
-      ? minExpiredDays < 0 && minExpiredDays > -99
-        ? `Vencido hace ${Math.abs(minExpiredDays)}d`
-        : "Vencido"
-      : expiredCount === 1
-        ? "1 perfil vencido"
-        : `${expiredCount} perfiles vencidos`;
+    let label = "";
+    if (isEn) {
+      label = isSingle
+        ? minExpiredDays < 0 && minExpiredDays > -99
+          ? `Expired ${Math.abs(minExpiredDays)}d ago`
+          : "Expired"
+        : expiredCount === 1
+          ? "1 expired profile"
+          : `${expiredCount} expired profiles`;
+    } else {
+      label = isSingle
+        ? minExpiredDays < 0 && minExpiredDays > -99
+          ? `Vencido hace ${Math.abs(minExpiredDays)}d`
+          : "Vencido"
+        : expiredCount === 1
+          ? "1 perfil vencido"
+          : `${expiredCount} perfiles vencidos`;
+    }
 
     return {
       level: "expired",
@@ -599,7 +687,9 @@ export function getClientAccountHealth(client: Client): ClientAccountHealth {
         "bg-red-500/10 text-red-700 dark:bg-red-950/40 dark:text-red-300 border border-red-500/30 font-bold",
       dotClass: "bg-red-500 shadow-sm shadow-red-500/50",
       borderClass: "border-slate-200 dark:border-[#1F1F23]",
-      tooltip: `Atención: cuenta con ${expiredCount} ${expiredCount === 1 ? "perfil vencido" : "perfiles vencidos"}`,
+      tooltip: isEn
+        ? `Attention: client has ${expiredCount} ${expiredCount === 1 ? "expired profile" : "expired profiles"}`
+        : `Atención: cuenta con ${expiredCount} ${expiredCount === 1 ? "perfil vencido" : "perfiles vencidos"}`,
       minDaysRemaining: minExpiredDays,
       expiredCount,
       expiringCount: expiringTodayCount + nearExpirationCount,
@@ -611,12 +701,14 @@ export function getClientAccountHealth(client: Client): ClientAccountHealth {
   if (expiringTodayCount > 0) {
     return {
       level: "expiring_today",
-      label: "¡Vence Hoy!",
+      label: isEn ? "Expires Today!" : "¡Vence Hoy!",
       badgeClass:
         "bg-amber-500/20 text-amber-800 dark:bg-amber-950/50 dark:text-amber-300 border border-amber-500/40 font-bold animate-pulse",
       dotClass: "bg-amber-500 animate-ping",
       borderClass: "border-slate-200 dark:border-[#1F1F23]",
-      tooltip: "Prioritario: perfil vence el día de hoy",
+      tooltip: isEn
+        ? "Priority: profile expires today"
+        : "Prioritario: perfil vence el día de hoy",
       minDaysRemaining: 0,
       expiredCount: 0,
       expiringCount: expiringTodayCount + nearExpirationCount,
@@ -626,8 +718,18 @@ export function getClientAccountHealth(client: Client): ClientAccountHealth {
 
   // 3. Any profile near expiration (1 - 5 days)?
   if (nearExpirationCount > 0) {
-    const label =
-      minDaysRemaining === 1 ? "Vence mañana" : `Vence en ${minDaysRemaining}d`;
+    let label = "";
+    if (isEn) {
+      label =
+        minDaysRemaining === 1
+          ? "Expires tomorrow"
+          : `Expires in ${minDaysRemaining}d`;
+    } else {
+      label =
+        minDaysRemaining === 1
+          ? "Vence mañana"
+          : `Vence en ${minDaysRemaining}d`;
+    }
 
     return {
       level: "near_expiration",
@@ -636,7 +738,9 @@ export function getClientAccountHealth(client: Client): ClientAccountHealth {
         "bg-amber-500/10 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300 border border-amber-500/30 font-semibold",
       dotClass: "bg-amber-500",
       borderClass: "border-slate-200 dark:border-[#1F1F23]",
-      tooltip: `Próximo corte: ${minDaysRemaining} día(s) restante(s)`,
+      tooltip: isEn
+        ? `Next cut date: ${minDaysRemaining} day(s) remaining`
+        : `Próximo corte: ${minDaysRemaining} día(s) restante(s)`,
       minDaysRemaining,
       expiredCount: 0,
       expiringCount: nearExpirationCount,
@@ -647,15 +751,18 @@ export function getClientAccountHealth(client: Client): ClientAccountHealth {
   // 4. All profiles active and healthy
   return {
     level: "healthy",
-    label: "Al día",
+    label: isEn ? "Up to date" : "Al día",
     badgeClass:
       "bg-emerald-500/10 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-500/30 font-semibold",
     dotClass: "bg-emerald-500",
     borderClass: "border-slate-200 dark:border-[#1F1F23]",
-    tooltip: `Todos los perfiles activos y al día (${activeCount} servicio(s))`,
+    tooltip: isEn
+      ? `All profiles active and up to date (${activeCount} service(s))`
+      : `Todos los perfiles activos y al día (${activeCount} servicio(s))`,
     minDaysRemaining,
     expiredCount: 0,
     expiringCount: 0,
     activeCount,
   };
 }
+

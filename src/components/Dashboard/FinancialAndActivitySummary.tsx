@@ -17,6 +17,7 @@ import {
   getPlatformDisplayName,
 } from "../../utils/platformHelpers";
 import { PlatformIcon } from "../common/PlatformIcon";
+import { useTranslation } from "../../utils/translations";
 
 interface FinancialAndActivitySummaryProps {
   onNavigateTab: (tab: string) => void;
@@ -26,6 +27,7 @@ interface FinancialAndActivitySummaryProps {
 export const FinancialAndActivitySummary: React.FC<
   FinancialAndActivitySummaryProps
 > = ({ onNavigateTab, onOpenAddClientModal }) => {
+  const { t, resolvedLanguage } = useTranslation();
   const { clients } = useDataStore();
 
   const activeClients = clients.filter((c) => c.status === "active");
@@ -106,10 +108,10 @@ export const FinancialAndActivitySummary: React.FC<
               </div>
               <div>
                 <h3 className="font-bold text-sm text-slate-900 dark:text-white">
-                  Balance Financiero
+                  {t("finance.title")}
                 </h3>
                 <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                  Moneda oficial: Soles (PEN)
+                  {t("finance.currency")}
                 </p>
               </div>
             </div>
@@ -121,7 +123,7 @@ export const FinancialAndActivitySummary: React.FC<
           <div className="space-y-4">
             <div className="p-4 rounded-xl bg-slate-100/70 dark:bg-[#101014] border border-slate-200/60 dark:border-[#25252D]">
               <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-1">
-                Facturación Mensual Total
+                {t("finance.totalMonthlyRevenue")}
               </span>
               <div className="flex items-baseline gap-1.5">
                 <span className="text-2xl sm:text-3xl font-bold font-cascadia text-emerald-600 dark:text-emerald-400">
@@ -131,14 +133,14 @@ export const FinancialAndActivitySummary: React.FC<
                     maximumFractionDigits: 2,
                   })}
                 </span>
-                <span className="text-xs text-slate-400">/ mes</span>
+                <span className="text-xs text-slate-400">{t("finance.perMonth")}</span>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#181820] border border-slate-200/50 dark:border-[#25252D]">
                 <span className="text-[10px] text-slate-500 dark:text-slate-400 block mb-0.5">
-                  Ticket Promedio / Cliente
+                  {t("finance.avgTicket")}
                 </span>
                 <span className="text-sm font-bold font-cascadia text-slate-800 dark:text-slate-200">
                   S/ {avgTicketPerClient.toFixed(2)}
@@ -146,7 +148,7 @@ export const FinancialAndActivitySummary: React.FC<
               </div>
               <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#181820] border border-slate-200/50 dark:border-[#25252D]">
                 <span className="text-[10px] text-slate-500 dark:text-slate-400 block mb-0.5">
-                  Precio Promedio / Perfil
+                  {t("finance.avgPrice")}
                 </span>
                 <span className="text-sm font-bold font-cascadia text-slate-800 dark:text-slate-200">
                   S/ {avgPricePerSub.toFixed(2)}
@@ -158,14 +160,14 @@ export const FinancialAndActivitySummary: React.FC<
 
         <div className="pt-4 mt-4 border-t border-slate-200/70 dark:border-[#25252D] flex items-center justify-between text-xs">
           <span className="text-slate-500 dark:text-slate-400 text-[11px]">
-            {totalActiveSubs} perfiles facturables
+            {t("finance.billableProfiles", { count: totalActiveSubs })}
           </span>
           <button
             type="button"
             onClick={() => onNavigateTab("clients_active")}
             className="text-indigo-600 dark:text-indigo-400 hover:underline font-semibold flex items-center gap-1 text-[11px]"
           >
-            <span>Ver detalle de clientes</span>
+            <span>{t("finance.viewClients")}</span>
             <ArrowUpRight className="w-3.5 h-3.5" />
           </button>
         </div>
@@ -181,10 +183,10 @@ export const FinancialAndActivitySummary: React.FC<
               </div>
               <div>
                 <h3 className="font-bold text-sm text-slate-900 dark:text-white">
-                  Salud de Cobranza
+                  {t("finance.collectionHealth")}
                 </h3>
                 <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                  Tasa de clientes activos al día
+                  {t("finance.rateUpToDate")}
                 </p>
               </div>
             </div>
@@ -195,7 +197,7 @@ export const FinancialAndActivitySummary: React.FC<
                   : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
               }`}
             >
-              {healthPercentage}% Al Día
+              {t("finance.upToDate", { pct: healthPercentage })}
             </span>
           </div>
 
@@ -203,8 +205,8 @@ export const FinancialAndActivitySummary: React.FC<
             {/* Barra de progreso de estado */}
             <div className="space-y-1.5">
               <div className="flex items-center justify-between text-xs font-medium text-slate-600 dark:text-slate-300">
-                <span>Distribución de clientes</span>
-                <span>{activeClients.length} cliente(s)</span>
+                <span>{resolvedLanguage === "en" ? "Clients distribution" : "Distribución de clientes"}</span>
+                <span>{activeClients.length} {t("clients.clientCount")}</span>
               </div>
               <div className="w-full h-3 rounded-full bg-slate-100 dark:bg-[#101014] overflow-hidden flex gap-0.5 p-0.5 border border-slate-200/50 dark:border-[#25252D]">
                 <div
@@ -212,21 +214,21 @@ export const FinancialAndActivitySummary: React.FC<
                     width: `${(healthyCount / totalEvaluatedClients) * 100}%`,
                   }}
                   className="bg-emerald-500 h-full rounded-l-full transition-all"
-                  title={`${healthyCount} al día`}
+                  title={`${healthyCount} ${t("clients.healthy")}`}
                 />
                 <div
                   style={{
                     width: `${(warningCount / totalEvaluatedClients) * 100}%`,
                   }}
                   className="bg-amber-500 h-full transition-all"
-                  title={`${warningCount} por vencer`}
+                  title={`${warningCount} ${t("clients.warning")}`}
                 />
                 <div
                   style={{
                     width: `${(expiredCount / totalEvaluatedClients) * 100}%`,
                   }}
                   className="bg-red-500 h-full rounded-r-full transition-all"
-                  title={`${expiredCount} vencidos`}
+                  title={`${expiredCount} ${t("clients.expired")}`}
                 />
               </div>
             </div>
@@ -235,7 +237,7 @@ export const FinancialAndActivitySummary: React.FC<
             <div className="grid grid-cols-3 gap-2 text-center">
               <div className="p-2.5 rounded-xl bg-emerald-500/5 border border-emerald-500/15">
                 <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold block">
-                  Al día
+                  {t("clients.healthy")}
                 </span>
                 <span className="text-base font-bold text-slate-800 dark:text-slate-100 font-cascadia">
                   {healthyCount}
@@ -243,7 +245,7 @@ export const FinancialAndActivitySummary: React.FC<
               </div>
               <div className="p-2.5 rounded-xl bg-amber-500/5 border border-amber-500/15">
                 <span className="text-[10px] text-amber-600 dark:text-amber-400 font-semibold block">
-                  ≤ 5 días
+                  ≤ 5d
                 </span>
                 <span className="text-base font-bold text-slate-800 dark:text-slate-100 font-cascadia">
                   {warningCount}
@@ -251,7 +253,7 @@ export const FinancialAndActivitySummary: React.FC<
               </div>
               <div className="p-2.5 rounded-xl bg-red-500/5 border border-red-500/15">
                 <span className="text-[10px] text-red-600 dark:text-red-400 font-semibold block">
-                  Vencidos
+                  {t("clients.expired")}
                 </span>
                 <span className="text-base font-bold text-slate-800 dark:text-slate-100 font-cascadia">
                   {expiredCount}
@@ -263,7 +265,7 @@ export const FinancialAndActivitySummary: React.FC<
               <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs flex items-center justify-between text-amber-800 dark:text-amber-300">
                 <span className="flex items-center gap-1.5 text-[11px] font-medium">
                   <Clock className="w-3.5 h-3.5 shrink-0" />
-                  <span>Por cobrar / renovar:</span>
+                  <span>{t("finance.revenueAtRisk")}:</span>
                 </span>
                 <strong className="font-cascadia font-bold">
                   S/ {revenueAtRisk.toFixed(2)}
@@ -279,7 +281,7 @@ export const FinancialAndActivitySummary: React.FC<
             onClick={() => onNavigateTab("alerts")}
             className="text-amber-600 dark:text-amber-400 hover:underline font-semibold flex items-center gap-1 text-[11px]"
           >
-            <span>Revisar alertas de corte</span>
+            <span>{t("finance.viewExpirations")}</span>
             <ArrowUpRight className="w-3.5 h-3.5" />
           </button>
         </div>
@@ -295,10 +297,10 @@ export const FinancialAndActivitySummary: React.FC<
               </div>
               <div>
                 <h3 className="font-bold text-sm text-slate-900 dark:text-white">
-                  Top Ingresos por Plataforma
+                  {t("finance.topPlatforms")}
                 </h3>
                 <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                  Servicios que más aportan a la facturación
+                  {t("finance.revenueByService")}
                 </p>
               </div>
             </div>
@@ -307,7 +309,9 @@ export const FinancialAndActivitySummary: React.FC<
           <div className="space-y-3">
             {topRevenuePlatforms.length === 0 ? (
               <p className="text-xs text-slate-400 italic py-4">
-                No hay suscripciones registradas aún.
+                {resolvedLanguage === "en"
+                  ? "No subscriptions registered yet."
+                  : "No hay suscripciones registradas aún."}
               </p>
             ) : (
               topRevenuePlatforms.map(([platform, data]) => {
@@ -332,7 +336,7 @@ export const FinancialAndActivitySummary: React.FC<
                           {platform}
                         </span>
                         <span className="text-[10px] text-slate-500 dark:text-slate-400">
-                          {data.count} suscripción(es)
+                          {data.count} {resolvedLanguage === "en" ? "sub(s)" : "suscripción(es)"}
                         </span>
                       </div>
                     </div>
@@ -342,7 +346,7 @@ export const FinancialAndActivitySummary: React.FC<
                         S/ {data.totalRevenue.toFixed(2)}
                       </span>
                       <span className="text-[10px] text-slate-400 font-cascadia">
-                        {share}% del total
+                        {share}% {resolvedLanguage === "en" ? "of total" : "del total"}
                       </span>
                     </div>
                   </div>
@@ -354,14 +358,14 @@ export const FinancialAndActivitySummary: React.FC<
 
         <div className="pt-4 mt-4 border-t border-slate-200/70 dark:border-[#25252D] flex items-center justify-between text-xs">
           <span className="text-slate-500 dark:text-slate-400 text-[11px]">
-            {Object.keys(platformRevenueMap).length} plataformas activas
+            {Object.keys(platformRevenueMap).length} {resolvedLanguage === "en" ? "active platforms" : "plataformas activas"}
           </span>
           <button
             type="button"
             onClick={() => onNavigateTab("clients_active")}
             className="text-indigo-600 dark:text-indigo-400 hover:underline font-semibold flex items-center gap-1 text-[11px]"
           >
-            <span>Ver todas</span>
+            <span>{resolvedLanguage === "en" ? "View all" : "Ver todas"}</span>
             <ArrowUpRight className="w-3.5 h-3.5" />
           </button>
         </div>
