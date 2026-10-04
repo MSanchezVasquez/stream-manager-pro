@@ -72,6 +72,10 @@ export interface SupplierAccount {
   webmailUrl?: string;
   notes?: string;
   status: "active" | "expired" | "revision";
+  cost?: number;
+  periodValue?: number;
+  periodUnit?: "days" | "months" | "years";
+  lastRenewedAt?: string;
 }
 
 export interface Supplier {

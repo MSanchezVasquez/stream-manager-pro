@@ -256,6 +256,19 @@ export interface TranslationDictionary {
   "suppliers.webmailUrl": string;
   "suppliers.notes": string;
   "suppliers.saveAccount": string;
+  "suppliers.renew": string;
+  "suppliers.renewAccount": string;
+  "suppliers.renewTitle": string;
+  "suppliers.renewSubtitle": string;
+  "suppliers.renewPeriod": string;
+  "suppliers.currentExpiration": string;
+  "suppliers.newExpiration": string;
+  "suppliers.renewSuccess": string;
+  "suppliers.renewCost": string;
+  "suppliers.renewCostPlaceholder": string;
+  "suppliers.baseFromExpiration": string;
+  "suppliers.baseFromToday": string;
+  "suppliers.updateCredentials": string;
 
   "profiles.title": string;
   "profiles.subtitle": string;
@@ -628,6 +641,19 @@ export const TRANSLATIONS: Record<SupportedLanguage, TranslationDictionary> = {
     "suppliers.webmailUrl": "Enlace a Webmail (Opcional)",
     "suppliers.notes": "Notas Adicionales",
     "suppliers.saveAccount": "Guardar Cuenta",
+    "suppliers.renew": "Renovar",
+    "suppliers.renewAccount": "Renovar Cuenta",
+    "suppliers.renewTitle": "Renovar Cuenta de Proveedor",
+    "suppliers.renewSubtitle": "Extender licencia para {platform} ({supplier})",
+    "suppliers.renewPeriod": "Periodo a renovar con el proveedor",
+    "suppliers.currentExpiration": "Vencimiento actual",
+    "suppliers.newExpiration": "Nuevo vencimiento",
+    "suppliers.renewSuccess": "¡Cuenta de proveedor renovada con éxito!",
+    "suppliers.renewCost": "Costo de renovación pagado (S/)",
+    "suppliers.renewCostPlaceholder": "Ej. 15.00",
+    "suppliers.baseFromExpiration": "Desde vencimiento actual ({date})",
+    "suppliers.baseFromToday": "A partir de hoy ({date})",
+    "suppliers.updateCredentials": "Actualizar contraseña / notas (opcional)",
 
     "profiles.title": "Perfiles Libres y Disponibles",
     "profiles.subtitle":
@@ -1002,6 +1028,19 @@ export const TRANSLATIONS: Record<SupportedLanguage, TranslationDictionary> = {
     "suppliers.webmailUrl": "Webmail Link (Optional)",
     "suppliers.notes": "Additional Notes",
     "suppliers.saveAccount": "Save Account",
+    "suppliers.renew": "Renew",
+    "suppliers.renewAccount": "Renew Account",
+    "suppliers.renewTitle": "Renew Supplier Account",
+    "suppliers.renewSubtitle": "Extend license for {platform} ({supplier})",
+    "suppliers.renewPeriod": "Renewal period with supplier",
+    "suppliers.currentExpiration": "Current expiration",
+    "suppliers.newExpiration": "New expiration",
+    "suppliers.renewSuccess": "Supplier account renewed successfully!",
+    "suppliers.renewCost": "Renewal cost paid (S/)",
+    "suppliers.renewCostPlaceholder": "e.g. 15.00",
+    "suppliers.baseFromExpiration": "From current expiration ({date})",
+    "suppliers.baseFromToday": "Starting today ({date})",
+    "suppliers.updateCredentials": "Update password / notes (optional)",
 
     "profiles.title": "Available Free Profiles",
     "profiles.subtitle":

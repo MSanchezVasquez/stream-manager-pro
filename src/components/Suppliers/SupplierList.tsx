@@ -24,9 +24,11 @@ import {
   Eye,
   EyeOff,
   X,
+  RotateCw,
 } from "lucide-react";
 import { Supplier, SupplierAccount } from "../../types";
 import { SupplierModal } from "./SupplierModal";
+import { RenewSupplierAccountModal } from "./RenewSupplierAccountModal";
 import { useTranslation } from "../../utils/translations";
 
 export const SupplierList: React.FC = () => {
@@ -59,6 +61,12 @@ export const SupplierList: React.FC = () => {
   const [accountToDelete, setAccountToDelete] = useState<{
     supplier: Supplier;
     accountId: string;
+  } | null>(null);
+
+  // Renew Account Modal state
+  const [accountToRenew, setAccountToRenew] = useState<{
+    supplier: Supplier;
+    account: SupplierAccount;
   } | null>(null);
 
   const [isDeleting, setIsDeleting] = useState(false);
@@ -291,6 +299,13 @@ export const SupplierList: React.FC = () => {
 
                           <div className="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
                             <button
+                              onClick={() => setAccountToRenew({ supplier, account: acc })}
+                              className="p-1 text-slate-400 hover:text-emerald-500 cursor-pointer"
+                              title={t("suppliers.renewAccount")}
+                            >
+                              <RotateCw className="w-3.5 h-3.5" />
+                            </button>
+                            <button
                               onClick={() => {
                                 setSelectedSupplier(supplier);
                                 setAccountToEdit(acc);
@@ -408,6 +423,17 @@ export const SupplierList: React.FC = () => {
                             </a>
                           )}
                         </div>
+
+                        {/* Renew Account Button */}
+                        <button
+                          type="button"
+                          onClick={() => setAccountToRenew({ supplier, account: acc })}
+                          className="w-full mt-2.5 py-1.5 px-3 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer border border-emerald-500/20"
+                          title={t("suppliers.renewAccount")}
+                        >
+                          <RotateCw className="w-3.5 h-3.5" />
+                          <span>{t("suppliers.renewAccount")}</span>
+                        </button>
                       </div>
                     );
                   })}
@@ -417,6 +443,16 @@ export const SupplierList: React.FC = () => {
           );
         })}
       </div>
+
+      {/* Renew Supplier Account Modal */}
+      {accountToRenew && (
+        <RenewSupplierAccountModal
+          isOpen={!!accountToRenew}
+          onClose={() => setAccountToRenew(null)}
+          supplier={accountToRenew.supplier}
+          account={accountToRenew.account}
+        />
+      )}
 
       {/* Supplier Modal */}
       {isModalOpen && selectedSupplier && (
