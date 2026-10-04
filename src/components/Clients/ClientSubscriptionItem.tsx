@@ -8,6 +8,7 @@ import {
   Check,
   MessageSquare,
   Sparkles,
+  RotateCw,
 } from "lucide-react";
 import { ClientSubscription } from "../../types";
 import { isSubscriptionFromFreeProfile } from "../../store/dataStore";
@@ -32,6 +33,7 @@ interface ClientSubscriptionItemProps {
   copiedField: string | null;
   onCopy: (text: string, fieldId: string) => void;
   onNotifyWhatsApp: (sub: ClientSubscription) => void;
+  onRenew?: (sub: ClientSubscription) => void;
 }
 
 export const ClientSubscriptionItem: React.FC<ClientSubscriptionItemProps> = ({
@@ -44,6 +46,7 @@ export const ClientSubscriptionItem: React.FC<ClientSubscriptionItemProps> = ({
   copiedField,
   onCopy,
   onNotifyWhatsApp,
+  onRenew,
 }) => {
   const { t, resolvedLanguage } = useTranslation();
   const platConfig = getPlatformConfig(sub.serviceName);
@@ -204,14 +207,28 @@ export const ClientSubscriptionItem: React.FC<ClientSubscriptionItemProps> = ({
         </div>
       )}
 
-      {/* WhatsApp trigger per subscription */}
-      <button
-        onClick={() => onNotifyWhatsApp(sub)}
-        className="w-full mt-2 py-1 px-2 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-      >
-        <MessageSquare className="w-3 h-3" />
-        <span>{t("sub.notifyWhatsApp")}</span>
-      </button>
+      {/* Action buttons: Renew + WhatsApp */}
+      <div className="flex items-center gap-2 mt-2 pt-1.5 border-t border-slate-200/60 dark:border-[#2D2D33]/60">
+        {onRenew && (
+          <button
+            type="button"
+            onClick={() => onRenew(sub)}
+            className="flex-1 py-1.5 px-2 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[11px] font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer border border-emerald-500/20"
+            title={t("sub.renew")}
+          >
+            <RotateCw className="w-3 h-3" />
+            <span>{t("sub.renew")}</span>
+          </button>
+        )}
+        <button
+          type="button"
+          onClick={() => onNotifyWhatsApp(sub)}
+          className="flex-1 py-1.5 px-2 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer border border-emerald-500/20"
+        >
+          <MessageSquare className="w-3 h-3" />
+          <span>{t("sub.notifyWhatsApp")}</span>
+        </button>
+      </div>
     </div>
   );
 };

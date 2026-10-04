@@ -9,6 +9,7 @@ import {
   Info,
   UserX,
   UserCheck,
+  RotateCw,
 } from "lucide-react";
 import { Client, ClientSubscription } from "../../types";
 import { getClientAccountHealth } from "../../utils/platformHelpers";
@@ -30,6 +31,7 @@ interface ClientCardProps {
   onDelete: (client: Client) => void;
   onReactivate?: (client: Client) => void;
   onNotifyWhatsApp: (sub: ClientSubscription) => void;
+  onRenew?: (client: Client, sub?: ClientSubscription) => void;
 }
 
 export const ClientCard: React.FC<ClientCardProps> = ({
@@ -47,6 +49,7 @@ export const ClientCard: React.FC<ClientCardProps> = ({
   onDelete,
   onReactivate,
   onNotifyWhatsApp,
+  onRenew,
 }) => {
   const { t } = useTranslation();
 
@@ -69,7 +72,18 @@ export const ClientCard: React.FC<ClientCardProps> = ({
           </div>
 
           {/* Card Header Actions */}
-          <div className="flex items-center gap-0.5 shrink-0">
+          <div className="flex items-center gap-1.5 shrink-0">
+            {client.status === "active" && onRenew && (
+              <button
+                type="button"
+                onClick={() => onRenew(client)}
+                className="px-2 py-1 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer border border-emerald-500/20"
+                title={t("clients.renewTooltip")}
+              >
+                <RotateCw className="w-3.5 h-3.5" />
+                <span>{t("clients.renew")}</span>
+              </button>
+            )}
             {client.status === "inactive" && onReactivate && (
               <button
                 onClick={() => onReactivate(client)}
@@ -178,6 +192,7 @@ export const ClientCard: React.FC<ClientCardProps> = ({
             copiedField={copiedField}
             onCopy={onCopy}
             onNotifyWhatsApp={onNotifyWhatsApp}
+            onRenew={onRenew ? (s) => onRenew(client, s) : undefined}
           />
         ))}
 

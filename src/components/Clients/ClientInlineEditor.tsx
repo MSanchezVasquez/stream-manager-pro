@@ -1,8 +1,13 @@
 import React from "react";
 import { DatePicker } from "../common/DatePicker";
-import { Edit2, Sidebar as SidebarIcon, Save, X } from "lucide-react";
+import { Edit2, Sidebar as SidebarIcon, Save, X, RotateCw } from "lucide-react";
 import { Client } from "../../types";
-import { getClientAccountHealth } from "../../utils/platformHelpers";
+import {
+  getClientAccountHealth,
+  formatDateToString,
+  getDaysRemaining,
+  addPeriodToDateString,
+} from "../../utils/platformHelpers";
 import { useTranslation } from "../../utils/translations";
 
 interface ClientInlineEditorProps {
@@ -113,9 +118,31 @@ export const ClientInlineEditor: React.FC<ClientInlineEditorProps> = ({
 
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="block text-[10px] text-slate-500 mb-0.5">
-                  {t("inline.cutDate")}
-                </label>
+                <div className="flex items-center justify-between mb-0.5">
+                  <label className="block text-[10px] text-slate-500">
+                    {t("inline.cutDate")}
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const today = formatDateToString(new Date());
+                      const isSubActive = sub.cutDate ? getDaysRemaining(sub.cutDate) > 0 : false;
+                      const baseDate = isSubActive && sub.cutDate ? sub.cutDate : today;
+                      const newCut = addPeriodToDateString(baseDate, sub.periodValue || 1, sub.periodUnit || "months");
+                      const newSubs = [...inlineClientData.subscriptions];
+                      newSubs[idx] = { ...newSubs[idx], cutDate: newCut, status: "active" };
+                      setInlineClientData({
+                        ...inlineClientData,
+                        subscriptions: newSubs,
+                      });
+                    }}
+                    className="text-[10px] text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-0.5 cursor-pointer font-bold"
+                    title={t("clients.renewTooltip")}
+                  >
+                    <RotateCw className="w-2.5 h-2.5" />
+                    <span>+{sub.periodValue || 1} {sub.periodUnit === "days" ? "d" : sub.periodUnit === "years" ? "a" : "m"}</span>
+                  </button>
+                </div>
                 <DatePicker
                   value={sub.cutDate}
                   onChange={(v) => {

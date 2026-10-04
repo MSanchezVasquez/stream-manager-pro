@@ -327,6 +327,35 @@ export interface TranslationDictionary {
   // Common Navigation
   "common.scrollLeft": string;
   "common.scrollRight": string;
+
+  // Renewal
+  "clients.renew": string;
+  "clients.renewTooltip": string;
+  "sub.renew": string;
+  "renewModal.title": string;
+  "renewModal.subtitle": string;
+  "renewModal.selectSubs": string;
+  "renewModal.selectAll": string;
+  "renewModal.renewPeriod": string;
+  "renewModal.durationUnit": string;
+  "renewModal.durationValue": string;
+  "renewModal.days": string;
+  "renewModal.months": string;
+  "renewModal.years": string;
+  "renewModal.quickPresets": string;
+  "renewModal.baseCalculation": string;
+  "renewModal.baseFromCut": string;
+  "renewModal.baseFromToday": string;
+  "renewModal.currentCutDate": string;
+  "renewModal.newCutDate": string;
+  "renewModal.cutDateManual": string;
+  "renewModal.newPrice": string;
+  "renewModal.summary": string;
+  "renewModal.confirm": string;
+  "renewModal.cancel": string;
+  "renewModal.success": string;
+  "renewModal.notifyWhatsApp": string;
+  "renewModal.activeHealth": string;
 }
 
 export const TRANSLATIONS: Record<SupportedLanguage, TranslationDictionary> = {
@@ -672,6 +701,35 @@ export const TRANSLATIONS: Record<SupportedLanguage, TranslationDictionary> = {
     // Common Navigation
     "common.scrollLeft": "Desplazar a la izquierda",
     "common.scrollRight": "Desplazar a la derecha",
+
+    // Renewal
+    "clients.renew": "Renovar",
+    "clients.renewTooltip": "Renovar suscripción del cliente",
+    "sub.renew": "Renovar",
+    "renewModal.title": "Renovar Suscripción",
+    "renewModal.subtitle": "Extender servicio para {name}",
+    "renewModal.selectSubs": "Servicios a renovar",
+    "renewModal.selectAll": "Renovar todos",
+    "renewModal.renewPeriod": "Periodo de renovación",
+    "renewModal.durationUnit": "Unidad de tiempo",
+    "renewModal.durationValue": "Cantidad",
+    "renewModal.days": "Días",
+    "renewModal.months": "Meses",
+    "renewModal.years": "Años",
+    "renewModal.quickPresets": "Atajos de duración",
+    "renewModal.baseCalculation": "Calcular renovación a partir de",
+    "renewModal.baseFromCut": "Fecha de corte actual ({date})",
+    "renewModal.baseFromToday": "A partir de hoy ({date})",
+    "renewModal.currentCutDate": "Corte actual",
+    "renewModal.newCutDate": "Nuevo corte",
+    "renewModal.cutDateManual": "Ajustar fecha de corte",
+    "renewModal.newPrice": "Precio de renovación (S/)",
+    "renewModal.summary": "Resumen de la renovación",
+    "renewModal.confirm": "Confirmar Renovación",
+    "renewModal.cancel": "Cancelar",
+    "renewModal.success": "¡Cliente renovado con éxito!",
+    "renewModal.notifyWhatsApp": "Avisar renovación por WhatsApp",
+    "renewModal.activeHealth": "Estado: Activo",
   },
   en: {
     // Navigation
@@ -1017,6 +1075,35 @@ export const TRANSLATIONS: Record<SupportedLanguage, TranslationDictionary> = {
     // Common Navigation
     "common.scrollLeft": "Scroll left",
     "common.scrollRight": "Scroll right",
+
+    // Renewal
+    "clients.renew": "Renew",
+    "clients.renewTooltip": "Renew client subscription",
+    "sub.renew": "Renew",
+    "renewModal.title": "Renew Subscription",
+    "renewModal.subtitle": "Extend service for {name}",
+    "renewModal.selectSubs": "Services to renew",
+    "renewModal.selectAll": "Renew all",
+    "renewModal.renewPeriod": "Renewal period",
+    "renewModal.durationUnit": "Time unit",
+    "renewModal.durationValue": "Quantity",
+    "renewModal.days": "Days",
+    "renewModal.months": "Months",
+    "renewModal.years": "Years",
+    "renewModal.quickPresets": "Quick duration presets",
+    "renewModal.baseCalculation": "Calculate renewal starting from",
+    "renewModal.baseFromCut": "Current cutoff date ({date})",
+    "renewModal.baseFromToday": "Starting today ({date})",
+    "renewModal.currentCutDate": "Current cutoff",
+    "renewModal.newCutDate": "New cutoff",
+    "renewModal.cutDateManual": "Adjust cutoff date",
+    "renewModal.newPrice": "Renewal price (S/)",
+    "renewModal.summary": "Renewal summary",
+    "renewModal.confirm": "Confirm Renewal",
+    "renewModal.cancel": "Cancel",
+    "renewModal.success": "Client renewed successfully!",
+    "renewModal.notifyWhatsApp": "Send WhatsApp confirmation",
+    "renewModal.activeHealth": "Status: Active",
   },
 };
 

@@ -13,6 +13,7 @@ import { ClientHealthFilterBar } from "./ClientHealthFilterBar";
 import { ClientCard } from "./ClientCard";
 import { ClientInlineEditor } from "./ClientInlineEditor";
 import { DeleteClientModal } from "./DeleteClientModal";
+import { RenewClientModal } from "./RenewClientModal";
 import { useTranslation } from "../../utils/translations";
 
 interface ClientListProps {
@@ -62,6 +63,10 @@ export const ClientList: React.FC<ClientListProps> = ({
   const [editingClient, setEditingClient] = useState<Client | null>(null);
   const [isClientModalOpen, setIsClientModalOpen] = useState(false);
   const [clientToDelete, setClientToDelete] = useState<Client | null>(null);
+  const [clientToRenew, setClientToRenew] = useState<{
+    client: Client;
+    targetSubId?: string;
+  } | null>(null);
   const [whatsAppSub, setWhatsAppSub] = useState<{
     clientName: string;
     sub: ClientSubscription;
@@ -384,10 +389,33 @@ export const ClientList: React.FC<ClientListProps> = ({
                     phone: client.phone,
                   })
                 }
+                onRenew={(c, sub) =>
+                  setClientToRenew({
+                    client: c,
+                    targetSubId: sub?.id,
+                  })
+                }
               />
             );
           })}
         </div>
+      )}
+
+      {/* Renew Client Modal */}
+      {clientToRenew && (
+        <RenewClientModal
+          isOpen={!!clientToRenew}
+          onClose={() => setClientToRenew(null)}
+          client={clientToRenew.client}
+          targetSubscriptionId={clientToRenew.targetSubId}
+          onNotifyWhatsApp={(sub, name, phone) => {
+            setWhatsAppSub({
+              clientName: name,
+              sub,
+              phone,
+            });
+          }}
+        />
       )}
 
       {/* Add / Edit Client Modal */}
