@@ -214,7 +214,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
           (isOriginalCutActive ? "cutDate" : "today");
 
         const baseDateStr =
-          chosenBase === "cutDate" && isOriginalCutActive && originalCut
+          chosenBase === "cutDate" && originalCut
             ? originalCut
             : getTodayFormatted();
 
@@ -768,7 +768,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                               renewalBaseMap[sub.id] ||
                               (isOriginalCutActive ? "cutDate" : "today");
 
-                            if (isOriginalCutActive && originalCut) {
+                            if (originalCut) {
                               return (
                                 <div className="flex items-center justify-between text-[11px] pt-1.5 border-t border-slate-200/60 dark:border-[#25252E] flex-wrap gap-2">
                                   <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5">

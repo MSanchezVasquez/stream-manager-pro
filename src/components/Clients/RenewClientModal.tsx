@@ -109,9 +109,8 @@ export const RenewClientModal: React.FC<RenewClientModalProps> = ({
     const today = getTodayFormatted();
 
     client.subscriptions.forEach((s) => {
-      const isSubActive = s.cutDate ? getDaysRemaining(s.cutDate) > 0 : false;
       const baseDate =
-        renewalBase === "cutDate" && isSubActive && s.cutDate
+        renewalBase === "cutDate" && s.cutDate
           ? s.cutDate
           : today;
 
@@ -173,7 +172,7 @@ export const RenewClientModal: React.FC<RenewClientModalProps> = ({
         if (!selectedSubIds.includes(s.id)) return s;
 
         const newCut = customCutDates[s.id] || addPeriodToDateString(
-          renewalBase === "cutDate" && s.cutDate && getDaysRemaining(s.cutDate) > 0
+          renewalBase === "cutDate" && s.cutDate
             ? s.cutDate
             : today,
           periodValue,
@@ -536,7 +535,7 @@ export const RenewClientModal: React.FC<RenewClientModalProps> = ({
                 .map((sub) => {
                   const currentCut = sub.cutDate || todayStr;
                   const newCut = customCutDates[sub.id] || addPeriodToDateString(
-                    renewalBase === "cutDate" && sub.cutDate && getDaysRemaining(sub.cutDate) > 0
+                    renewalBase === "cutDate" && sub.cutDate
                       ? sub.cutDate
                       : todayStr,
                     periodValue,

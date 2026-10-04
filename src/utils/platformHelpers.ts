@@ -321,7 +321,14 @@ export function addPeriodToDateString(
   unit: PeriodUnit,
 ): string {
   const parsed = parseDateString(dateStr) || new Date();
-  const res = new Date(parsed.getTime());
+  const res = new Date(
+    parsed.getFullYear(),
+    parsed.getMonth(),
+    parsed.getDate(),
+    12,
+    0,
+    0,
+  );
 
   if (unit === "days") {
     res.setDate(res.getDate() + value);

@@ -69,11 +69,8 @@ export const RenewSupplierAccountModal: React.FC<
     setPeriodUnit(initUnit);
     setPeriodValue(initVal);
 
-    // Initial base: if account expiration is in the future, extend from expiration; otherwise start from today
-    const isActive = account.expirationDate
-      ? getDaysRemaining(account.expirationDate) > 0
-      : false;
-    const defaultBase = isActive ? "expirationDate" : "today";
+    // Initial base: use expirationDate if available, otherwise today
+    const defaultBase = account.expirationDate ? "expirationDate" : "today";
     setRenewalBase(defaultBase);
 
     const today = getTodayFormatted();
@@ -92,7 +89,7 @@ export const RenewSupplierAccountModal: React.FC<
     if (!account) return;
     const today = getTodayFormatted();
     const baseDate =
-      renewalBase === "expirationDate" && account.expirationDate && getDaysRemaining(account.expirationDate) > 0
+      renewalBase === "expirationDate" && account.expirationDate
         ? account.expirationDate
         : today;
 
@@ -119,7 +116,7 @@ export const RenewSupplierAccountModal: React.FC<
       const finalExpDate =
         customExpirationDate ||
         addPeriodToDateString(
-          renewalBase === "expirationDate" && account.expirationDate && getDaysRemaining(account.expirationDate) > 0
+          renewalBase === "expirationDate" && account.expirationDate
             ? account.expirationDate
             : today,
           periodValue,
@@ -489,7 +486,9 @@ export const RenewSupplierAccountModal: React.FC<
                 <div>
                   <p className="text-[10px] text-purple-700 dark:text-purple-400 uppercase font-bold flex items-center justify-between">
                     <span>{t("suppliers.newExpiration")}</span>
-                    <span className="font-cascadia font-normal">+{calculatedDaysDiff}d</span>
+                    <span className="font-cascadia font-normal">
+                      +{periodValue}{periodUnit === "days" ? "d" : periodUnit === "years" ? "a" : "m"}
+                    </span>
                   </p>
                   <DatePicker
                     value={customExpirationDate}
