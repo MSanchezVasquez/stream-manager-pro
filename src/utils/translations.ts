@@ -425,7 +425,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, TranslationDictionary> = {
       "Intenta cambiar el término de búsqueda o registra un nuevo cliente en el sistema.",
     "clients.showAll": "Mostrar todos los clientes",
     "clients.search": "Buscar...",
-    "clients.notifyRenewal": "Notificar Renovación",
+    "clients.notifyRenewal": "Avisar por WhatsApp",
     "clients.copied": "¡Copiado!",
     "clients.copy": "Copiar",
     "clients.daysRemaining": "días restantes",
@@ -460,7 +460,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, TranslationDictionary> = {
     "sub.pin": "PIN:",
     "sub.noEmail": "Sin correo asignado",
     "sub.noPassword": "Sin contraseña asignada",
-    "sub.notifyWhatsApp": "Notificar Renovación por WhatsApp",
+    "sub.notifyWhatsApp": "Avisar por WhatsApp",
     "sub.copyEmail": "Copiar correo",
     "sub.copyPassword": "Copiar contraseña",
     "sub.copyProfile": "Copiar perfil",
@@ -692,7 +692,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, TranslationDictionary> = {
 
     // WhatsApp Modal
     "whatsapp.title": "Notificación para WhatsApp",
-    "whatsapp.subtitle": "Aviso de corte/renovación para {name}",
+    "whatsapp.subtitle": "Aviso de servicio para {name}",
     "whatsapp.formattedMsg": "Mensaje Formateado (Puedes editarlo antes de enviar):",
     "whatsapp.copied": "¡Copiado!",
     "whatsapp.copy": "Copiar Texto",
@@ -797,7 +797,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, TranslationDictionary> = {
       "Try changing your search query or register a new client in the system.",
     "clients.showAll": "Show all clients",
     "clients.search": "Search...",
-    "clients.notifyRenewal": "Notify Renewal",
+    "clients.notifyRenewal": "Notify via WhatsApp",
     "clients.copied": "Copied!",
     "clients.copy": "Copy",
     "clients.daysRemaining": "days remaining",
@@ -832,7 +832,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, TranslationDictionary> = {
     "sub.pin": "PIN:",
     "sub.noEmail": "No email assigned",
     "sub.noPassword": "No password assigned",
-    "sub.notifyWhatsApp": "Notify Renewal via WhatsApp",
+    "sub.notifyWhatsApp": "Notify via WhatsApp",
     "sub.copyEmail": "Copy email",
     "sub.copyPassword": "Copy password",
     "sub.copyProfile": "Copy profile",
@@ -1066,7 +1066,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, TranslationDictionary> = {
 
     // WhatsApp Modal
     "whatsapp.title": "WhatsApp Notification",
-    "whatsapp.subtitle": "Cut-off/renewal notice for {name}",
+    "whatsapp.subtitle": "Service notice for {name}",
     "whatsapp.formattedMsg": "Formatted Message (You can edit before sending):",
     "whatsapp.copied": "Copied!",
     "whatsapp.copy": "Copy Text",

@@ -192,7 +192,6 @@ export const ClientCard: React.FC<ClientCardProps> = ({
             copiedField={copiedField}
             onCopy={onCopy}
             onNotifyWhatsApp={onNotifyWhatsApp}
-            onRenew={onRenew ? (s) => onRenew(client, s) : undefined}
           />
         ))}
 
