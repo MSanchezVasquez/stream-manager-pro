@@ -17,6 +17,7 @@ import { useSettingsStore, WeekStart } from "../../store/settingsStore";
 import { useAuthStore } from "../../store/authStore";
 import { LANGUAGES } from "../../utils/languages";
 import { useTranslation } from "../../utils/translations";
+import { LanguageFlag } from "../common/LanguageFlag";
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -172,10 +173,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 onClick={() => setShowLangDropdown((o) => !o)}
                 className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-white dark:bg-[#0F0F12] border border-slate-200 dark:border-[#2D2D33] text-sm text-slate-900 dark:text-white cursor-pointer"
               >
-                <span className="flex items-center gap-2">
-                  <span className="text-xs font-bold w-6 shrink-0">
-                    {currentLang.shortCode}
-                  </span>
+                <span className="flex items-center gap-2.5">
+                  <LanguageFlag code={currentLang.code} size={22} className="shrink-0" />
                   <span>{currentLang.name}</span>
                 </span>
                 <ChevronDown
@@ -200,10 +199,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                             : "text-slate-700 dark:text-white hover:bg-slate-100 dark:hover:bg-[#1F1F26]"
                         }`}
                       >
-                        <span className="flex items-center gap-2">
-                          <span className="text-xs font-bold w-6 shrink-0">
-                            {lang.shortCode}
-                          </span>
+                        <span className="flex items-center gap-2.5">
+                          <LanguageFlag code={lang.code} size={22} className="shrink-0" />
                           <span>{lang.name}</span>
                         </span>
                         {isSelected && <Check className="w-4 h-4 shrink-0" />}
@@ -224,7 +221,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               style={isAutoDetect ? { borderColor: ACCENT } : undefined}
             >
               {isAutoDetect
-                ? `${t("profile.autoDetect")} (${t("profile.detected")}: ${detectedBrowserLanguage === "es" ? "Español" : "English"})`
+                ? `${t("profile.autoDetect")} (${t("profile.detected")}: ${detectedBrowserLanguage === "es" ? "Español" : "English (US)"})`
                 : t("profile.autoDetect")}
             </button>
           </SettingsCard>

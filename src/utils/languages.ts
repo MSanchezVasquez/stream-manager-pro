@@ -6,7 +6,7 @@ export interface LanguageOption {
 
 export const LANGUAGES: LanguageOption[] = [
   { code: "es", shortCode: "ES", name: "Español" },
-  { code: "en", shortCode: "EN", name: "English" },
+  { code: "en", shortCode: "US", name: "English (US)" },
 ];
 
 /**

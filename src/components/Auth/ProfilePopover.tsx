@@ -13,6 +13,7 @@ import gsap from "gsap";
 import { LogoutConfirmModal } from "./LogoutConfirmModal";
 import { LANGUAGES } from "../../utils/languages";
 import { useTranslation } from "../../utils/translations";
+import { LanguageFlag } from "../common/LanguageFlag";
 
 interface ProfilePopoverProps {
   isOpen: boolean;
@@ -162,9 +163,7 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <span className="text-xs font-bold text-slate-900 dark:text-white w-6 shrink-0">
-                      {currentLang.shortCode}
-                    </span>
+                    <LanguageFlag code={currentLang.code} size={22} className="shrink-0" />
                     <span className="text-sm font-normal text-slate-900 dark:text-white">
                       {currentLang.name}
                     </span>
@@ -192,9 +191,7 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
                           }`}
                         >
                           <div className="flex items-center gap-3">
-                            <span className="text-xs font-bold text-slate-900 dark:text-white w-6 shrink-0">
-                              {lang.shortCode}
-                            </span>
+                            <LanguageFlag code={lang.code} size={22} className="shrink-0" />
                             <span className="text-sm font-normal">
                               {lang.name}
                             </span>
@@ -222,7 +219,7 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
             }`}
           >
             {isAutoDetect
-              ? `${t("profile.autoDetect")} (${t("profile.detected")}: ${detectedBrowserLanguage === "es" ? "Español" : "English"})`
+              ? `${t("profile.autoDetect")} (${t("profile.detected")}: ${detectedBrowserLanguage === "es" ? "Español" : "English (US)"})`
               : t("profile.autoDetect")}
           </button>
         </div>
