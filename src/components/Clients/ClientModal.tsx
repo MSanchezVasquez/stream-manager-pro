@@ -89,6 +89,30 @@ export const ClientModal: React.FC<ClientModalProps> = ({
     initialClient,
   );
 
+  // Bloquear el scroll de la página de fondo cuando el drawer lateral está abierto
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const originalBodyOverflow = document.body.style.overflow;
+    const originalHtmlOverflow = document.documentElement.style.overflow;
+
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = originalBodyOverflow;
+      document.documentElement.style.overflow = originalHtmlOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen, onClose]);
+
   useEffect(() => {
     setActiveClient(initialClient);
   }, [initialClient, isOpen]);
@@ -346,6 +370,8 @@ export const ClientModal: React.FC<ClientModalProps> = ({
       <div
         className="fixed inset-0 bg-black/15 dark:bg-black/35 backdrop-brightness-[0.75] transition-all duration-300 animate-fade-in"
         onClick={onClose}
+        onWheel={(e) => e.stopPropagation()}
+        onTouchMove={(e) => e.stopPropagation()}
       />
 
       <div className="fixed inset-y-0 right-0 max-w-full flex pl-10 pointer-events-none z-10">

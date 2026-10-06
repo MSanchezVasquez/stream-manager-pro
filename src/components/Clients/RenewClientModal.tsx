@@ -70,6 +70,11 @@ export const RenewClientModal: React.FC<RenewClientModalProps> = ({
       return;
     }
 
+    const originalBodyOverflow = document.body.style.overflow;
+    const originalHtmlOverflow = document.documentElement.style.overflow;
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
+
     setRenewedSuccess(false);
 
     // Initial selected subscription(s)
@@ -99,6 +104,11 @@ export const RenewClientModal: React.FC<RenewClientModalProps> = ({
     });
     setCustomPrices(prices);
     setCustomCutDates({});
+
+    return () => {
+      document.body.style.overflow = originalBodyOverflow;
+      document.documentElement.style.overflow = originalHtmlOverflow;
+    };
   }, [isOpen, client, targetSubscriptionId]);
 
   // Recalculate cut dates when periodUnit, periodValue, or renewalBase changes
