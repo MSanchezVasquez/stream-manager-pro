@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useMemo } from "react";
+import React, { useRef, useEffect, useState, useMemo } from 'react';
 import {
   Sun,
   Moon,
@@ -8,17 +8,17 @@ import {
   Zap,
   Star,
   Menu,
-} from "lucide-react";
-import { AppLogo } from "./AppLogo";
-import { PlatformIcon } from "./common/PlatformIcon";
-import { ProfilePopover } from "./Auth/ProfilePopover";
-import { LogoutConfirmModal } from "./Auth/LogoutConfirmModal";
-import { useThemeStore } from "../store/themeStore";
-import { useAuthStore } from "../store/authStore";
-import { useDataStore } from "../store/dataStore";
-import { useTranslation } from "../utils/translations";
+} from 'lucide-react';
+import { AppLogo } from './AppLogo';
+import { PlatformIcon } from './common/PlatformIcon';
+import { ProfilePopover } from './Auth/ProfilePopover';
+import { LogoutConfirmModal } from './Auth/LogoutConfirmModal';
+import { useThemeStore } from '../store/themeStore';
+import { useAuthStore } from '../store/authStore';
+import { useDataStore } from '../store/dataStore';
+import { useTranslation } from '../utils/translations';
 
-import gsap from "gsap";
+import gsap from 'gsap';
 
 interface NavbarProps {
   searchQuery: string;
@@ -31,18 +31,18 @@ interface NavbarProps {
 }
 
 const STREAMING_PLATFORMS = [
-  { id: "Netflix Premium", label: "Netflix Premium" },
-  { id: "Disney+ Premium", label: "Disney+ Premium" },
-  { id: "HBO Max Estándar", label: "HBO Max Estándar" },
-  { id: "Prime Video", label: "Prime Video" },
-  { id: "Youtube Premium", label: "Youtube Premium" },
-  { id: "Paramount Plus", label: "Paramount Plus" },
-  { id: "Spotify Premium", label: "Spotify Premium" },
-  { id: "Crunchyroll Fan", label: "Crunchyroll Fan" },
-  { id: "DGO", label: "DGO" },
-  { id: "Apple TV", label: "Apple TV" },
-  { id: "Vix Premium", label: "Vix Premium" },
-  { id: "Movistar TV", label: "Movistar TV" },
+  { id: 'Netflix Premium', label: 'Netflix Premium' },
+  { id: 'Disney+ Premium', label: 'Disney+ Premium' },
+  { id: 'HBO Max Estándar', label: 'HBO Max Estándar' },
+  { id: 'Prime Video', label: 'Prime Video' },
+  { id: 'Youtube Premium', label: 'Youtube Premium' },
+  { id: 'Paramount Plus', label: 'Paramount Plus' },
+  { id: 'Spotify Premium', label: 'Spotify Premium' },
+  { id: 'Crunchyroll Fan', label: 'Crunchyroll Fan' },
+  { id: 'DGO', label: 'DGO' },
+  { id: 'Apple TV', label: 'Apple TV' },
+  { id: 'Vix Premium', label: 'Vix Premium' },
+  { id: 'Movistar TV', label: 'Movistar TV' },
 ];
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -75,22 +75,22 @@ export const Navbar: React.FC<NavbarProps> = ({
   // Keyboard shortcut Ctrl+K to focus search input
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
         searchInputRef.current?.focus();
       }
     };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   // Calculate total alerts (cut-off in <= 5 days or expired)
   const alertCount = useMemo(() => {
     return clients.reduce((acc, client) => {
-      if (client.status !== "active") return acc;
+      if (client.status !== 'active') return acc;
       const count = client.subscriptions.filter((sub) => {
         if (!sub.cutDate) return false;
-        const parts = sub.cutDate.split("/");
+        const parts = sub.cutDate.split('/');
         if (parts.length === 3) {
           let year = parseInt(parts[2], 10);
           if (year < 100) year += 2000;
@@ -111,7 +111,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   }, [clients]);
 
   const activeClientsCount = useMemo(
-    () => clients.filter((c) => c.status === "active").length,
+    () => clients.filter((c) => c.status === 'active').length,
     [clients],
   );
 
@@ -125,7 +125,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       gsap.fromTo(
         logoRef.current,
         { scale: 0.8, opacity: 0 },
-        { scale: 1, opacity: 1, duration: 0.6, ease: "back.out(1.7)" },
+        { scale: 1, opacity: 1, duration: 0.6, ease: 'back.out(1.7)' },
       );
     }
   }, []);
@@ -133,7 +133,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   const handleThemeToggle = () => {
     if (themeBtnRef.current) {
       gsap.to(themeBtnRef.current, {
-        rotate: theme === "dark" ? 180 : 0,
+        rotate: theme === 'dark' ? 180 : 0,
         scale: 1.2,
         duration: 0.3,
         yoyo: true,
@@ -146,16 +146,16 @@ export const Navbar: React.FC<NavbarProps> = ({
   const handleSearchChange = (query: string) => {
     setSearchQuery(query);
     if (query.trim().length > 0) {
-      if (activeTab !== "clients_active" && activeTab !== "clients_inactive") {
-        setActiveTab("clients_active");
+      if (activeTab !== 'clients_active' && activeTab !== 'clients_inactive') {
+        setActiveTab('clients_active');
       }
     }
   };
 
   const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && searchQuery.trim().length > 0) {
-      if (activeTab !== "clients_active" && activeTab !== "clients_inactive") {
-        setActiveTab("clients_active");
+    if (e.key === 'Enter' && searchQuery.trim().length > 0) {
+      if (activeTab !== 'clients_active' && activeTab !== 'clients_inactive') {
+        setActiveTab('clients_active');
       }
     }
   };
@@ -167,7 +167,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-1.5 sm:gap-6">
           <div className="flex items-center gap-1.5 sm:gap-3 min-w-0">
             {/* Sidebar Floating Toggle Button - ONLY on Tablet & Mobile, NEVER on laptop */}
-            {onToggleSidebar && activeTab !== "profile" && (
+            {onToggleSidebar && activeTab !== 'profile' && (
               <button
                 type="button"
                 onClick={onToggleSidebar}
@@ -183,7 +183,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div
               ref={logoRef}
               className="flex items-center gap-2 sm:gap-2.5 cursor-pointer group min-w-0 shrink"
-              onClick={() => setActiveTab("dashboard")}
+              onClick={() => setActiveTab('dashboard')}
             >
               <AppLogo className="w-7 h-7 sm:w-8 sm:h-8 text-white group-hover:scale-105 transition-transform shrink-0" />
               <div className="flex items-center gap-1 sm:gap-1.5 min-w-0">
@@ -203,7 +203,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <input
                 ref={searchInputRef}
                 type="text"
-                placeholder={t("nav.searchPlaceholder")}
+                placeholder={t('nav.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => handleSearchChange(e.target.value)}
                 onKeyDown={handleSearchKeyDown}
@@ -212,7 +212,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               {searchQuery ? (
                 <button
                   type="button"
-                  onClick={() => setSearchQuery("")}
+                  onClick={() => setSearchQuery('')}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-white/80 hover:text-white"
                 >
                   ✕
@@ -230,11 +230,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Expiration Alerts Button with Bounce Badge */}
             <button
               type="button"
-              onClick={() => setActiveTab("alerts")}
+              onClick={() => setActiveTab('alerts')}
               className={`relative p-1.5 sm:p-2 rounded-lg sm:rounded-xl transition-all border shrink-0 ${
-                activeTab === "alerts"
-                  ? "bg-white text-[#2242cc] border-white shadow-sm"
-                  : "bg-white/10 hover:bg-white/20 border-white/15 text-white"
+                activeTab === 'alerts'
+                  ? 'bg-white text-[#2242cc] border-white shadow-sm'
+                  : 'bg-white/10 hover:bg-white/20 border-white/15 text-white'
               }`}
               title="Alertas de Vencimiento"
             >
@@ -253,13 +253,13 @@ export const Navbar: React.FC<NavbarProps> = ({
               onClick={handleThemeToggle}
               className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 text-white transition-all shrink-0 cursor-pointer"
               title={
-                theme === "dark"
-                  ? "Cambiar a Modo Claro"
-                  : "Cambiar a Modo Oscuro"
+                theme === 'dark'
+                  ? 'Cambiar a Modo Claro'
+                  : 'Cambiar a Modo Oscuro'
               }
               aria-label="Cambiar tema"
             >
-              {theme === "dark" ? (
+              {theme === 'dark' ? (
                 <Sun className="w-4 h-4 text-amber-300" />
               ) : (
                 <Moon className="w-4 h-4 text-white" />
@@ -285,7 +285,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   />
                 ) : (
                   <div className="w-full h-full rounded-full bg-white/20 flex items-center justify-center overflow-hidden shrink-0 text-white font-black text-xs border-0 border-none">
-                    {user?.email ? user.email.charAt(0).toUpperCase() : "U"}
+                    {user?.email ? user.email.charAt(0).toUpperCase() : 'U'}
                   </div>
                 )}
               </button>
@@ -296,7 +296,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 triggerRef={avatarBtnRef}
                 onOpenSettings={onOpenSettingsModal}
                 onOpenAuthModal={onOpenAuthModal}
-                onOpenProfile={() => setActiveTab("profile")}
+                onOpenProfile={() => setActiveTab('profile')}
                 onRequestLogout={() => {
                   setIsPopoverOpen(false);
                   setIsLogoutModalOpen(true);
@@ -318,7 +318,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/70 pointer-events-none" />
             <input
               type="text"
-              placeholder={t("nav.searchPlaceholder")}
+              placeholder={t('nav.searchPlaceholder')}
               value={searchQuery}
               onChange={(e) => handleSearchChange(e.target.value)}
               onKeyDown={handleSearchKeyDown}
@@ -327,7 +327,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             {searchQuery && (
               <button
                 type="button"
-                onClick={() => setSearchQuery("")}
+                onClick={() => setSearchQuery('')}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-white/80 hover:text-white p-1"
               >
                 ✕
@@ -377,29 +377,35 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="hidden lg:flex items-center gap-4 text-xs font-semibold text-white/90 shrink-0 pointer-events-auto">
             <button
               type="button"
-              onClick={() => setActiveTab("alerts")}
+              onClick={() => setActiveTab('alerts')}
               className="hover:text-white transition-colors flex items-center gap-1.5 cursor-pointer"
             >
               <Zap className="w-3.5 h-3.5 text-amber-300" />
-              <span>{t("nav.expirations")} ({alertCount})</span>
+              <span>
+                {t('nav.expirations')} ({alertCount})
+              </span>
             </button>
 
             <button
               type="button"
-              onClick={() => setActiveTab("clients_active")}
+              onClick={() => setActiveTab('clients_active')}
               className="hover:text-white transition-colors flex items-center gap-1.5 cursor-pointer"
             >
               <Star className="w-3.5 h-3.5 text-emerald-300" />
-              <span>{activeClientsCount} {t("nav.active")}</span>
+              <span>
+                {activeClientsCount} {t('nav.active')}
+              </span>
             </button>
 
             <button
               type="button"
-              onClick={() => setActiveTab("free_profiles")}
+              onClick={() => setActiveTab('free_profiles')}
               className="hover:text-white transition-colors flex items-center gap-1.5 cursor-pointer"
             >
               <Sparkles className="w-3.5 h-3.5 text-cyan-300" />
-              <span>{freeProfilesCount} {t("nav.freeProfiles")}</span>
+              <span>
+                {freeProfilesCount} {t('nav.freeProfiles')}
+              </span>
             </button>
           </div>
         </div>

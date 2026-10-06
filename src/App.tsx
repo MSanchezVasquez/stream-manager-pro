@@ -1,33 +1,33 @@
-import { useState, useRef, useEffect } from "react";
-import { useAuthStore } from "./store/authStore";
-import { useDataStore } from "./store/dataStore";
+import { useState, useRef, useEffect } from 'react';
+import { useAuthStore } from './store/authStore';
+import { useDataStore } from './store/dataStore';
 
-import { Navbar } from "./components/Navbar";
-import { Footer } from "./components/Footer";
-import { Sidebar } from "./components/Sidebar";
-import { SettingsModal } from "./components/Settings/SettingsModal";
+import { Navbar } from './components/Navbar';
+import { Footer } from './components/Footer';
+import { Sidebar } from './components/Sidebar';
+import { SettingsModal } from './components/Settings/SettingsModal';
 
-import { FloatingSidebarDrawer } from "./components/FloatingSidebarDrawer";
-import { OverviewCards } from "./components/Dashboard/OverviewCards";
-import { PlatformDistributionChart } from "./components/Dashboard/PlatformDistributionChart";
-import { ExpirationAlerts } from "./components/Dashboard/ExpirationAlerts";
-import { FinancialAndActivitySummary } from "./components/Dashboard/FinancialAndActivitySummary";
-import { ClientList } from "./components/Clients/ClientList";
-import { SupplierList } from "./components/Suppliers/SupplierList";
-import { FreeProfilesList } from "./components/Profiles/FreeProfilesList";
-import { QuickLinksView } from "./components/Links/QuickLinksView";
-import { ClientModal } from "./components/Clients/ClientModal";
-import { AuthModal } from "./components/Auth/AuthModal";
-import { AuthScreen } from "./components/Auth/AuthScreen";
-import { FullScreenAppLoader } from "./components/common/LoadingSpinners";
-import { UserProfile } from "./components/Profiles/UserProfile";
-import gsap from "gsap";
-import { ThemeController } from "./components/ThemeController";
-import { useVaultStore } from "./store/vaultStore";
-import { useSettingsStore } from "./store/settingsStore";
-import { VaultUnlockModal } from "./components/Vault/VaultUnlockModal";
-import { SetAccountPasswordModal } from "./components/Auth/SetAccountPasswordModal";
-import { Menu } from "lucide-react";
+import { FloatingSidebarDrawer } from './components/FloatingSidebarDrawer';
+import { OverviewCards } from './components/Dashboard/OverviewCards';
+import { PlatformDistributionChart } from './components/Dashboard/PlatformDistributionChart';
+import { ExpirationAlerts } from './components/Dashboard/ExpirationAlerts';
+import { FinancialAndActivitySummary } from './components/Dashboard/FinancialAndActivitySummary';
+import { ClientList } from './components/Clients/ClientList';
+import { SupplierList } from './components/Suppliers/SupplierList';
+import { FreeProfilesList } from './components/Profiles/FreeProfilesList';
+import { QuickLinksView } from './components/Links/QuickLinksView';
+import { ClientModal } from './components/Clients/ClientModal';
+import { AuthModal } from './components/Auth/AuthModal';
+import { AuthScreen } from './components/Auth/AuthScreen';
+import { FullScreenAppLoader } from './components/common/LoadingSpinners';
+import { UserProfile } from './components/Profiles/UserProfile';
+import gsap from 'gsap';
+import { ThemeController } from './components/ThemeController';
+import { useVaultStore } from './store/vaultStore';
+import { useSettingsStore } from './store/settingsStore';
+import { VaultUnlockModal } from './components/Vault/VaultUnlockModal';
+import { SetAccountPasswordModal } from './components/Auth/SetAccountPasswordModal';
+import { Menu } from 'lucide-react';
 
 function useDelayedLoading(isLoading: boolean, delay = 400): boolean {
   const [showLoader, setShowLoader] = useState(false);
@@ -47,8 +47,8 @@ function useDelayedLoading(isLoading: boolean, delay = 400): boolean {
 function MainApp() {
   const { user, loading: authLoading, initAuth } = useAuthStore();
   const { loading: dataLoading, isSyncing, subscribeToData } = useDataStore();
-  const [activeTab, setActiveTab] = useState<string>("dashboard");
-  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [activeTab, setActiveTab] = useState<string>('dashboard');
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
   const [isClientModalOpen, setIsClientModalOpen] = useState<boolean>(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
@@ -57,7 +57,7 @@ function MainApp() {
   const { sidebarCollapsed, toggleSidebarCollapsed } = useSettingsStore();
 
   const handleToggleSidebar = () => {
-    if (typeof window !== "undefined" && window.innerWidth < 1024) {
+    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
       setIsMobileDrawerOpen((prev) => !prev);
     } else {
       toggleSidebarCollapsed();
@@ -90,7 +90,7 @@ function MainApp() {
 
   // Animar transición al cambiar de pestaña
   useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     setIsTransitioning(true);
     const timer = setTimeout(() => {
       setIsTransitioning(false);
@@ -100,7 +100,7 @@ function MainApp() {
       gsap.fromTo(
         mainContentRef.current,
         { opacity: 0 },
-        { opacity: 1, duration: 0.2, ease: "power2.out" },
+        { opacity: 1, duration: 0.2, ease: 'power2.out' },
       );
     }
 
@@ -110,8 +110,8 @@ function MainApp() {
   // Transición suave y cambio automático de pestaña al buscar
   useEffect(() => {
     if (!searchQuery) return;
-    if (activeTab !== "clients_active" && activeTab !== "clients_inactive") {
-      setActiveTab("clients_active");
+    if (activeTab !== 'clients_active' && activeTab !== 'clients_inactive') {
+      setActiveTab('clients_active');
     }
     setIsTransitioning(true);
     const timer = setTimeout(() => {
@@ -164,7 +164,7 @@ function MainApp() {
       {/* Main Container */}
       <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-7 flex flex-col relative">
         {/* Mobile / Tablet Sidebar Toggle Button - stuck to the left, below navbar */}
-        {activeTab !== "profile" && (
+        {activeTab !== 'profile' && (
           <div className="lg:hidden mb-3.5 flex items-center gap-2">
             <button
               type="button"
@@ -183,7 +183,7 @@ function MainApp() {
 
         <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 items-start flex-1 w-full min-h-[calc(100vh-22rem)]">
           {/* Static Navigation Sidebar for Laptop & Desktop */}
-          {activeTab !== "profile" && (
+          {activeTab !== 'profile' && (
             <Sidebar
               activeTab={activeTab}
               setActiveTab={setActiveTab}
@@ -198,7 +198,7 @@ function MainApp() {
             ref={mainContentRef}
             className="flex-1 min-w-0 w-full flex flex-col"
           >
-            {activeTab === "dashboard" && (
+            {activeTab === 'dashboard' && (
               <div className="space-y-8">
                 <OverviewCards onNavigateTab={(tab) => setActiveTab(tab)} />
                 <FinancialAndActivitySummary
@@ -210,9 +210,9 @@ function MainApp() {
               </div>
             )}
 
-            {activeTab === "profile" && <UserProfile />}
+            {activeTab === 'profile' && <UserProfile />}
 
-            {activeTab === "clients_active" && (
+            {activeTab === 'clients_active' && (
               <ClientList
                 statusFilter="active"
                 globalSearchQuery={searchQuery}
@@ -220,7 +220,7 @@ function MainApp() {
               />
             )}
 
-            {activeTab === "clients_inactive" && (
+            {activeTab === 'clients_inactive' && (
               <ClientList
                 statusFilter="inactive"
                 globalSearchQuery={searchQuery}
@@ -228,13 +228,13 @@ function MainApp() {
               />
             )}
 
-            {activeTab === "suppliers" && <SupplierList />}
+            {activeTab === 'suppliers' && <SupplierList />}
 
-            {activeTab === "free_profiles" && <FreeProfilesList />}
+            {activeTab === 'free_profiles' && <FreeProfilesList />}
 
-            {activeTab === "alerts" && <ExpirationAlerts />}
+            {activeTab === 'alerts' && <ExpirationAlerts />}
 
-            {activeTab === "links" && <QuickLinksView />}
+            {activeTab === 'links' && <QuickLinksView />}
           </div>
         </div>
       </main>
