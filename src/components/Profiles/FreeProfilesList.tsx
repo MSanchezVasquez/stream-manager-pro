@@ -21,13 +21,17 @@ import {
   Search,
   Eye,
   EyeOff,
+  Truck,
+  Calendar,
 } from "lucide-react";
 import { FreeProfile, StreamingPlatform } from "../../types";
 import { AssignProfileModal } from "./AssignProfileModal";
+import { AddFromSupplierModal } from "./AddFromSupplierModal";
 import { useTranslation } from "../../utils/translations";
 
 export const FreeProfilesList: React.FC = () => {
-  const { freeProfiles, saveFreeProfile, deleteFreeProfile } = useDataStore();
+  const { freeProfiles, suppliers, saveFreeProfile, deleteFreeProfile } =
+    useDataStore();
   const { t } = useTranslation();
 
   const [search, setSearch] = useState("");
@@ -44,6 +48,10 @@ export const FreeProfilesList: React.FC = () => {
   );
   const [isDeleting, setIsDeleting] = useState(false);
 
+  // Import from supplier modal state
+  const [isImportFromSupplierModalOpen, setIsImportFromSupplierModalOpen] =
+    useState(false);
+
   // New profile modal state
   const [isNewProfileModalOpen, setIsNewProfileModalOpen] = useState(false);
   const [newService, setNewService] =
@@ -52,6 +60,22 @@ export const FreeProfilesList: React.FC = () => {
   const [newEmail, setNewEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [newBrowser, setNewBrowser] = useState("Google Chrome");
+  const [selectedSupplierMeta, setSelectedSupplierMeta] = useState<{
+    supplierId?: string;
+    supplierName?: string;
+    supplierAccountId?: string;
+    expirationDate?: string;
+  } | null>(null);
+
+  const allSupplierAccounts = React.useMemo(() => {
+    return suppliers.flatMap((s) =>
+      (s.accounts || []).map((a) => ({
+        ...a,
+        supplierId: s.id,
+        supplierName: s.name,
+      })),
+    );
+  }, [suppliers]);
 
   const togglePassword = (id: string) => {
     setShowPasswords((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -88,11 +112,16 @@ export const FreeProfilesList: React.FC = () => {
       email: newEmail,
       password: newPassword,
       browser: newBrowser,
+      supplierId: selectedSupplierMeta?.supplierId,
+      supplierName: selectedSupplierMeta?.supplierName,
+      supplierAccountId: selectedSupplierMeta?.supplierAccountId,
+      expirationDate: selectedSupplierMeta?.expirationDate,
     };
 
     setIsNewProfileModalOpen(false);
     setNewEmail("");
     setNewPassword("");
+    setSelectedSupplierMeta(null);
 
     saveFreeProfile(newProf).then((success) => {
       if (!success) {
@@ -144,7 +173,18 @@ export const FreeProfilesList: React.FC = () => {
           </div>
 
           <button
-            onClick={() => setIsNewProfileModalOpen(true)}
+            onClick={() => setIsImportFromSupplierModalOpen(true)}
+            className="px-3.5 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-md shadow-purple-600/20 transition-all shrink-0 cursor-pointer"
+          >
+            <Truck className="w-4 h-4" />
+            <span>{t("profiles.addFromSupplier")}</span>
+          </button>
+
+          <button
+            onClick={() => {
+              setSelectedSupplierMeta(null);
+              setIsNewProfileModalOpen(true);
+            }}
             className="px-3.5 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-md shadow-amber-600/20 transition-all shrink-0 cursor-pointer"
           >
             <Plus className="w-4 h-4" />
@@ -256,6 +296,23 @@ export const FreeProfilesList: React.FC = () => {
                   </p>
                 )}
 
+                {(prof.supplierName || prof.expirationDate) && (
+                  <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 flex-wrap gap-1 pt-0.5">
+                    {prof.supplierName && (
+                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/20">
+                        <Truck className="w-2.5 h-2.5" />
+                        <span>{prof.supplierName}</span>
+                      </span>
+                    )}
+                    {prof.expirationDate && (
+                      <span className="inline-flex items-center gap-1 font-cascadia text-[10px] text-amber-600 dark:text-amber-400">
+                        <Calendar className="w-2.5 h-2.5 text-amber-500" />
+                        <span>{prof.expirationDate}</span>
+                      </span>
+                    )}
+                  </div>
+                )}
+
                 <div className="pt-2 flex items-center justify-between gap-2 border-t border-slate-100 dark:border-slate-800">
                   <button
                     onClick={() => setSelectedProfileForAssign(prof)}
@@ -297,6 +354,47 @@ export const FreeProfilesList: React.FC = () => {
             </h3>
 
             <form onSubmit={handleAddProfile} className="space-y-4">
+              {/* Optional Autofill from Supplier Account */}
+              {allSupplierAccounts.length > 0 && (
+                <div className="p-3 rounded-xl bg-purple-500/5 dark:bg-purple-500/10 border border-purple-500/20 space-y-1.5">
+                  <label className="block text-[11px] font-semibold text-purple-700 dark:text-purple-300 flex items-center gap-1.5">
+                    <Truck className="w-3.5 h-3.5" />
+                    <span>{t("profiles.importFromSupplierAccount")}</span>
+                  </label>
+                  <select
+                    onChange={(e) => {
+                      const accId = e.target.value;
+                      if (!accId) {
+                        setSelectedSupplierMeta(null);
+                        return;
+                      }
+                      const found = allSupplierAccounts.find((a) => a.id === accId);
+                      if (found) {
+                        setNewService(found.serviceName);
+                        setNewEmail(found.email);
+                        setNewPassword(found.password);
+                        setNewBrowser(found.browser || "Google Chrome");
+                        setSelectedSupplierMeta({
+                          supplierId: found.supplierId,
+                          supplierName: found.supplierName,
+                          supplierAccountId: found.id,
+                          expirationDate: found.expirationDate,
+                        });
+                      }
+                    }}
+                    defaultValue=""
+                    className="w-full p-2 text-xs rounded-lg border border-purple-200 dark:border-purple-900/50 bg-white dark:bg-[#1A1A1E] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  >
+                    <option value="">{t("profiles.selectSupplierAccount")}</option>
+                    {allSupplierAccounts.map((a) => (
+                      <option key={a.id} value={a.id}>
+                        {getPlatformDisplayName(a.serviceName)} - {a.email} ({a.supplierName})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
               <div>
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   {t("profiles.platform")}
@@ -416,6 +514,14 @@ export const FreeProfilesList: React.FC = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Import from Supplier Modal */}
+      {isImportFromSupplierModalOpen && (
+        <AddFromSupplierModal
+          isOpen={isImportFromSupplierModalOpen}
+          onClose={() => setIsImportFromSupplierModalOpen(false)}
+        />
       )}
     </div>
   );

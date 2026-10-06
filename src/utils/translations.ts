@@ -283,6 +283,19 @@ export interface TranslationDictionary {
   "profiles.deleteTitle": string;
   "profiles.deleteDesc": string;
   "profiles.addNewTitle": string;
+  "profiles.addFromSupplier": string;
+  "profiles.addFromSupplierTitle": string;
+  "profiles.addFromSupplierSubtitle": string;
+  "profiles.allSuppliers": string;
+  "profiles.allPlatforms": string;
+  "profiles.alreadyInInventory": string;
+  "profiles.addToInventory": string;
+  "profiles.addedSuccess": string;
+  "profiles.noSupplierAccounts": string;
+  "profiles.noSupplierAccountsDesc": string;
+  "profiles.importFromSupplierAccount": string;
+  "profiles.orFillManually": string;
+  "profiles.selectSupplierAccount": string;
   "profiles.platform": string;
   "profiles.quantity": string;
   "profiles.email": string;
@@ -670,6 +683,21 @@ export const TRANSLATIONS: Record<SupportedLanguage, TranslationDictionary> = {
     "profiles.deleteTitle": "¿Eliminar Perfil Libre?",
     "profiles.deleteDesc": "¿Estás seguro de que deseas eliminar este registro de perfil libre?",
     "profiles.addNewTitle": "Agregar Perfil Libre",
+    "profiles.addFromSupplier": "Añadir de Proveedores",
+    "profiles.addFromSupplierTitle": "Añadir Perfiles desde Cuentas de Proveedor",
+    "profiles.addFromSupplierSubtitle":
+      "Convierte cuentas compradas a tus proveedores en perfiles listos para vender",
+    "profiles.allSuppliers": "Todos los Proveedores",
+    "profiles.allPlatforms": "Todas las Plataformas",
+    "profiles.alreadyInInventory": "{count} ya en inventario",
+    "profiles.addToInventory": "Añadir a Perfiles",
+    "profiles.addedSuccess": "¡Perfiles añadidos al inventario con éxito!",
+    "profiles.noSupplierAccounts": "No hay cuentas de proveedores registradas",
+    "profiles.noSupplierAccountsDesc":
+      "Registra primero tus cuentas en la pestaña Proveedores para poder importar sus perfiles aquí.",
+    "profiles.importFromSupplierAccount": "Importar desde cuenta de proveedor (autocompletar)",
+    "profiles.orFillManually": "-- O llenar manualmente --",
+    "profiles.selectSupplierAccount": "Seleccionar cuenta de proveedor...",
     "profiles.platform": "Plataforma Streaming *",
     "profiles.quantity": "Cantidad de perfiles *",
     "profiles.email": "Correo Electrónico *",
@@ -1057,6 +1085,21 @@ export const TRANSLATIONS: Record<SupportedLanguage, TranslationDictionary> = {
     "profiles.deleteTitle": "Delete Free Profile?",
     "profiles.deleteDesc": "Are you sure you want to delete this free profile record?",
     "profiles.addNewTitle": "Add Free Profile",
+    "profiles.addFromSupplier": "Add from Suppliers",
+    "profiles.addFromSupplierTitle": "Add Profiles from Supplier Accounts",
+    "profiles.addFromSupplierSubtitle":
+      "Convert accounts bought from your suppliers into profiles ready to sell",
+    "profiles.allSuppliers": "All Suppliers",
+    "profiles.allPlatforms": "All Platforms",
+    "profiles.alreadyInInventory": "{count} already in inventory",
+    "profiles.addToInventory": "Add to Profiles",
+    "profiles.addedSuccess": "Profiles added to inventory successfully!",
+    "profiles.noSupplierAccounts": "No supplier accounts registered",
+    "profiles.noSupplierAccountsDesc":
+      "Register your accounts in the Suppliers tab first to import their profiles here.",
+    "profiles.importFromSupplierAccount": "Import from supplier account (autofill)",
+    "profiles.orFillManually": "-- Or fill manually --",
+    "profiles.selectSupplierAccount": "Select supplier account...",
     "profiles.platform": "Streaming Platform *",
     "profiles.quantity": "Profile Quantity *",
     "profiles.email": "Email Address *",

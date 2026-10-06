@@ -27,9 +27,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigateTab }) => {
               className="flex items-center gap-3 cursor-pointer group"
               onClick={() => onNavigateTab("dashboard")}
             >
-              <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-transform">
-                <AppLogo className="w-6 h-6 text-white" />
-              </div>
+              <AppLogo className="w-9 h-9 text-white group-hover:scale-105 transition-transform shrink-0" />
               <div>
                 <span className="font-extrabold text-2xl tracking-tight text-white flex items-center gap-2">
                   StreamManager

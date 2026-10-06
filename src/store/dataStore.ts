@@ -791,6 +791,7 @@ export const useDataStore = create<DataState>((set, get) => {
                 profileName: "",
                 pin: "",
                 status: "active",
+                supplierName: currentProfile.supplierName || "",
                 notes: currentProfile.notes || "",
                 price: 0,
                 isFromFreeProfile: true,
@@ -801,6 +802,7 @@ export const useDataStore = create<DataState>((set, get) => {
                   email: currentProfile.email,
                   password: currentProfile.password,
                   browser: currentProfile.browser || "Google Chrome",
+                  supplierName: currentProfile.supplierName || "",
                   notes: currentProfile.notes || "",
                 },
               };

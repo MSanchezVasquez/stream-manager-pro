@@ -46,6 +46,7 @@ export interface ClientSubscription {
     email: string;
     password?: string;
     browser?: string;
+    supplierName?: string;
     notes?: string;
   };
 }
@@ -94,6 +95,10 @@ export interface FreeProfile {
   password: string;
   browser?: string;
   notes?: string;
+  supplierId?: string;
+  supplierName?: string;
+  supplierAccountId?: string;
+  expirationDate?: string;
 }
 
 export interface QuickLink {

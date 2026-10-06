@@ -25,10 +25,12 @@ import {
   EyeOff,
   X,
   RotateCw,
+  Sparkles,
 } from "lucide-react";
 import { Supplier, SupplierAccount } from "../../types";
 import { SupplierModal } from "./SupplierModal";
 import { RenewSupplierAccountModal } from "./RenewSupplierAccountModal";
+import { AddFromSupplierModal } from "../Profiles/AddFromSupplierModal";
 import { useTranslation } from "../../utils/translations";
 
 export const SupplierList: React.FC = () => {
@@ -68,6 +70,11 @@ export const SupplierList: React.FC = () => {
     supplier: Supplier;
     account: SupplierAccount;
   } | null>(null);
+
+  // Export Account to Free Profiles Modal state
+  const [supplierAccountToExport, setSupplierAccountToExport] = useState<
+    string | null
+  >(null);
 
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -299,6 +306,13 @@ export const SupplierList: React.FC = () => {
 
                           <div className="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
                             <button
+                              onClick={() => setSupplierAccountToExport(acc.id)}
+                              className="p-1 text-slate-400 hover:text-amber-500 cursor-pointer"
+                              title="Crear perfiles libres de esta cuenta"
+                            >
+                              <Sparkles className="w-3.5 h-3.5" />
+                            </button>
+                            <button
                               onClick={() => setAccountToRenew({ supplier, account: acc })}
                               className="p-1 text-slate-400 hover:text-emerald-500 cursor-pointer"
                               title={t("suppliers.renewAccount")}
@@ -451,6 +465,15 @@ export const SupplierList: React.FC = () => {
           onClose={() => setAccountToRenew(null)}
           supplier={accountToRenew.supplier}
           account={accountToRenew.account}
+        />
+      )}
+
+      {/* Export to Free Profiles Modal */}
+      {supplierAccountToExport && (
+        <AddFromSupplierModal
+          isOpen={!!supplierAccountToExport}
+          onClose={() => setSupplierAccountToExport(null)}
+          initialAccountId={supplierAccountToExport}
         />
       )}
 
