@@ -8,6 +8,7 @@ import {
   BellRing,
   ExternalLink,
   PlusCircle,
+  Menu,
 } from "lucide-react";
 
 import { useDataStore } from "../store/dataStore";
@@ -17,15 +18,19 @@ interface SidebarProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
   onOpenAddClientModal: () => void;
+  isCollapsed?: boolean;
+  onToggleCollapse?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
   activeTab,
   setActiveTab,
   onOpenAddClientModal,
+  isCollapsed = false,
+  onToggleCollapse,
 }) => {
   const { clients, suppliers, freeProfiles } = useDataStore();
-  const { t } = useTranslation();
+  const { t, resolvedLanguage } = useTranslation();
 
   const { activeClientsCount, inactiveClientsCount } = useMemo(() => {
     return {
@@ -46,12 +51,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
     {
       id: "dashboard",
       label: t("nav.overview"),
+      shortLabel: resolvedLanguage === "en" ? "Home" : "Inicio",
       icon: LayoutDashboard,
       badge: null,
     },
     {
       id: "clients_active",
       label: t("nav.activeClients"),
+      shortLabel: resolvedLanguage === "en" ? "Active" : "Activos",
       icon: Users,
       badge: activeClientsCount,
       badgeColor:
@@ -60,6 +67,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     {
       id: "clients_inactive",
       label: t("nav.inactiveClients"),
+      shortLabel: resolvedLanguage === "en" ? "Inactive" : "Inactivos",
       icon: UserX,
       badge: inactiveClientsCount,
       badgeColor: "bg-slate-500/10 text-slate-500 border border-slate-500/20",
@@ -67,6 +75,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     {
       id: "suppliers",
       label: t("nav.suppliers"),
+      shortLabel: resolvedLanguage === "en" ? "Suppliers" : "Proveedores",
       icon: Truck,
       badge: suppliersCount,
       badgeColor:
@@ -75,6 +84,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     {
       id: "free_profiles",
       label: t("nav.freeProfiles"),
+      shortLabel: resolvedLanguage === "en" ? "Free" : "Libres",
       icon: Sparkles,
       badge: freeProfilesCount,
       badgeColor:
@@ -83,41 +93,118 @@ export const Sidebar: React.FC<SidebarProps> = ({
     {
       id: "alerts",
       label: t("nav.alertsWhatsapp"),
+      shortLabel: resolvedLanguage === "en" ? "Alerts" : "Alertas",
       icon: BellRing,
       badge: null,
     },
     {
       id: "links",
       label: t("nav.quickLinks"),
+      shortLabel: resolvedLanguage === "en" ? "Links" : "Enlaces",
       icon: ExternalLink,
       badge: null,
     },
   ];
 
   return (
-    <aside className="hidden lg:block w-64 shrink-0">
+    <aside
+      className={`hidden lg:block shrink-0 transition-[width] duration-300 ease-in-out ${
+        isCollapsed ? "w-[76px]" : "w-64"
+      }`}
+    >
       <div className="sticky top-20 flex flex-col gap-3">
-        {/* Header */}
-        <div className="flex items-center justify-between px-1.5 pb-0.5">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-[#80808C] font-space">
-            {t("nav.menu")}
-          </span>
+        {/* Header with toggle icon pegged to the left */}
+        <div
+          className={`flex items-center gap-2.5 px-0.5 pb-0.5 ${
+            isCollapsed ? "justify-center" : "justify-start"
+          }`}
+        >
+          <button
+            type="button"
+            onClick={onToggleCollapse}
+            className="p-2 rounded-xl bg-white hover:bg-slate-100 dark:bg-[#141418] dark:hover:bg-[#1A1A1E] text-slate-700 dark:text-[#E4E4E7] border border-slate-200 dark:border-[#2D2D33] shadow-xs transition-all cursor-pointer flex items-center justify-center shrink-0 active:scale-95"
+            title={isCollapsed ? "Abrir barra lateral" : "Cerrar barra lateral"}
+            aria-label={isCollapsed ? "Abrir barra lateral" : "Cerrar barra lateral"}
+          >
+            <Menu className="w-5 h-5 text-slate-700 dark:text-[#E4E4E7]" />
+          </button>
+
+          {!isCollapsed && (
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-[#80808C] font-space truncate">
+              {t("nav.menu")}
+            </span>
+          )}
         </div>
 
         {/* Primary CTA button */}
-        <button
-          onClick={onOpenAddClientModal}
-          className="w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm shadow-lg shadow-indigo-600/20 transition-all transform active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
-        >
-          <PlusCircle className="w-4 h-4" />
-          <span>{t("nav.newClientService")}</span>
-        </button>
+        {isCollapsed ? (
+          <button
+            onClick={onOpenAddClientModal}
+            title={t("nav.newClientService")}
+            className="w-12 h-12 mx-auto rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center shadow-lg shadow-indigo-600/20 transition-all transform active:scale-95 cursor-pointer"
+            aria-label={t("nav.newClientService")}
+          >
+            <PlusCircle className="w-5 h-5" />
+          </button>
+        ) : (
+          <button
+            onClick={onOpenAddClientModal}
+            className="w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm shadow-lg shadow-indigo-600/20 transition-all transform active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <PlusCircle className="w-4 h-4" />
+            <span>{t("nav.newClientService")}</span>
+          </button>
+        )}
 
         {/* Navigation items */}
-        <nav className="p-2 rounded-2xl bg-white dark:bg-[#0F0F12] border border-slate-200 dark:border-[#1F1F23] shadow-sm space-y-1">
+        <nav
+          className={`rounded-2xl bg-white dark:bg-[#0F0F12] border border-slate-200 dark:border-[#1F1F23] shadow-sm space-y-1 ${
+            isCollapsed ? "p-1.5" : "p-2"
+          }`}
+        >
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;
+
+            if (isCollapsed) {
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveTab(item.id)}
+                  title={item.label}
+                  className={`w-full flex flex-col items-center justify-center py-2 px-1 rounded-xl transition-all duration-150 cursor-pointer group relative ${
+                    isActive
+                      ? "bg-indigo-600/10 dark:bg-indigo-600/20 text-indigo-600 dark:text-indigo-400 font-semibold"
+                      : "text-slate-600 dark:text-[#94949E] hover:bg-slate-100 dark:hover:bg-[#1A1A1E]"
+                  }`}
+                >
+                  <div className="relative flex items-center justify-center">
+                    <Icon
+                      className={`w-5 h-5 shrink-0 transition-transform group-hover:scale-110 duration-150 ${
+                        isActive
+                          ? "text-indigo-600 dark:text-indigo-400"
+                          : "text-[#94949E]"
+                      }`}
+                    />
+                    {item.badge !== null && item.badge > 0 && (
+                      <span
+                        className={`absolute -top-1.5 -right-3 min-w-[16px] h-4 px-1 text-[9px] font-bold rounded-full flex items-center justify-center shadow-xs ${
+                          isActive
+                            ? "bg-indigo-600 text-white"
+                            : item.badgeColor
+                        }`}
+                      >
+                        {item.badge}
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-[10px] font-medium leading-tight text-center mt-1.5 truncate max-w-[66px]">
+                    {item.shortLabel}
+                  </span>
+                </button>
+              );
+            }
+
             return (
               <button
                 key={item.id}
@@ -130,7 +217,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
               >
                 <div className="flex items-center gap-3">
                   <Icon
-                    className={`w-4 h-4 shrink-0 transition-colors duration-150 ${isActive ? "text-indigo-600 dark:text-indigo-400" : "text-[#94949E]"}`}
+                    className={`w-4 h-4 shrink-0 transition-colors duration-150 ${
+                      isActive
+                        ? "text-indigo-600 dark:text-indigo-400"
+                        : "text-[#94949E]"
+                    }`}
                   />
                   <span className="truncate">{item.label}</span>
                 </div>

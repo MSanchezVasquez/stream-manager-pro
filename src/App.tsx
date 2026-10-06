@@ -24,8 +24,10 @@ import { UserProfile } from "./components/Profiles/UserProfile";
 import gsap from "gsap";
 import { ThemeController } from "./components/ThemeController";
 import { useVaultStore } from "./store/vaultStore";
+import { useSettingsStore } from "./store/settingsStore";
 import { VaultUnlockModal } from "./components/Vault/VaultUnlockModal";
 import { SetAccountPasswordModal } from "./components/Auth/SetAccountPasswordModal";
+import { Menu } from "lucide-react";
 
 function useDelayedLoading(isLoading: boolean, delay = 400): boolean {
   const [showLoader, setShowLoader] = useState(false);
@@ -52,6 +54,15 @@ function MainApp() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
 
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState<boolean>(false);
+  const { sidebarCollapsed, toggleSidebarCollapsed } = useSettingsStore();
+
+  const handleToggleSidebar = () => {
+    if (typeof window !== "undefined" && window.innerWidth < 1024) {
+      setIsMobileDrawerOpen((prev) => !prev);
+    } else {
+      toggleSidebarCollapsed();
+    }
+  };
 
   const { isUnlocked } = useVaultStore();
   const [isVaultModalOpen, setIsVaultModalOpen] = useState(false);
@@ -137,7 +148,7 @@ function MainApp() {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         onOpenAuthModal={() => setIsAuthModalOpen(true)}
-        onToggleSidebar={() => setIsMobileDrawerOpen(true)}
+        onToggleSidebar={handleToggleSidebar}
         onOpenSettingsModal={() => setIsSettingsModalOpen(true)}
       />
 
@@ -152,13 +163,33 @@ function MainApp() {
 
       {/* Main Container */}
       <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-7 flex flex-col relative">
-        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start flex-1 w-full min-h-[calc(100vh-22rem)]">
-          {/* Static Navigation Sidebar for Laptop & Desktop (hidden lg:block, never pushes content) */}
+        {/* Mobile / Tablet Sidebar Toggle Button - stuck to the left, below navbar */}
+        {activeTab !== "profile" && (
+          <div className="lg:hidden mb-3.5 flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setIsMobileDrawerOpen(true)}
+              className="p-2 rounded-xl bg-white hover:bg-slate-100 dark:bg-[#141418] dark:hover:bg-[#1A1A1E] text-slate-700 dark:text-[#E4E4E7] border border-slate-200 dark:border-[#2D2D33] shadow-xs transition-all cursor-pointer flex items-center justify-center shrink-0 active:scale-95"
+              title="Abrir menú de navegación"
+              aria-label="Abrir menú de navegación"
+            >
+              <Menu className="w-5 h-5 text-slate-700 dark:text-[#E4E4E7]" />
+            </button>
+            <span className="text-xs font-bold text-slate-500 dark:text-[#80808C] font-space uppercase">
+              Menú
+            </span>
+          </div>
+        )}
+
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 items-start flex-1 w-full min-h-[calc(100vh-22rem)]">
+          {/* Static Navigation Sidebar for Laptop & Desktop */}
           {activeTab !== "profile" && (
             <Sidebar
               activeTab={activeTab}
               setActiveTab={setActiveTab}
               onOpenAddClientModal={() => setIsClientModalOpen(true)}
+              isCollapsed={sidebarCollapsed}
+              onToggleCollapse={toggleSidebarCollapsed}
             />
           )}
 

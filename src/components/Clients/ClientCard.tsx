@@ -72,18 +72,7 @@ export const ClientCard: React.FC<ClientCardProps> = ({
           </div>
 
           {/* Card Header Actions */}
-          <div className="flex items-center gap-1.5 shrink-0">
-            {client.status === "active" && onRenew && (
-              <button
-                type="button"
-                onClick={() => onRenew(client)}
-                className="px-2 py-1 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer border border-emerald-500/20"
-                title={t("clients.renewTooltip")}
-              >
-                <RotateCw className="w-3.5 h-3.5" />
-                <span>{t("clients.renew")}</span>
-              </button>
-            )}
+          <div className="flex items-center gap-1 shrink-0">
             {client.status === "inactive" && onReactivate && (
               <button
                 onClick={() => onReactivate(client)}
@@ -201,6 +190,21 @@ export const ClientCard: React.FC<ClientCardProps> = ({
           </div>
         )}
       </div>
+
+      {/* Card Footer: Renew Client Button */}
+      {client.status === "active" && onRenew && (
+        <div className="mt-auto pt-2.5 border-t border-slate-100 dark:border-[#1F1F23]">
+          <button
+            type="button"
+            onClick={() => onRenew(client)}
+            className="w-full py-2 px-3 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer border border-emerald-500/20 shadow-xs"
+            title={t("clients.renewTooltip")}
+          >
+            <RotateCw className="w-3.5 h-3.5" />
+            <span>{t("clients.renew")}</span>
+          </button>
+        </div>
+      )}
     </div>
   );
 };

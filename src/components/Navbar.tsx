@@ -166,20 +166,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       <div>
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-1.5 sm:gap-6">
           <div className="flex items-center gap-1.5 sm:gap-3 min-w-0">
-            {/* Sidebar Floating Toggle Button - ONLY on Tablet & Mobile, NEVER on laptop */}
-            {onToggleSidebar && activeTab !== "profile" && (
-              <button
-                type="button"
-                onClick={onToggleSidebar}
-                className="lg:hidden p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-white/10 hover:bg-white/20 active:bg-white/30 text-white transition-all cursor-pointer flex items-center justify-center shrink-0 border border-white/15"
-                title="Abrir menú de navegación"
-                aria-label="Abrir menú de navegación"
-              >
-                <Menu className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-              </button>
-            )}
-
-            {/* Brand Logo */}
+            {/* Brand Logo - Outside sidebar, on the navbar */}
             <div
               ref={logoRef}
               className="flex items-center gap-1.5 sm:gap-2.5 cursor-pointer group min-w-0 shrink"

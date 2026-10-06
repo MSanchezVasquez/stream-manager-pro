@@ -9,9 +9,12 @@ interface SettingsState {
   language: SupportedLanguage;
   autoDetectLanguage: boolean;
   weekStartsOn: WeekStart;
+  sidebarCollapsed: boolean;
   setLanguage: (lang: SupportedLanguage) => void;
   setAutoDetectLanguage: (auto: boolean) => void;
   setWeekStartsOn: (day: WeekStart) => void;
+  setSidebarCollapsed: (collapsed: boolean) => void;
+  toggleSidebarCollapsed: () => void;
   getResolvedLanguage: () => SupportedLanguage;
 }
 
@@ -21,6 +24,7 @@ export const useSettingsStore = create<SettingsState>()(
       language: detectBrowserLanguage(),
       autoDetectLanguage: true,
       weekStartsOn: "monday",
+      sidebarCollapsed: false,
 
       setLanguage: (language) => {
         set({ language, autoDetectLanguage: false });
@@ -40,6 +44,9 @@ export const useSettingsStore = create<SettingsState>()(
         }
       },
       setWeekStartsOn: (weekStartsOn) => set({ weekStartsOn }),
+      setSidebarCollapsed: (sidebarCollapsed) => set({ sidebarCollapsed }),
+      toggleSidebarCollapsed: () =>
+        set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
       getResolvedLanguage: () => {
         const state = get();
         if (state.autoDetectLanguage) {
