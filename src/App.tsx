@@ -24,7 +24,6 @@ import { UserProfile } from './components/Profiles/UserProfile';
 import gsap from 'gsap';
 import { ThemeController } from './components/ThemeController';
 import { useVaultStore } from './store/vaultStore';
-import { useSettingsStore } from './store/settingsStore';
 import { VaultUnlockModal } from './components/Vault/VaultUnlockModal';
 import { SetAccountPasswordModal } from './components/Auth/SetAccountPasswordModal';
 import { Menu } from 'lucide-react';
@@ -54,14 +53,9 @@ function MainApp() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
 
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState<boolean>(false);
-  const { sidebarCollapsed, toggleSidebarCollapsed } = useSettingsStore();
 
   const handleToggleSidebar = () => {
-    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
-      setIsMobileDrawerOpen((prev) => !prev);
-    } else {
-      toggleSidebarCollapsed();
-    }
+    setIsMobileDrawerOpen((prev) => !prev);
   };
 
   const { isUnlocked } = useVaultStore();
@@ -188,8 +182,6 @@ function MainApp() {
               activeTab={activeTab}
               setActiveTab={setActiveTab}
               onOpenAddClientModal={() => setIsClientModalOpen(true)}
-              isCollapsed={sidebarCollapsed}
-              onToggleCollapse={toggleSidebarCollapsed}
             />
           )}
 

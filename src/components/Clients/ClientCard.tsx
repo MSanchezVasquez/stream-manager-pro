@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  Sidebar as SidebarIcon,
   Trash2,
   Smartphone,
   AlertCircle,
@@ -59,14 +58,15 @@ export const ClientCard: React.FC<ClientCardProps> = ({
       <div className="mb-4 pb-3.5 border-b border-slate-100 dark:border-[#1F1F23] space-y-2.5">
         {/* Top Row: Avatar + Name + Header Actions */}
         <div className="flex items-center justify-between gap-2.5">
-          <div className="flex items-center gap-2.5 min-w-0 flex-1">
-            <div className="w-9 h-9 rounded-xl bg-indigo-600 text-white font-bold flex items-center justify-center text-xs shadow-md shadow-indigo-600/20 font-space shrink-0">
+          <div
+            onClick={() => onOpenDrawer(client)}
+            className="flex items-center gap-2.5 min-w-0 flex-1 cursor-pointer group/name"
+            title={client.name}
+          >
+            <div className="w-9 h-9 rounded-xl bg-indigo-600 text-white font-bold flex items-center justify-center text-xs shadow-md shadow-indigo-600/20 font-space shrink-0 group-hover/name:scale-105 transition-transform">
               {client.name.substring(0, 2).toUpperCase()}
             </div>
-            <h3
-              className="font-bold text-base text-slate-900 dark:text-[#E4E4E7] leading-tight font-space tracking-tight truncate"
-              title={client.name}
-            >
+            <h3 className="font-bold text-base text-slate-900 dark:text-[#E4E4E7] group-hover/name:text-indigo-600 dark:group-hover/name:text-indigo-400 leading-tight font-space tracking-tight truncate transition-colors">
               {client.name}
             </h3>
           </div>
@@ -82,13 +82,6 @@ export const ClientCard: React.FC<ClientCardProps> = ({
                 <UserCheck className="w-3.5 h-3.5" />
               </button>
             )}
-            <button
-              onClick={() => onOpenDrawer(client)}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-[#1A1A1E] transition-colors cursor-pointer"
-              title={t("clients.cardDrawerTooltip")}
-            >
-              <SidebarIcon className="w-3.5 h-3.5" />
-            </button>
             <button
               onClick={() => onDelete(client)}
               className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-500/10 transition-colors cursor-pointer"
