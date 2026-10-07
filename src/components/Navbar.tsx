@@ -199,7 +199,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           <div className="hidden md:flex flex-1 max-w-sm sm:max-w-md lg:max-w-lg mx-2 sm:mx-4">
             <div className="relative w-full">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/70 pointer-events-none" />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50 pointer-events-none" />
               <input
                 ref={searchInputRef}
                 type="text"
@@ -207,20 +207,16 @@ export const Navbar: React.FC<NavbarProps> = ({
                 value={searchQuery}
                 onChange={(e) => handleSearchChange(e.target.value)}
                 onKeyDown={handleSearchKeyDown}
-                className="w-full pl-9 pr-14 py-2 text-xs rounded-full border border-white/20 bg-white/15 backdrop-blur-sm text-white placeholder:text-white/70 focus:outline-none focus:bg-white/25 focus:border-white transition-all shadow-inner"
+                className="w-full pl-9 pr-8 py-2 text-xs rounded-xl bg-white/10 text-white placeholder:text-white/60 border-none outline-none focus:outline-none focus:ring-0 focus:border-none transition-none"
               />
-              {searchQuery ? (
+              {searchQuery && (
                 <button
                   type="button"
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-white/80 hover:text-white"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-white/70 hover:text-white transition-none cursor-pointer"
                 >
                   ✕
                 </button>
-              ) : (
-                <kbd className="hidden sm:inline-block absolute right-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 text-[10px] font-bold text-white/80 bg-white/15 rounded border border-white/25 pointer-events-none">
-                  Ctrl K
-                </kbd>
               )}
             </div>
           </div>
@@ -315,20 +311,20 @@ export const Navbar: React.FC<NavbarProps> = ({
         {/* Level 1.5: Dedicated Mobile Search Bar (Only visible on screens < md, full width, clear & visible) */}
         <div className="md:hidden px-3 sm:px-4 pb-2.5 pt-0 max-w-7xl mx-auto">
           <div className="relative w-full">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/70 pointer-events-none" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50 pointer-events-none" />
             <input
               type="text"
               placeholder={t('nav.searchPlaceholder')}
               value={searchQuery}
               onChange={(e) => handleSearchChange(e.target.value)}
               onKeyDown={handleSearchKeyDown}
-              className="w-full pl-9 pr-9 py-2 text-xs rounded-full border border-white/25 bg-white/15 backdrop-blur-sm text-white placeholder:text-white/75 focus:outline-none focus:bg-white/25 focus:border-white transition-all shadow-inner"
+              className="w-full pl-9 pr-8 py-2 text-xs rounded-xl bg-white/10 text-white placeholder:text-white/60 border-none outline-none focus:outline-none focus:ring-0 focus:border-none transition-none"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-white/80 hover:text-white p-1"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-white/70 hover:text-white transition-none cursor-pointer p-1"
               >
                 ✕
               </button>
