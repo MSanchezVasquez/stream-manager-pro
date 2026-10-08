@@ -46,6 +46,7 @@ export const RenewSupplierAccountModal: React.FC<
 
   const [periodUnit, setPeriodUnit] = useState<"days" | "months" | "years">("months");
   const [periodValue, setPeriodValue] = useState<number>(1);
+  const [periodInputStr, setPeriodInputStr] = useState<string>("1");
   const [renewalBase, setRenewalBase] = useState<"expirationDate" | "today">("expirationDate");
   const [customExpirationDate, setCustomExpirationDate] = useState<string>("");
   const [renewalCost, setRenewalCost] = useState<string>("");
@@ -73,6 +74,7 @@ export const RenewSupplierAccountModal: React.FC<
     const initVal = account.periodValue || 1;
     setPeriodUnit(initUnit);
     setPeriodValue(initVal);
+    setPeriodInputStr(String(initVal));
 
     // Initial base: use expirationDate if available, otherwise today
     const defaultBase = account.expirationDate ? "expirationDate" : "today";
@@ -116,6 +118,7 @@ export const RenewSupplierAccountModal: React.FC<
 
   const applyPreset = (val: number, unit: "days" | "months" | "years") => {
     setPeriodValue(val);
+    setPeriodInputStr(String(val));
     setPeriodUnit(unit);
   };
 
@@ -406,10 +409,28 @@ export const RenewSupplierAccountModal: React.FC<
                   <input
                     type="number"
                     min={1}
-                    value={periodValue}
-                    onChange={(e) =>
-                      setPeriodValue(Math.max(1, parseInt(e.target.value, 10) || 1))
-                    }
+                    value={periodInputStr}
+                    onChange={(e) => {
+                      const raw = e.target.value;
+                      setPeriodInputStr(raw);
+                      if (raw === "") return;
+                      const num = parseInt(raw, 10);
+                      if (!isNaN(num) && num > 0) {
+                        setPeriodValue(num);
+                      }
+                    }}
+                    onBlur={() => {
+                      if (
+                        periodInputStr === "" ||
+                        isNaN(parseInt(periodInputStr, 10)) ||
+                        parseInt(periodInputStr, 10) < 1
+                      ) {
+                        const fallback = periodValue > 0 ? periodValue : 1;
+                        setPeriodInputStr(String(fallback));
+                        setPeriodValue(fallback);
+                      }
+                    }}
+                    onFocus={(e) => e.target.select()}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#1A1A1E] text-slate-900 dark:text-white text-xs font-cascadia font-bold text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:outline-none focus:ring-2 focus:ring-purple-500"
                   />
                 </div>

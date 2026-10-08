@@ -10,6 +10,7 @@ import {
   Calendar,
   Compass,
   Globe,
+  Coins,
 } from "lucide-react";
 import { Supplier, SupplierAccount, StreamingPlatform } from "../../types";
 import { useDataStore } from "../../store/dataStore";
@@ -38,6 +39,7 @@ export const SupplierModal: React.FC<SupplierModalProps> = ({
   const [browser, setBrowser] = useState("Google Chrome");
   const [webmailUrl, setWebmailUrl] = useState("");
   const [notes, setNotes] = useState("");
+  const [cost, setCost] = useState("");
 
   useEffect(() => {
     if (accountToEdit) {
@@ -48,6 +50,11 @@ export const SupplierModal: React.FC<SupplierModalProps> = ({
       setBrowser(accountToEdit.browser || "Google Chrome");
       setWebmailUrl(accountToEdit.webmailUrl || "");
       setNotes(accountToEdit.notes || "");
+      setCost(
+        typeof accountToEdit.cost === "number" && accountToEdit.cost >= 0
+          ? String(accountToEdit.cost)
+          : "",
+      );
     } else {
       setServiceName("DGO");
       setEmail("");
@@ -56,6 +63,7 @@ export const SupplierModal: React.FC<SupplierModalProps> = ({
       setBrowser("Google Chrome");
       setWebmailUrl("");
       setNotes("");
+      setCost("");
     }
   }, [accountToEdit, isOpen]);
 
@@ -68,6 +76,7 @@ export const SupplierModal: React.FC<SupplierModalProps> = ({
       return;
     }
 
+    const parsedCost = parseFloat(cost);
     const newAcc: SupplierAccount = {
       id: accountToEdit ? accountToEdit.id : `sup-acc-${Date.now()}`,
       supplierId: supplier.id,
@@ -80,6 +89,7 @@ export const SupplierModal: React.FC<SupplierModalProps> = ({
       webmailUrl,
       notes,
       status: "active",
+      cost: !isNaN(parsedCost) && parsedCost >= 0 ? parsedCost : undefined,
     };
 
     let updatedAccounts = [...supplier.accounts];
@@ -204,18 +214,42 @@ export const SupplierModal: React.FC<SupplierModalProps> = ({
             </div>
           </div>
 
-          <div>
-            <label className=" text-xs font-semibold text-slate-700 dark:text-[#94949E] mb-1 flex items-center gap-1">
-              <Globe className="w-3.5 h-3.5 text-[#94949E]" />
-              {t("suppliers.webmailUrl")}
-            </label>
-            <input
-              type="text"
-              placeholder="https://webmail..."
-              value={webmailUrl}
-              onChange={(e) => setWebmailUrl(e.target.value)}
-              className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-slate-50 dark:bg-[#1A1A1E] text-slate-900 dark:text-[#E4E4E7] text-xs"
-            />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs font-semibold text-slate-700 dark:text-[#94949E] mb-1 flex items-center gap-1">
+                <Coins className="w-3.5 h-3.5 text-emerald-500" />
+                {t("suppliers.cost")}
+              </label>
+              <div className="relative">
+                <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400 font-cascadia">
+                  S/
+                </span>
+                <input
+                  type="number"
+                  step="0.5"
+                  min="0"
+                  value={cost}
+                  onChange={(e) => setCost(e.target.value)}
+                  onFocus={(e) => e.target.select()}
+                  placeholder="0.00"
+                  className="w-full pl-8 pr-3 py-2 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-slate-50 dark:bg-[#1A1A1E] text-slate-900 dark:text-[#E4E4E7] text-xs font-cascadia font-semibold focus:border-purple-500 outline-none"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className=" text-xs font-semibold text-slate-700 dark:text-[#94949E] mb-1 flex items-center gap-1">
+                <Globe className="w-3.5 h-3.5 text-[#94949E]" />
+                {t("suppliers.webmailUrl")}
+              </label>
+              <input
+                type="text"
+                placeholder="https://webmail..."
+                value={webmailUrl}
+                onChange={(e) => setWebmailUrl(e.target.value)}
+                className="w-full p-2 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-slate-50 dark:bg-[#1A1A1E] text-slate-900 dark:text-[#E4E4E7] text-xs"
+              />
+            </div>
           </div>
 
           <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200 dark:border-[#1F1F23]">

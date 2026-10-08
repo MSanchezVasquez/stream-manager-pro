@@ -63,6 +63,7 @@ export const AddFromSupplierModal: React.FC<AddFromSupplierModalProps> = ({
 
   // Quantity to add per account: accountId -> quantity
   const [quantities, setQuantities] = useState<Record<string, number>>({});
+  const [quantityInputs, setQuantityInputs] = useState<Record<string, string>>({});
   // Processing state for individual adds: accountId -> boolean
   const [loadingMap, setLoadingMap] = useState<Record<string, boolean>>({});
   // Success indicator per account: accountId -> boolean
@@ -119,6 +120,7 @@ export const AddFromSupplierModal: React.FC<AddFromSupplierModalProps> = ({
       initQty[acc.id] = getDefaultProfilesForPlatform(acc.serviceName);
     });
     setQuantities(initQty);
+    setQuantityInputs({});
     setAddedSuccessMap({});
     setBulkSuccessMessage(null);
 
@@ -170,13 +172,18 @@ export const AddFromSupplierModal: React.FC<AddFromSupplierModalProps> = ({
     setQuantities((prev) => {
       const current = prev[accId] || 1;
       const next = Math.max(1, current + delta);
+      setQuantityInputs((q) => ({ ...q, [accId]: String(next) }));
       return { ...prev, [accId]: next };
     });
   };
 
   const handleQuantityInput = (accId: string, val: string) => {
-    const num = Math.max(1, parseInt(val, 10) || 1);
-    setQuantities((prev) => ({ ...prev, [accId]: num }));
+    setQuantityInputs((prev) => ({ ...prev, [accId]: val }));
+    if (val === "") return;
+    const num = parseInt(val, 10);
+    if (!isNaN(num) && num > 0) {
+      setQuantities((prev) => ({ ...prev, [accId]: num }));
+    }
   };
 
   const toggleSelectAccount = (id: string) => {
@@ -589,8 +596,26 @@ export const AddFromSupplierModal: React.FC<AddFromSupplierModalProps> = ({
                       <input
                         type="number"
                         min={1}
-                        value={currentQty}
+                        value={
+                          quantityInputs[acc.id] !== undefined
+                            ? quantityInputs[acc.id]
+                            : currentQty
+                        }
                         onChange={(e) => handleQuantityInput(acc.id, e.target.value)}
+                        onBlur={() => {
+                          const raw = quantityInputs[acc.id];
+                          if (raw !== undefined) {
+                            const num = parseInt(raw, 10);
+                            const fallback =
+                              !isNaN(num) && num > 0 ? num : quantities[acc.id] || 1;
+                            setQuantityInputs((prev) => ({
+                              ...prev,
+                              [acc.id]: String(fallback),
+                            }));
+                            setQuantities((prev) => ({ ...prev, [acc.id]: fallback }));
+                          }
+                        }}
+                        onFocus={(e) => e.target.select()}
                         className="w-10 text-center font-cascadia font-bold text-xs bg-transparent text-slate-900 dark:text-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:outline-none"
                       />
 

@@ -18,6 +18,8 @@ import {
   CheckCircle2,
   UserX,
   RefreshCw,
+  Truck,
+  Crown,
 } from "lucide-react";
 import { Client, ClientSubscription } from "../../types";
 import {
@@ -64,7 +66,8 @@ export const ClientModal: React.FC<ClientModalProps> = ({
   initialClient,
 }) => {
   const { t, resolvedLanguage } = useTranslation();
-  const { clients, freeProfiles, saveClient, deleteClient } = useDataStore();
+  const { clients, freeProfiles, saveClient, deleteClient, suppliers } =
+    useDataStore();
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -79,6 +82,9 @@ export const ClientModal: React.FC<ClientModalProps> = ({
   const initialCutDatesRef = useRef<Record<string, string>>({});
   const [renewalBaseMap, setRenewalBaseMap] = useState<
     Record<string, "today" | "cutDate">
+  >({});
+  const [periodInputStrings, setPeriodInputStrings] = useState<
+    Record<string, string>
   >({});
 
   // Cliente "activo" del formulario. Empieza siendo initialClient, pero
@@ -120,6 +126,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
   useEffect(() => {
     setDuplicateClient(null);
     setConfirmDuplicateAnyway(false);
+    setPeriodInputStrings({});
 
     if (activeClient) {
       setName(activeClient.name);
@@ -220,6 +227,10 @@ export const ClientModal: React.FC<ClientModalProps> = ({
     forcedBase?: "today" | "cutDate",
   ) => {
     const validVal = Math.max(1, value);
+    setPeriodInputStrings((prev) => ({
+      ...prev,
+      [subId]: String(validVal),
+    }));
     setSubscriptions((prev) =>
       prev.map((s) => {
         if (s.id !== subId) return s;
@@ -602,7 +613,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                         )}
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
                         <div>
                           <label className="block text-[11px] font-semibold text-slate-600 dark:text-[#94949E] mb-1">
                             {t("clientModal.platform")}
@@ -646,8 +657,33 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                           />
                         </div>
 
+                        <div>
+                          <label className="block text-[11px] font-semibold text-slate-600 dark:text-[#94949E] mb-1 flex items-center gap-1">
+                            <Truck className="w-3.5 h-3.5 text-purple-500" />
+                            {t("clientModal.supplierOrigin")}
+                          </label>
+                          <select
+                            value={sub.supplierName || ""}
+                            onChange={(e) =>
+                              handleUpdateSubscription(
+                                sub.id,
+                                "supplierName",
+                                e.target.value,
+                              )
+                            }
+                            className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-xs font-medium focus:border-indigo-500 outline-none transition-colors shadow-sm cursor-pointer"
+                          >
+                            <option value="">{t("clientModal.ownAccountOption")}</option>
+                            {suppliers.map((s) => (
+                              <option key={s.id} value={s.name}>
+                                🚚 {s.name}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+
                         {/* Subscription Period: Días / Meses / Años Selector */}
-                        <div className="sm:col-span-2 p-3.5 rounded-xl bg-slate-100/80 dark:bg-[#121217] border border-slate-200/80 dark:border-[#25252E] space-y-2.5">
+                        <div className="sm:col-span-3 p-3.5 rounded-xl bg-slate-100/80 dark:bg-[#121217] border border-slate-200/80 dark:border-[#25252E] space-y-2.5">
                           <div className="flex items-center justify-between flex-wrap gap-2">
                             <label className="text-[11px] font-semibold text-slate-700 dark:text-[#E4E4E7] flex items-center gap-1.5">
                               <Clock className="w-3.5 h-3.5 text-indigo-500" />
@@ -699,18 +735,51 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                                 type="number"
                                 min="1"
                                 value={
-                                  sub.periodValue ||
-                                  (sub.periodUnit === "days"
-                                    ? sub.periodDays || 30
-                                    : 1)
+                                  periodInputStrings[sub.id] !== undefined
+                                    ? periodInputStrings[sub.id]
+                                    : String(
+                                        sub.periodValue ||
+                                          (sub.periodUnit === "days"
+                                            ? sub.periodDays || 30
+                                            : 1),
+                                      )
                                 }
                                 onChange={(e) => {
-                                  const val = parseInt(e.target.value, 10);
-                                  handlePeriodChange(
-                                    sub.id,
-                                    isNaN(val) ? 1 : val,
-                                    sub.periodUnit || "months",
-                                  );
+                                  const rawVal = e.target.value;
+                                  setPeriodInputStrings((prev) => ({
+                                    ...prev,
+                                    [sub.id]: rawVal,
+                                  }));
+                                  if (rawVal === "") return;
+                                  const val = parseInt(rawVal, 10);
+                                  if (!isNaN(val) && val > 0) {
+                                    handlePeriodChange(
+                                      sub.id,
+                                      val,
+                                      sub.periodUnit || "months",
+                                    );
+                                  }
+                                }}
+                                onBlur={() => {
+                                  const rawVal = periodInputStrings[sub.id];
+                                  if (rawVal !== undefined) {
+                                    const val = parseInt(rawVal, 10);
+                                    const fallback =
+                                      !isNaN(val) && val > 0
+                                        ? val
+                                        : sub.periodUnit === "days"
+                                          ? 30
+                                          : 1;
+                                    setPeriodInputStrings((prev) => ({
+                                      ...prev,
+                                      [sub.id]: String(fallback),
+                                    }));
+                                    handlePeriodChange(
+                                      sub.id,
+                                      fallback,
+                                      sub.periodUnit || "months",
+                                    );
+                                  }
                                 }}
                                 onFocus={(e) => e.target.select()}
                                 className="w-full pl-3 pr-14 py-1.5 rounded-lg border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-xs font-cascadia font-bold focus:border-indigo-500 outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"

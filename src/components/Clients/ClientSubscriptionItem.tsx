@@ -8,6 +8,8 @@ import {
   Check,
   MessageSquare,
   Sparkles,
+  Truck,
+  Crown,
 } from "lucide-react";
 import { ClientSubscription } from "../../types";
 import { isSubscriptionFromFreeProfile } from "../../store/dataStore";
@@ -73,7 +75,24 @@ export const ClientSubscriptionItem: React.FC<ClientSubscriptionItemProps> = ({
           </span>
         </span>
 
-        <div className="flex items-center gap-1.5 shrink-0">
+        <div className="flex items-center gap-1.5 shrink-0 flex-wrap">
+          {sub.supplierName ? (
+            <span
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/20 whitespace-nowrap"
+              title={`Proveedor: ${sub.supplierName}`}
+            >
+              <Truck className="w-2.5 h-2.5 text-purple-500 shrink-0" />
+              <span>{sub.supplierName}</span>
+            </span>
+          ) : (
+            <span
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20 whitespace-nowrap"
+              title={resolvedLanguage === "en" ? "Own direct account (100% profit)" : "Cuenta propia sin proveedor (100% ganancia)"}
+            >
+              <Crown className="w-2.5 h-2.5 text-amber-500 shrink-0" />
+              <span>{resolvedLanguage === "en" ? "Own (100%)" : "Propia (100%)"}</span>
+            </span>
+          )}
           {isSubscriptionFromFreeProfile(sub, freeProfiles) && (
             <span
               className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/20 whitespace-nowrap"

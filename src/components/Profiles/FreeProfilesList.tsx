@@ -409,10 +409,24 @@ export const FreeProfilesList: React.FC = () => {
                 <input
                   type="number"
                   min={1}
-                  value={newQuantity}
-                  onChange={(e) =>
-                    setNewQuantity(parseInt(e.target.value, 10) || 1)
-                  }
+                  value={newQuantity || ""}
+                  onChange={(e) => {
+                    const raw = e.target.value;
+                    if (raw === "") {
+                      setNewQuantity("" as any);
+                      return;
+                    }
+                    const val = parseInt(raw, 10);
+                    if (!isNaN(val)) {
+                      setNewQuantity(val);
+                    }
+                  }}
+                  onBlur={() => {
+                    if (!newQuantity || (typeof newQuantity === "number" && newQuantity < 1)) {
+                      setNewQuantity(1);
+                    }
+                  }}
+                  onFocus={(e) => e.target.select()}
                   className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-xs"
                 />
               </div>
