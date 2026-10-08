@@ -192,25 +192,6 @@ export interface TranslationDictionary {
   "finance.currency": string;
   "finance.totalMonthlyRevenue": string;
   "finance.perMonth": string;
-  "finance.netProfit": string;
-  "finance.supplierExpenses": string;
-  "finance.profitMargin": string;
-  "finance.breakdownTitle": string;
-  "finance.ownAccountsTitle": string;
-  "finance.ownAccountsDesc": string;
-  "finance.supplierAccountsTitle": string;
-  "finance.supplierAccountsDesc": string;
-  "finance.ownRevenue": string;
-  "finance.supplierSales": string;
-  "finance.supplierCost": string;
-  "finance.pureProfitBadge": string;
-  "finance.supplierMarginBadge": string;
-  "finance.manageSuppliers": string;
-  "dash.supplierExpenses": string;
-  "dash.netProfit": string;
-  "suppliers.cost": string;
-  "clientModal.supplierOrigin": string;
-  "clientModal.ownAccountOption": string;
   "finance.avgTicket": string;
   "finance.avgPrice": string;
   "finance.billableProfiles": string;
@@ -602,29 +583,10 @@ export const TRANSLATIONS: Record<SupportedLanguage, TranslationDictionary> = {
     "chart.sub": "suscripción",
 
     // Financial & Activity Summary
-    "finance.title": "Balance Financiero y Rentabilidad",
+    "finance.title": "Balance Financiero",
     "finance.currency": "Moneda oficial: Soles (PEN)",
-    "finance.totalMonthlyRevenue": "Facturación Mensual (Clientes)",
+    "finance.totalMonthlyRevenue": "Facturación Mensual Total",
     "finance.perMonth": "/ mes",
-    "finance.netProfit": "Ganancia Neta Estimada",
-    "finance.supplierExpenses": "Gasto en Proveedores",
-    "finance.profitMargin": "Margen de Ganancia",
-    "finance.breakdownTitle": "Desglose: Cuentas Propias vs Proveedores",
-    "finance.ownAccountsTitle": "Cuentas Propias (100% Ganancia)",
-    "finance.ownAccountsDesc": "Cuentas directas sin proveedor mayorista. El 100% cobrado es beneficio limpio.",
-    "finance.supplierAccountsTitle": "Cuentas de Proveedor",
-    "finance.supplierAccountsDesc": "Cuentas compradas a proveedores donde se descuenta el costo de compra.",
-    "finance.ownRevenue": "Ingresos Cuentas Propias",
-    "finance.supplierSales": "Cobrado a Clientes",
-    "finance.supplierCost": "Costo Pagado a Proveedor",
-    "finance.pureProfitBadge": "100% Ganancia Limpia",
-    "finance.supplierMarginBadge": "Margen de Reventa",
-    "finance.manageSuppliers": "Gestionar Proveedores",
-    "dash.supplierExpenses": "Gasto Proveedores",
-    "dash.netProfit": "Ganancia Neta",
-    "suppliers.cost": "Costo de Proveedor (S/)",
-    "clientModal.supplierOrigin": "Origen de Cuenta / Proveedor",
-    "clientModal.ownAccountOption": "👑 Cuenta Propia (100% Ganancia)",
     "finance.avgTicket": "Ticket Promedio / Cliente",
     "finance.avgPrice": "Precio Promedio / Perfil",
     "finance.billableProfiles": "{count} perfiles facturables",
@@ -1023,29 +985,10 @@ export const TRANSLATIONS: Record<SupportedLanguage, TranslationDictionary> = {
     "chart.sub": "subscription",
 
     // Financial & Activity Summary
-    "finance.title": "Financial Balance & Profitability",
+    "finance.title": "Financial Balance",
     "finance.currency": "Official currency: Soles (PEN)",
-    "finance.totalMonthlyRevenue": "Monthly Client Revenue",
+    "finance.totalMonthlyRevenue": "Total Monthly Revenue",
     "finance.perMonth": "/ mo",
-    "finance.netProfit": "Estimated Net Profit",
-    "finance.supplierExpenses": "Supplier Expenses",
-    "finance.profitMargin": "Profit Margin",
-    "finance.breakdownTitle": "Breakdown: Own Accounts vs Suppliers",
-    "finance.ownAccountsTitle": "Own Accounts (100% Profit)",
-    "finance.ownAccountsDesc": "Direct accounts without a supplier. 100% of revenue is pure profit.",
-    "finance.supplierAccountsTitle": "Supplier Accounts",
-    "finance.supplierAccountsDesc": "Accounts purchased from suppliers where wholesale cost is deducted.",
-    "finance.ownRevenue": "Own Accounts Revenue",
-    "finance.supplierSales": "Client Revenue",
-    "finance.supplierCost": "Wholesale Cost Paid",
-    "finance.pureProfitBadge": "100% Pure Profit",
-    "finance.supplierMarginBadge": "Resell Margin",
-    "finance.manageSuppliers": "Manage Suppliers",
-    "dash.supplierExpenses": "Supplier Expenses",
-    "dash.netProfit": "Net Profit",
-    "suppliers.cost": "Supplier Cost (S/)",
-    "clientModal.supplierOrigin": "Account Origin / Supplier",
-    "clientModal.ownAccountOption": "👑 Own Account (100% Profit)",
     "finance.avgTicket": "Average Ticket / Client",
     "finance.avgPrice": "Average Price / Profile",
     "finance.billableProfiles": "{count} billable profiles",

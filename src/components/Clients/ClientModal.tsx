@@ -18,8 +18,6 @@ import {
   CheckCircle2,
   UserX,
   RefreshCw,
-  Truck,
-  Crown,
 } from "lucide-react";
 import { Client, ClientSubscription } from "../../types";
 import {
@@ -66,8 +64,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
   initialClient,
 }) => {
   const { t, resolvedLanguage } = useTranslation();
-  const { clients, freeProfiles, saveClient, deleteClient, suppliers } =
-    useDataStore();
+  const { clients, freeProfiles, saveClient, deleteClient } = useDataStore();
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -613,7 +610,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                         )}
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                         <div>
                           <label className="block text-[11px] font-semibold text-slate-600 dark:text-[#94949E] mb-1">
                             {t("clientModal.platform")}
@@ -657,33 +654,8 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                           />
                         </div>
 
-                        <div>
-                          <label className="block text-[11px] font-semibold text-slate-600 dark:text-[#94949E] mb-1 flex items-center gap-1">
-                            <Truck className="w-3.5 h-3.5 text-purple-500" />
-                            {t("clientModal.supplierOrigin")}
-                          </label>
-                          <select
-                            value={sub.supplierName || ""}
-                            onChange={(e) =>
-                              handleUpdateSubscription(
-                                sub.id,
-                                "supplierName",
-                                e.target.value,
-                              )
-                            }
-                            className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-xs font-medium focus:border-indigo-500 outline-none transition-colors shadow-sm cursor-pointer"
-                          >
-                            <option value="">{t("clientModal.ownAccountOption")}</option>
-                            {suppliers.map((s) => (
-                              <option key={s.id} value={s.name}>
-                                🚚 {s.name}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-
                         {/* Subscription Period: Días / Meses / Años Selector */}
-                        <div className="sm:col-span-3 p-3.5 rounded-xl bg-slate-100/80 dark:bg-[#121217] border border-slate-200/80 dark:border-[#25252E] space-y-2.5">
+                        <div className="sm:col-span-2 p-3.5 rounded-xl bg-slate-100/80 dark:bg-[#121217] border border-slate-200/80 dark:border-[#25252E] space-y-2.5">
                           <div className="flex items-center justify-between flex-wrap gap-2">
                             <label className="text-[11px] font-semibold text-slate-700 dark:text-[#E4E4E7] flex items-center gap-1.5">
                               <Clock className="w-3.5 h-3.5 text-indigo-500" />

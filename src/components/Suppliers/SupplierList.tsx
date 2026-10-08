@@ -26,7 +26,6 @@ import {
   X,
   RotateCw,
   Sparkles,
-  Coins,
 } from "lucide-react";
 import { Supplier, SupplierAccount } from "../../types";
 import { SupplierModal } from "./SupplierModal";
@@ -421,18 +420,6 @@ export const SupplierList: React.FC = () => {
                                 {t("suppliers.browser")}:{" "}
                                 <strong className="text-slate-800 dark:text-slate-200">
                                   {acc.browser}
-                                </strong>
-                              </span>
-                            </div>
-                          )}
-
-                          {acc.cost !== undefined && acc.cost > 0 && (
-                            <div className="flex items-center gap-1.5">
-                              <Coins className="w-3.5 h-3.5 text-emerald-500" />
-                              <span>
-                                {t("suppliers.cost")}:{" "}
-                                <strong className="text-emerald-600 dark:text-emerald-400 font-cascadia">
-                                  S/ {acc.cost.toFixed(2)}
                                 </strong>
                               </span>
                             </div>
