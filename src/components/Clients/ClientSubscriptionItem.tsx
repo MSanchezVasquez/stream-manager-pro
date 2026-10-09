@@ -73,7 +73,7 @@ export const ClientSubscriptionItem: React.FC<ClientSubscriptionItemProps> = ({
           </span>
         </span>
 
-        <div className="flex items-center gap-1.5 shrink-0">
+        <div className="flex items-center gap-1.5 shrink-0 flex-wrap">
           {isSubscriptionFromFreeProfile(sub, freeProfiles) && (
             <span
               className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/20 whitespace-nowrap"

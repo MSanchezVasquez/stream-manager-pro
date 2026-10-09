@@ -10,6 +10,7 @@ import {
   Calendar,
   Compass,
   Globe,
+  Sparkles,
 } from "lucide-react";
 import { Supplier, SupplierAccount, StreamingPlatform } from "../../types";
 import { useDataStore } from "../../store/dataStore";
@@ -29,7 +30,7 @@ export const SupplierModal: React.FC<SupplierModalProps> = ({
   accountToEdit,
 }) => {
   const { saveSupplier } = useDataStore();
-  const { t } = useTranslation();
+  const { t, resolvedLanguage } = useTranslation();
 
   const [serviceName, setServiceName] = useState<StreamingPlatform>("DGO");
   const [email, setEmail] = useState("");
@@ -132,6 +133,16 @@ export const SupplierModal: React.FC<SupplierModalProps> = ({
                 {supplier.name}
               </strong>
             </p>
+            {accountToEdit && (
+              <p className="text-[11px] text-purple-600 dark:text-purple-400 mt-1 flex items-center gap-1 font-medium">
+                <Sparkles className="w-3 h-3 shrink-0" />
+                <span>
+                  {resolvedLanguage === "en"
+                    ? "Changes will automatically update linked free profiles."
+                    : "Los cambios se actualizarán automáticamente en tus perfiles libres."}
+                </span>
+              </p>
+            )}
           </div>
         </div>
 

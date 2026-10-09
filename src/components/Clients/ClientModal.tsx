@@ -64,7 +64,8 @@ export const ClientModal: React.FC<ClientModalProps> = ({
   initialClient,
 }) => {
   const { t, resolvedLanguage } = useTranslation();
-  const { clients, freeProfiles, saveClient, deleteClient } = useDataStore();
+  const { clients, freeProfiles, saveClient, deleteClient } =
+    useDataStore();
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");

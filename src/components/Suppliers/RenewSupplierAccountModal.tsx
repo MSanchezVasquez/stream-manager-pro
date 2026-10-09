@@ -266,6 +266,16 @@ export const RenewSupplierAccountModal: React.FC<
               )}
             </div>
 
+            {/* Auto-sync notice */}
+            <div className="flex items-center gap-2 p-2.5 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-700 dark:text-purple-300 text-xs text-left">
+              <CheckCircle2 className="w-4 h-4 shrink-0 text-purple-500" />
+              <span>
+                {resolvedLanguage === "en"
+                  ? "Free profiles linked to this account were automatically synchronized."
+                  : "Los perfiles libres vinculados a esta cuenta se han actualizado automáticamente."}
+              </span>
+            </div>
+
             <div className="flex justify-end pt-2">
               <button
                 type="button"

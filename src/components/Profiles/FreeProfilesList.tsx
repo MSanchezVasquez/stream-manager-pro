@@ -32,7 +32,7 @@ import { useTranslation } from "../../utils/translations";
 export const FreeProfilesList: React.FC = () => {
   const { freeProfiles, suppliers, saveFreeProfile, deleteFreeProfile } =
     useDataStore();
-  const { t } = useTranslation();
+  const { t, resolvedLanguage } = useTranslation();
 
   const [search, setSearch] = useState("");
   const [selectedProfileForAssign, setSelectedProfileForAssign] =
@@ -299,7 +299,14 @@ export const FreeProfilesList: React.FC = () => {
                 {(prof.supplierName || prof.expirationDate) && (
                   <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 flex-wrap gap-1 pt-0.5">
                     {prof.supplierName && (
-                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/20">
+                      <span
+                        title={
+                          resolvedLanguage === "en"
+                            ? "Linked and automatically synchronized with supplier account"
+                            : "Vinculado y sincronizado automáticamente con cuenta del proveedor"
+                        }
+                        className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/20"
+                      >
                         <Truck className="w-2.5 h-2.5" />
                         <span>{prof.supplierName}</span>
                       </span>

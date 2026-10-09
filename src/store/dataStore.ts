@@ -578,15 +578,103 @@ export const useDataStore = create<DataState>((set, get) => {
 
         const vaultKey = getVaultKey();
         const previousSuppliers = get().suppliers;
+        const previousProfiles = get().freeProfiles;
+        const oldSupplier = previousSuppliers.find((s) => s?.id === supplier.id);
 
+        // Detectar y sincronizar perfiles libres asociados a las cuentas de este proveedor
+        let nextProfiles = [...previousProfiles];
+        const changedProfilesMap = new Map<string, FreeProfile>();
+
+        for (const newAcc of supplier.accounts || []) {
+          const oldAcc = oldSupplier?.accounts?.find((a) => a.id === newAcc.id);
+
+          nextProfiles = nextProfiles.map((fp) => {
+            if (!fp) return fp;
+
+            // Coincidencia 1: ID directo de cuenta de proveedor
+            const isDirectMatch = Boolean(
+              fp.supplierAccountId && fp.supplierAccountId === newAcc.id,
+            );
+
+            // Coincidencia 2: Mismo proveedor y misma plataforma + correo (anterior o nuevo)
+            const isSupplierAndPlatformMatch = Boolean(
+              fp.supplierId &&
+                fp.supplierId === supplier.id &&
+                ((oldAcc &&
+                  fp.serviceName?.toLowerCase().trim() ===
+                    oldAcc.serviceName?.toLowerCase().trim() &&
+                  fp.email?.toLowerCase().trim() ===
+                    oldAcc.email?.toLowerCase().trim()) ||
+                  (fp.serviceName?.toLowerCase().trim() ===
+                    newAcc.serviceName?.toLowerCase().trim() &&
+                    fp.email?.toLowerCase().trim() ===
+                      newAcc.email?.toLowerCase().trim())),
+            );
+
+            // Coincidencia 3: Mismo correo y misma plataforma (incluso si no se había guardado supplierId antes)
+            const isPlatformAndEmailMatch = Boolean(
+              (oldAcc &&
+                fp.serviceName?.toLowerCase().trim() ===
+                  oldAcc.serviceName?.toLowerCase().trim() &&
+                fp.email?.toLowerCase().trim() ===
+                  oldAcc.email?.toLowerCase().trim()) ||
+                (fp.serviceName?.toLowerCase().trim() ===
+                  newAcc.serviceName?.toLowerCase().trim() &&
+                  fp.email?.toLowerCase().trim() ===
+                    newAcc.email?.toLowerCase().trim()),
+            );
+
+            if (
+              !isDirectMatch &&
+              !isSupplierAndPlatformMatch &&
+              !isPlatformAndEmailMatch
+            ) {
+              return fp;
+            }
+
+            const updatedFp: FreeProfile = {
+              ...fp,
+              serviceName: newAcc.serviceName,
+              email: newAcc.email,
+              password: newAcc.password,
+              expirationDate: newAcc.expirationDate || fp.expirationDate,
+              browser: newAcc.browser || fp.browser,
+              supplierId: supplier.id,
+              supplierName: supplier.name,
+              supplierAccountId: newAcc.id,
+            };
+
+            const hasChanges =
+              fp.serviceName !== updatedFp.serviceName ||
+              fp.email !== updatedFp.email ||
+              fp.password !== updatedFp.password ||
+              fp.expirationDate !== updatedFp.expirationDate ||
+              fp.browser !== updatedFp.browser ||
+              fp.supplierId !== updatedFp.supplierId ||
+              fp.supplierName !== updatedFp.supplierName ||
+              fp.supplierAccountId !== updatedFp.supplierAccountId;
+
+            if (hasChanges) {
+              changedProfilesMap.set(updatedFp.id, updatedFp);
+              return updatedFp;
+            }
+
+            return fp;
+          });
+        }
+
+        // Actualizar optimísticamente en el estado local de Zustand
         set((state) => {
           const idx = state.suppliers.findIndex((s) => s?.id === supplier.id);
-          if (idx >= 0) {
-            const newSuppliers = [...state.suppliers];
-            newSuppliers[idx] = supplier;
-            return { suppliers: newSuppliers };
-          }
-          return { suppliers: [supplier, ...state.suppliers] };
+          const newSuppliers =
+            idx >= 0
+              ? state.suppliers.map((s, i) => (i === idx ? supplier : s))
+              : [supplier, ...state.suppliers];
+
+          return {
+            suppliers: newSuppliers,
+            freeProfiles: nextProfiles,
+          };
         });
 
         const supplierToPersist = await encryptSupplier(supplier, vaultKey);
@@ -597,8 +685,38 @@ export const useDataStore = create<DataState>((set, get) => {
           supplierToPersist,
         );
         if (!success) {
-          set({ suppliers: previousSuppliers });
+          // Rollback
+          set({
+            suppliers: previousSuppliers,
+            freeProfiles: previousProfiles,
+          });
+          return false;
         }
+
+        // Persistir los perfiles libres actualizados en Firestore
+        if (changedProfilesMap.size > 0) {
+          await Promise.all(
+            Array.from(changedProfilesMap.values()).map(async (changedFp) => {
+              try {
+                const profileToPersist = await encryptFreeProfile(
+                  changedFp,
+                  vaultKey,
+                );
+                await saveUserDocument(
+                  uid,
+                  COLLECTIONS.FREE_PROFILES,
+                  profileToPersist,
+                );
+              } catch (err) {
+                console.error(
+                  "Error al persistir perfil libre sincronizado con proveedor:",
+                  err,
+                );
+              }
+            }),
+          );
+        }
+
         return success;
       }),
 
