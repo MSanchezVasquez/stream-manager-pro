@@ -4,9 +4,6 @@ import {
   Moon,
   Bell,
   Search,
-  Sparkles,
-  Zap,
-  Star,
   Menu,
 } from 'lucide-react';
 import { AppLogo } from './AppLogo';
@@ -56,7 +53,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const { themeMode: theme, toggleTheme } = useThemeStore();
   const { user, logout } = useAuthStore();
-  const { clients, freeProfiles } = useDataStore();
+  const { clients } = useDataStore();
   const { t } = useTranslation();
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
@@ -109,16 +106,6 @@ export const Navbar: React.FC<NavbarProps> = ({
       return acc + count;
     }, 0);
   }, [clients]);
-
-  const activeClientsCount = useMemo(
-    () => clients.filter((c) => c.status === 'active').length,
-    [clients],
-  );
-
-  const freeProfilesCount = useMemo(
-    () => freeProfiles.reduce((sum, p) => sum + p.quantity, 0),
-    [freeProfiles],
-  );
 
   useEffect(() => {
     if (logoRef.current) {
@@ -367,42 +354,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </div>
               ))}
             </div>
-          </div>
-
-          {/* Right Highlights & Shortcuts (Desktop only) */}
-          <div className="hidden lg:flex items-center gap-4 text-xs font-semibold text-white/90 shrink-0 pointer-events-auto">
-            <button
-              type="button"
-              onClick={() => setActiveTab('alerts')}
-              className="hover:text-white transition-colors flex items-center gap-1.5 cursor-pointer"
-            >
-              <Zap className="w-3.5 h-3.5 text-amber-300" />
-              <span>
-                {t('nav.expirations')} ({alertCount})
-              </span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab('clients_active')}
-              className="hover:text-white transition-colors flex items-center gap-1.5 cursor-pointer"
-            >
-              <Star className="w-3.5 h-3.5 text-emerald-300" />
-              <span>
-                {activeClientsCount} {t('nav.active')}
-              </span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab('free_profiles')}
-              className="hover:text-white transition-colors flex items-center gap-1.5 cursor-pointer"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-cyan-300" />
-              <span>
-                {freeProfilesCount} {t('nav.freeProfiles')}
-              </span>
-            </button>
           </div>
         </div>
       </div>
