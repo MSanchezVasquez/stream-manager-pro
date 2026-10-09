@@ -6,6 +6,8 @@ import {
   Plus,
   ChevronLeft,
   ChevronRight,
+  ArrowDownAZ,
+  ArrowUpAZ,
 } from "lucide-react";
 import { PlatformIcon } from "../common/PlatformIcon";
 import { useTranslation } from "../../utils/translations";
@@ -17,6 +19,8 @@ interface ClientListHeaderProps {
   onSelectPlatform: (platform: string) => void;
   platformOptions: string[];
   onAddClient: () => void;
+  sortOrder?: "name-asc" | "name-desc";
+  onToggleSortOrder?: () => void;
 }
 
 export const ClientListHeader: React.FC<ClientListHeaderProps> = ({
@@ -26,8 +30,11 @@ export const ClientListHeader: React.FC<ClientListHeaderProps> = ({
   onSelectPlatform,
   platformOptions,
   onAddClient,
+  sortOrder = "name-asc",
+  onToggleSortOrder,
 }) => {
-  const { t } = useTranslation();
+  const { t, resolvedLanguage } = useTranslation();
+  const isEn = resolvedLanguage === "en";
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -138,13 +145,39 @@ export const ClientListHeader: React.FC<ClientListHeaderProps> = ({
           </div>
         </div>
 
-        <button
-          onClick={onAddClient}
-          className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-md shadow-indigo-600/20 transition-all shrink-0 cursor-pointer ml-auto"
-        >
-          <Plus className="w-4 h-4" />
-          <span>{t("clients.addClient")}</span>
-        </button>
+        <div className="flex items-center gap-2 shrink-0 ml-auto">
+          {onToggleSortOrder && (
+            <button
+              type="button"
+              onClick={onToggleSortOrder}
+              className="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#1A1A1E] dark:hover:bg-[#25252E] border border-slate-200 dark:border-[#2D2D33] text-slate-700 dark:text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
+              title={
+                sortOrder === "name-desc"
+                  ? isEn
+                    ? "Sorted: Z to A (Click to sort A to Z)"
+                    : "Orden actual: Z a A (Clic para ordenar A a Z)"
+                  : isEn
+                    ? "Sorted: A to Z (Click to sort Z to A)"
+                    : "Orden actual: A a Z (Clic para ordenar Z a A)"
+              }
+            >
+              {sortOrder === "name-desc" ? (
+                <ArrowUpAZ className="w-4 h-4 text-indigo-500" />
+              ) : (
+                <ArrowDownAZ className="w-4 h-4 text-indigo-500" />
+              )}
+              <span>{sortOrder === "name-desc" ? "Z → A" : "A → Z"}</span>
+            </button>
+          )}
+
+          <button
+            onClick={onAddClient}
+            className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-md shadow-indigo-600/20 transition-all shrink-0 cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span>{t("clients.addClient")}</span>
+          </button>
+        </div>
       </div>
 
       {/* Platform Filter Buttons - With marquee-like fade masks and smooth horizontal navigation */}

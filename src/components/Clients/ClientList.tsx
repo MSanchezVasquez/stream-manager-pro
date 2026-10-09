@@ -47,6 +47,7 @@ export const ClientList: React.FC<ClientListProps> = ({
   const [healthFilter, setHealthFilter] = useState<
     "all" | "healthy" | "warning" | "expired"
   >("all");
+  const [sortOrder, setSortOrder] = useState<"name-asc" | "name-desc">("name-asc");
   const [localSearch] = useState<string>("");
   const [showPasswords, setShowPasswords] = useState<Record<string, boolean>>(
     {},
@@ -209,6 +210,19 @@ export const ClientList: React.FC<ClientListProps> = ({
     return true;
   });
 
+  // Sort clients alphabetically by name (default A-Z)
+  const sortedClients = useMemo(() => {
+    return [...filteredClients].sort((a, b) => {
+      const nameA = (a.name || "").trim();
+      const nameB = (b.name || "").trim();
+      const comp = nameA.localeCompare(nameB, "es", {
+        sensitivity: "base",
+        numeric: true,
+      });
+      return sortOrder === "name-desc" ? -comp : comp;
+    });
+  }, [filteredClients, sortOrder]);
+
   // Inline editing handlers
   const startInlineEdit = (client: Client) => {
     setInlineEditingClientId(client.id);
@@ -286,6 +300,12 @@ export const ClientList: React.FC<ClientListProps> = ({
         platformFilter={platformFilter}
         onSelectPlatform={setPlatformFilter}
         platformOptions={PLATFORM_FILTER_OPTIONS}
+        sortOrder={sortOrder}
+        onToggleSortOrder={() =>
+          setSortOrder((prev) =>
+            prev === "name-asc" ? "name-desc" : "name-asc",
+          )
+        }
         onAddClient={() => {
           setEditingClient(null);
           setIsClientModalOpen(true);
@@ -332,7 +352,7 @@ export const ClientList: React.FC<ClientListProps> = ({
         </div>
       ) : (
         <div className="columns-1 md:columns-2 xl:columns-3 gap-6 space-y-6">
-          {filteredClients.map((client) => {
+          {sortedClients.map((client) => {
             const visibleSubs =
               client.subscriptions.filter(isSubMatchingFilters);
             const health = hasActiveSubFilters
