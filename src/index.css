@@ -112,24 +112,21 @@ html {
   scrollbar-width: none !important;
 }
 
-/* Animación de desplazamiento horizontal continuo para plataformas */
-@keyframes marqueeScroll {
+/* Animación de desplazamiento horizontal continuo e infinito sin saltos */
+@keyframes marqueeInfinite {
   0% {
-    transform: translateX(0%);
+    transform: translateX(0);
   }
   100% {
-    transform: translateX(-50%);
+    transform: translateX(-100%);
   }
 }
 
 .animate-marquee-scroll {
   display: flex;
-  width: max-content;
-  animation: marqueeScroll 28s linear infinite;
-}
-
-.animate-marquee-scroll:hover {
-  animation-play-state: paused;
+  flex-shrink: 0;
+  will-change: transform;
+  animation: marqueeInfinite 40s linear infinite;
 }
 
 /* Máscara de desvanecimiento suave para entrada y salida de las plataformas */
