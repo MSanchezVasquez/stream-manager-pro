@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Users, Tv, AlertTriangle, Sparkles, Coins } from 'lucide-react';
+import { Users, Tv, AlertTriangle, Truck, Sparkles } from 'lucide-react';
 import { useDataStore } from '../../store/dataStore';
 import { getDaysRemaining } from '../../utils/platformHelpers';
 import { useTranslation } from '../../utils/translations';
@@ -9,7 +9,7 @@ export const OverviewCards: React.FC<{
   onNavigateTab: (tab: string) => void;
 }> = ({ onNavigateTab }) => {
   const { t } = useTranslation();
-  const { clients, freeProfiles } = useDataStore();
+  const { clients, suppliers, freeProfiles } = useDataStore();
   const containerRef = useRef<HTMLDivElement>(null);
 
   const activeClients = clients.filter((c) => c.status === 'active');
@@ -21,15 +21,6 @@ export const OverviewCards: React.FC<{
     0,
   );
 
-  const totalMonthlyRevenue = activeClients.reduce(
-    (acc, c) =>
-      acc +
-      c.subscriptions
-        .filter((s) => s.status === 'active')
-        .reduce((sum, s) => sum + (typeof s.price === 'number' ? s.price : 0), 0),
-    0,
-  );
-
   const upcomingExpirations = activeClients.reduce((acc, c) => {
     const warningSubs = c.subscriptions.filter((s) => {
       const days = getDaysRemaining(s.cutDate);
@@ -38,6 +29,7 @@ export const OverviewCards: React.FC<{
     return acc + warningSubs.length;
   }, 0);
 
+  const totalSuppliers = suppliers.length;
   const totalFreeProfiles = freeProfiles.reduce(
     (acc, p) => acc + p.quantity,
     0,
@@ -51,32 +43,16 @@ export const OverviewCards: React.FC<{
         { y: 0, opacity: 1, duration: 0.5, stagger: 0.08, ease: 'power2.out' },
       );
     }
-  }, [
-    totalActiveClients,
-    totalActiveSubs,
-    upcomingExpirations,
-    totalMonthlyRevenue,
-  ]);
+  }, [totalActiveClients, totalActiveSubs, upcomingExpirations, totalSuppliers, totalFreeProfiles]);
 
   const cards = [
-    {
-      title: t('dash.monthlyRevenueTitle'),
-      value: `S/ ${totalMonthlyRevenue.toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
-      icon: Coins,
-      color: 'from-blue-500/20 to-indigo-500/5 text-blue-500',
-      borderColor: 'border-blue-500/30',
-      iconBg: 'bg-blue-500/10 text-blue-600 dark:text-blue-400',
-      tab: 'clients_active',
-      isPrice: true,
-      priceColor: 'text-blue-600 dark:text-blue-400',
-    },
     {
       title: t('dash.activeClientsTitle'),
       value: totalActiveClients,
       icon: Users,
-      color: 'from-cyan-500/20 to-blue-500/5 text-cyan-500',
-      borderColor: 'border-cyan-500/30',
-      iconBg: 'bg-cyan-500/10 text-cyan-600 dark:text-cyan-400',
+      color: 'from-blue-500/20 to-indigo-500/5 text-blue-500',
+      borderColor: 'border-blue-500/30',
+      iconBg: 'bg-blue-500/10 text-blue-600 dark:text-blue-400',
       tab: 'clients_active',
     },
     {
@@ -98,6 +74,15 @@ export const OverviewCards: React.FC<{
       tab: 'alerts',
     },
     {
+      title: t('dash.registeredSuppliersTitle'),
+      value: totalSuppliers,
+      icon: Truck,
+      color: 'from-purple-500/20 to-pink-500/5 text-purple-500',
+      borderColor: 'border-purple-500/30',
+      iconBg: 'bg-purple-500/10 text-purple-600 dark:text-purple-400',
+      tab: 'suppliers',
+    },
+    {
       title: t('dash.freeProfilesTitle'),
       value: totalFreeProfiles,
       icon: Sparkles,
@@ -111,7 +96,7 @@ export const OverviewCards: React.FC<{
   return (
     <div
       ref={containerRef}
-      className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-6 sm:mb-8"
+      className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-4 mb-6 sm:mb-8"
     >
       {cards.map((card, idx) => {
         const Icon = card.icon;
@@ -124,28 +109,21 @@ export const OverviewCards: React.FC<{
             <div
               className={`absolute -right-4 -bottom-4 w-20 h-20 rounded-full bg-linear-to-br ${card.color} blur-2xl group-hover:scale-150 transition-transform`}
             />
-            <div className="flex items-start justify-between gap-1.5 mb-2">
-              <span className="text-[11px] font-semibold text-slate-500 dark:text-[#94949E] uppercase tracking-wider font-space line-clamp-2 leading-tight">
+            <div className="flex items-start justify-between gap-1.5 mb-1.5 sm:mb-2">
+              <span className="text-[10px] sm:text-xs font-semibold text-slate-500 dark:text-[#94949E] uppercase tracking-wider font-space line-clamp-2 leading-tight">
                 {card.title}
               </span>
               <div
                 className={`p-1.5 sm:p-2 rounded-lg sm:rounded-xl shrink-0 ${card.iconBg}`}
               >
-                <Icon className="w-4 h-4" />
+                <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </div>
             </div>
-
-            <div>
-              <div
-                className={`font-bold font-cascadia truncate ${
-                  card.isPrice
-                    ? `text-base sm:text-lg ${card.priceColor || 'text-slate-900 dark:text-white'}`
-                    : 'text-xl sm:text-2xl text-slate-900 dark:text-[#E4E4E7]'
-                }`}
-                title={String(card.value)}
-              >
-                {card.value}
-              </div>
+            <div
+              className="font-bold text-slate-900 dark:text-[#E4E4E7] font-cascadia truncate text-xl sm:text-2xl"
+              title={String(card.value)}
+            >
+              {card.value}
             </div>
           </div>
         );

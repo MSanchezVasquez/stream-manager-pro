@@ -3,25 +3,23 @@ import { useDataStore } from "../../store/dataStore";
 import { getPlatformConfig, getPlatformDisplayName } from "../../utils/platformHelpers";
 import { PlatformIcon } from "../common/PlatformIcon";
 import { useTranslation } from "../../utils/translations";
-import { Tv, Coins } from "lucide-react";
+import { Tv } from "lucide-react";
 
 export const PlatformDistributionChart: React.FC = () => {
   const { t } = useTranslation();
   const { clients } = useDataStore();
 
-  // Count active subscriptions and revenue per platform in Soles (PEN)
-  const platformStats: Record<string, { count: number; revenue: number }> = {};
+  // Count active subscriptions per platform
+  const platformStats: Record<string, { count: number }> = {};
   clients.forEach((c) => {
     if (c.status === "active") {
       c.subscriptions.forEach((s) => {
         if (s.status === "active") {
           const norm = getPlatformDisplayName(s.serviceName) || "Otros";
-          const price = typeof s.price === "number" ? s.price : 0;
           if (!platformStats[norm]) {
-            platformStats[norm] = { count: 0, revenue: 0 };
+            platformStats[norm] = { count: 0 };
           }
           platformStats[norm].count += 1;
-          platformStats[norm].revenue += price;
         }
       });
     }
@@ -31,7 +29,6 @@ export const PlatformDistributionChart: React.FC = () => {
     (a, b) => b[1].count - a[1].count,
   );
   const totalSubs = sortedPlatforms.reduce((acc, [, val]) => acc + val.count, 0);
-  const totalRevenue = sortedPlatforms.reduce((acc, [, val]) => acc + val.revenue, 0);
 
   return (
     <div className="p-6 rounded-xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#1F1F23] shadow-sm">
@@ -45,14 +42,6 @@ export const PlatformDistributionChart: React.FC = () => {
             {t("chart.subtitle", { total: totalSubs })}
           </p>
         </div>
-        {totalRevenue > 0 && (
-          <div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-xl self-start sm:self-auto">
-            <Coins className="w-4 h-4 text-emerald-500" />
-            <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 font-cascadia">
-              {t("chart.totalRevenue", { amount: totalRevenue.toFixed(2) })}
-            </span>
-          </div>
-        )}
       </div>
 
       {sortedPlatforms.length === 0 ? (
@@ -77,13 +66,8 @@ export const PlatformDistributionChart: React.FC = () => {
                     <span>{platform}</span>
                   </span>
                   <div className="flex items-center gap-3">
-                    {data.revenue > 0 && (
-                      <span className="text-emerald-600 dark:text-emerald-400 font-cascadia font-bold">
-                        S/ {data.revenue.toFixed(2)}
-                      </span>
-                    )}
                     <span className="text-slate-500 dark:text-[#94949E]">
-                      {data.count} sub(s) ({percentage}%)
+                      {data.count} {data.count === 1 ? "suscripción" : "suscripciones"} ({percentage}%)
                     </span>
                   </div>
                 </div>
