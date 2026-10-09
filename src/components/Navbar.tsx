@@ -325,42 +325,44 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
       </div>
 
-      {/* Level 2: Platform Showcase Ticker (Purely visual decorative horizontal animation, seamlessly infinite) */}
-      <div className="bg-black/15 py-1.5 px-0 overflow-hidden select-none pointer-events-none">
-        <div className="w-full flex items-center overflow-hidden marquee-mask">
-          {/* Track 1 */}
-          <div className="flex shrink-0 animate-marquee-scroll items-center gap-6 sm:gap-8 pr-6 sm:pr-8 py-0.5">
-            {PLATFORMS_SEQUENCE.map((platform, idx) => (
-              <div
-                key={`t1-${platform.id}-${idx}`}
-                className="px-2 py-0.5 flex items-center justify-center shrink-0 opacity-85 hover:opacity-100 transition-opacity"
-                title={platform.label}
-              >
-                <PlatformIcon
-                  platform={platform.label}
-                  className="h-5 sm:h-6 w-auto max-w-[48px] shrink-0 object-contain"
-                />
-              </div>
-            ))}
-          </div>
+      {/* Level 2: Platform Showcase Ticker (Aligned with main page content width) */}
+      <div className="bg-black/15 py-1.5 overflow-hidden select-none pointer-events-none">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+          <div className="w-full flex items-center overflow-hidden marquee-mask">
+            {/* Track 1 */}
+            <div className="flex shrink-0 animate-marquee-scroll items-center gap-6 sm:gap-8 pr-6 sm:pr-8 py-0.5">
+              {PLATFORMS_SEQUENCE.map((platform, idx) => (
+                <div
+                  key={`t1-${platform.id}-${idx}`}
+                  className="px-2 py-0.5 flex items-center justify-center shrink-0 opacity-85 hover:opacity-100 transition-opacity"
+                  title={platform.label}
+                >
+                  <PlatformIcon
+                    platform={platform.label}
+                    className="h-5 sm:h-6 w-auto max-w-[48px] shrink-0 object-contain"
+                  />
+                </div>
+              ))}
+            </div>
 
-          {/* Track 2 (identical clone for seamless infinite loop without jump) */}
-          <div
-            aria-hidden="true"
-            className="flex shrink-0 animate-marquee-scroll items-center gap-6 sm:gap-8 pr-6 sm:pr-8 py-0.5"
-          >
-            {PLATFORMS_SEQUENCE.map((platform, idx) => (
-              <div
-                key={`t2-${platform.id}-${idx}`}
-                className="px-2 py-0.5 flex items-center justify-center shrink-0 opacity-85 hover:opacity-100 transition-opacity"
-                title={platform.label}
-              >
-                <PlatformIcon
-                  platform={platform.label}
-                  className="h-5 sm:h-6 w-auto max-w-[48px] shrink-0 object-contain"
-                />
-              </div>
-            ))}
+            {/* Track 2 (identical clone for seamless infinite loop without jump) */}
+            <div
+              aria-hidden="true"
+              className="flex shrink-0 animate-marquee-scroll items-center gap-6 sm:gap-8 pr-6 sm:pr-8 py-0.5"
+            >
+              {PLATFORMS_SEQUENCE.map((platform, idx) => (
+                <div
+                  key={`t2-${platform.id}-${idx}`}
+                  className="px-2 py-0.5 flex items-center justify-center shrink-0 opacity-85 hover:opacity-100 transition-opacity"
+                  title={platform.label}
+                >
+                  <PlatformIcon
+                    platform={platform.label}
+                    className="h-5 sm:h-6 w-auto max-w-[48px] shrink-0 object-contain"
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
