@@ -31,7 +31,7 @@ export const ClientInlineEditor: React.FC<ClientInlineEditorProps> = ({
   const { t } = useTranslation();
 
   return (
-    <div className="break-inside-avoid mb-6 p-5 rounded-2xl bg-white dark:bg-[#141418] border-2 border-indigo-500/50 shadow-xl transition-all flex flex-col space-y-4 relative">
+    <div className="p-5 rounded-2xl bg-white dark:bg-[#141418] border-2 border-indigo-500/50 shadow-xl transition-all flex flex-col space-y-4 relative">
       {/* Inline Edit Header */}
       <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-[#1F1F23]">
         <div className="flex items-center gap-2 flex-wrap">

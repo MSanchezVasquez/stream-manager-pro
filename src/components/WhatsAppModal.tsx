@@ -93,7 +93,7 @@ export const WhatsAppModal: React.FC<WhatsAppModalProps> = ({
             rows={8}
             value={messageText}
             onChange={(e) => setMessageText(e.target.value)}
-            className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 text-xs font-mono focus:ring-2 focus:ring-emerald-500/50 focus:outline-none transition-all"
+            className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 text-xs font-mono outline-none focus:outline-none ring-0 focus:ring-0 focus:border-slate-200 dark:focus:border-slate-800 transition-all resize-y"
           />
         </div>
 

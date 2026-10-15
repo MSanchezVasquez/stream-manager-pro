@@ -53,7 +53,7 @@ export const ClientCard: React.FC<ClientCardProps> = ({
   const { t } = useTranslation();
 
   return (
-    <div className="break-inside-avoid mb-6 p-5 rounded-2xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#1F1F23] shadow-sm hover:border-slate-300 dark:hover:border-[#2D2D33] transition-all flex flex-col relative group">
+    <div className="p-5 rounded-2xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#1F1F23] shadow-sm hover:border-slate-300 dark:hover:border-[#2D2D33] transition-all flex flex-col relative group">
       {/* Header */}
       <div className="mb-4 pb-3.5 border-b border-slate-100 dark:border-[#1F1F23] space-y-2.5">
         {/* Top Row: Avatar + Name + Header Actions */}
