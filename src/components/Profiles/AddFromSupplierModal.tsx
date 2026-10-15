@@ -315,8 +315,13 @@ export const AddFromSupplierModal: React.FC<AddFromSupplierModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/40 backdrop-blur-sm transition-all duration-300 animate-fade-in">
-      <div className="w-full max-w-4xl max-h-[92vh] rounded-2xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#25252D] shadow-2xl flex flex-col relative overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5">
+      {/* Fondo suave, claro y con visibilidad (Estilo Sofascore) */}
+      <div
+        className="fixed inset-0 bg-black/15 dark:bg-black/35 backdrop-brightness-[0.75] transition-all duration-300 animate-fade-in"
+        onClick={onClose}
+      />
+      <div className="w-full max-w-4xl max-h-[92vh] rounded-2xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#25252D] shadow-2xl flex flex-col relative z-10 overflow-hidden animate-scale-in">
         {/* Header */}
         <div className="p-5 border-b border-slate-200 dark:border-[#1F1F23] flex items-center justify-between shrink-0 bg-slate-50/60 dark:bg-[#101014]/60">
           <div className="flex items-center gap-3">

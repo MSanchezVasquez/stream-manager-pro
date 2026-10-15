@@ -189,8 +189,13 @@ export const RenewSupplierAccountModal: React.FC<
     : 0;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/35 dark:bg-black/55 backdrop-blur-sm transition-all duration-300 animate-fade-in">
-      <div className="w-full max-w-lg rounded-2xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#25252D] shadow-2xl p-6 relative flex flex-col max-h-[92vh] overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Fondo suave, claro y con visibilidad (Estilo Sofascore) */}
+      <div
+        className="fixed inset-0 bg-black/15 dark:bg-black/35 backdrop-brightness-[0.75] transition-all duration-300 animate-fade-in"
+        onClick={onClose}
+      />
+      <div className="w-full max-w-lg rounded-2xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#25252D] shadow-2xl p-6 relative z-10 flex flex-col max-h-[92vh] overflow-hidden animate-scale-in">
         {/* Close Button */}
         <button
           onClick={onClose}

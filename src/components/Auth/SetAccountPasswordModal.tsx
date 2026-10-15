@@ -247,17 +247,17 @@ export const SetAccountPasswordModal: React.FC<SetAccountPasswordModalProps> = (
 
   return ReactDOM.createPortal(
     <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
-      {/* Backdrop */}
+      {/* Backdrop (Estilo Sofascore) */}
       <div
         ref={overlayRef}
         onClick={onClose}
-        className="fixed inset-0 bg-black/60 backdrop-brightness-[0.75] backdrop-blur-sm transition-all duration-300"
+        className="fixed inset-0 bg-black/15 dark:bg-black/35 backdrop-brightness-[0.75] transition-all duration-300 animate-fade-in"
       />
 
       {/* Modal */}
       <div
         ref={modalRef}
-        className="relative z-10 w-full max-w-md bg-white dark:bg-[#16161C] border border-slate-200 dark:border-[#2D2D33] rounded-3xl shadow-2xl overflow-hidden"
+        className="relative z-10 w-full max-w-md bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#25252D] rounded-2xl shadow-2xl overflow-hidden animate-scale-in"
       >
         <div className="p-6">
           {/* Header */}

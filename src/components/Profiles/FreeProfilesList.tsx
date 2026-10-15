@@ -437,9 +437,13 @@ export const FreeProfilesList: React.FC = () => {
 
       {/* Add New Profile Modal */}
       {isNewProfileModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-fade-in">
-          <div className="w-full max-w-md rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl p-6 relative">
-            <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="fixed inset-0 bg-black/15 dark:bg-black/35 backdrop-brightness-[0.75] transition-all duration-300 animate-fade-in"
+            onClick={() => setIsNewProfileModalOpen(false)}
+          />
+          <div className="w-full max-w-md rounded-2xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#25252D] shadow-2xl p-6 relative z-10 animate-scale-in">
+            <h3 className="font-bold text-lg text-slate-900 dark:text-[#E4E4E7] mb-4">
               {t("profiles.addNewTitle")}
             </h3>
 
@@ -584,8 +588,12 @@ export const FreeProfilesList: React.FC = () => {
 
       {/* Edit Quantity Modal */}
       {profileToEditQuantity && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
-          <div className="w-full max-w-sm rounded-2xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#25252D] shadow-2xl p-6 relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="fixed inset-0 bg-black/15 dark:bg-black/35 backdrop-brightness-[0.75] transition-all duration-300 animate-fade-in"
+            onClick={() => setProfileToEditQuantity(null)}
+          />
+          <div className="w-full max-w-sm rounded-2xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#25252D] shadow-2xl p-6 relative z-10 animate-scale-in">
             <button
               type="button"
               onClick={() => setProfileToEditQuantity(null)}
@@ -700,8 +708,12 @@ export const FreeProfilesList: React.FC = () => {
 
       {/* Delete Profile Confirmation Modal */}
       {profileToDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-          <div className="w-full max-w-sm rounded-2xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#25252D] shadow-2xl p-6 relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="fixed inset-0 bg-black/15 dark:bg-black/35 backdrop-brightness-[0.75] transition-all duration-300 animate-fade-in"
+            onClick={() => !isDeleting && setProfileToDelete(null)}
+          />
+          <div className="w-full max-w-sm rounded-2xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#25252D] shadow-2xl p-6 relative z-10 animate-scale-in">
             <div className="w-12 h-12 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center mb-4 mx-auto">
               <Trash2 className="w-6 h-6" />
             </div>

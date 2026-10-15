@@ -139,16 +139,16 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
   return ReactDOM.createPortal(
     <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
-      {/* Fondo sólido oscuro, SIN blur (a diferencia de los otros modales de la app) */}
+      {/* Fondo suave, claro y con visibilidad (Estilo Sofascore) */}
       <div
         ref={overlayRef}
         onClick={onClose}
-        className="fixed inset-0 bg-black/80"
+        className="fixed inset-0 bg-black/15 dark:bg-black/35 backdrop-brightness-[0.75] transition-all duration-300 animate-fade-in"
       />
 
       <div
         ref={modalRef}
-        className="relative z-10 w-full max-w-2xl max-h-[85vh] overflow-y-auto bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#25252D] rounded-3xl shadow-2xl scrollbar-thin"
+        className="relative z-10 w-full max-w-2xl max-h-[85vh] overflow-y-auto bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#25252D] rounded-2xl shadow-2xl scrollbar-thin animate-scale-in"
       >
         {/* Header */}
         <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-5 border-b border-slate-100 dark:border-[#25252D] bg-white/95 dark:bg-[#141418]/95 backdrop-blur-sm">
