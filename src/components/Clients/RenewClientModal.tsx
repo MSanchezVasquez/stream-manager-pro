@@ -35,6 +35,7 @@ interface RenewClientModalProps {
     sub: ClientSubscription,
     clientName: string,
     phone?: string,
+    allRenewedSubs?: ClientSubscription[],
   ) => void;
 }
 
@@ -228,7 +229,7 @@ export const RenewClientModal: React.FC<RenewClientModalProps> = ({
   const todayStr = getTodayFormatted();
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm transition-all duration-300 animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/35 dark:bg-black/55 backdrop-blur-sm transition-all duration-300 animate-fade-in">
       <div className="w-full max-w-xl rounded-2xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#25252D] shadow-2xl p-6 relative flex flex-col max-h-[92vh] overflow-hidden">
         {/* Close Button */}
         <button
@@ -293,7 +294,7 @@ export const RenewClientModal: React.FC<RenewClientModalProps> = ({
               {onNotifyWhatsApp && lastRenewedSubs.length > 0 && (
                 <button
                   onClick={() => {
-                    onNotifyWhatsApp(lastRenewedSubs[0], client.name, client.phone);
+                    onNotifyWhatsApp(lastRenewedSubs[0], client.name, client.phone, lastRenewedSubs);
                     onClose();
                   }}
                   className="flex-1 py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20 transition-all cursor-pointer"

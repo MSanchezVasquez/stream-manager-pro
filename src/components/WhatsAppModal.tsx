@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { MessageSquare, Copy, Check, ExternalLink, X } from 'lucide-react';
-import { generateWhatsAppMessage } from '../utils/platformHelpers';
+import { generateWhatsAppMessage, generateWhatsAppRenewalMessage } from '../utils/platformHelpers';
+import { ClientSubscription } from '../types';
 import { useTranslation } from '../utils/translations';
 
 interface WhatsAppModalProps {
@@ -14,6 +15,8 @@ interface WhatsAppModalProps {
   profileName?: string;
   pin?: string;
   phone?: string;
+  isRenewal?: boolean;
+  renewedSubs?: ClientSubscription[];
 }
 
 export const WhatsAppModal: React.FC<WhatsAppModalProps> = ({
@@ -26,14 +29,39 @@ export const WhatsAppModal: React.FC<WhatsAppModalProps> = ({
   password,
   profileName,
   pin,
-  phone
+  phone,
+  isRenewal = false,
+  renewedSubs,
 }) => {
   const { t, resolvedLanguage } = useTranslation();
   const [copied, setCopied] = useState(false);
 
-  if (!isOpen) return null;
-
-  const defaultMsg = generateWhatsAppMessage(
+  const defaultMsg = useMemo(() => {
+    if (isRenewal) {
+      return generateWhatsAppRenewalMessage(
+        clientName,
+        serviceName,
+        cutDate,
+        email,
+        password,
+        profileName,
+        pin,
+        renewedSubs,
+        resolvedLanguage
+      );
+    }
+    return generateWhatsAppMessage(
+      clientName,
+      serviceName,
+      cutDate,
+      email,
+      password,
+      profileName,
+      pin,
+      resolvedLanguage
+    );
+  }, [
+    isRenewal,
     clientName,
     serviceName,
     cutDate,
@@ -41,10 +69,17 @@ export const WhatsAppModal: React.FC<WhatsAppModalProps> = ({
     password,
     profileName,
     pin,
-    resolvedLanguage
-  );
+    renewedSubs,
+    resolvedLanguage,
+  ]);
 
   const [messageText, setMessageText] = useState(defaultMsg);
+
+  useEffect(() => {
+    setMessageText(defaultMsg);
+  }, [defaultMsg]);
+
+  if (!isOpen) return null;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(messageText);
@@ -62,7 +97,7 @@ export const WhatsAppModal: React.FC<WhatsAppModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/15 dark:bg-black/35 backdrop-brightness-[0.75] transition-all duration-300 animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/35 dark:bg-black/55 backdrop-blur-sm transition-all duration-300 animate-fade-in">
       <div className="w-full max-w-lg rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl p-6 relative">
         <button
           onClick={onClose}
@@ -77,10 +112,12 @@ export const WhatsAppModal: React.FC<WhatsAppModalProps> = ({
           </div>
           <div>
             <h3 className="font-bold text-lg text-slate-900 dark:text-white">
-              {t("whatsapp.title")}
+              {isRenewal ? t("whatsapp.renewalTitle") : t("whatsapp.title")}
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              {t("whatsapp.subtitle", { name: clientName })}
+              {isRenewal
+                ? t("whatsapp.renewalSubtitle", { name: clientName })
+                : t("whatsapp.subtitle", { name: clientName })}
             </p>
           </div>
         </div>

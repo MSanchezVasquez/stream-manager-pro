@@ -94,6 +94,8 @@ export const ClientList: React.FC<ClientListProps> = ({
     clientName: string;
     sub: ClientSubscription;
     phone?: string;
+    isRenewal?: boolean;
+    allRenewedSubs?: ClientSubscription[];
   } | null>(null);
 
   const effectiveSearch = (globalSearchQuery || localSearch).trim();
@@ -465,11 +467,13 @@ export const ClientList: React.FC<ClientListProps> = ({
           onClose={() => setClientToRenew(null)}
           client={clientToRenew.client}
           targetSubscriptionId={clientToRenew.targetSubId}
-          onNotifyWhatsApp={(sub, name, phone) => {
+          onNotifyWhatsApp={(sub, name, phone, allRenewedSubs) => {
             setWhatsAppSub({
               clientName: name,
               sub,
               phone,
+              isRenewal: true,
+              allRenewedSubs,
             });
           }}
         />
@@ -497,6 +501,8 @@ export const ClientList: React.FC<ClientListProps> = ({
           profileName={whatsAppSub.sub.profileName}
           pin={whatsAppSub.sub.pin}
           phone={whatsAppSub.phone}
+          isRenewal={whatsAppSub.isRenewal}
+          renewedSubs={whatsAppSub.allRenewedSubs}
         />
       )}
 

@@ -189,7 +189,7 @@ export const RenewSupplierAccountModal: React.FC<
     : 0;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm transition-all duration-300 animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/35 dark:bg-black/55 backdrop-blur-sm transition-all duration-300 animate-fade-in">
       <div className="w-full max-w-lg rounded-2xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#25252D] shadow-2xl p-6 relative flex flex-col max-h-[92vh] overflow-hidden">
         {/* Close Button */}
         <button

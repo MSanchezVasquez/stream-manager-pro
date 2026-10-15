@@ -1,5 +1,5 @@
 import { CSSProperties } from "react";
-import { StreamingPlatform, Client } from "../types";
+import { StreamingPlatform, Client, ClientSubscription } from "../types";
 import { useSettingsStore } from "../store/settingsStore";
 
 function resolveLang(lang?: "es" | "en"): "es" | "en" {
@@ -559,6 +559,71 @@ export function generateWhatsAppMessage(
   if (pin) credentialsText += `\n🔒 *PIN:* ${pin}`;
 
   return `Hola *${clientName}* 👋\n\nLe recordamos que ${timeAlert}\n${credentialsText}\n\nPara renovar o ante cualquier consulta, responda a este mensaje. ¡Gracias por preferir nuestro servicio! 🚀`;
+}
+
+/**
+ * Format a WhatsApp confirmation message for successful client renewal
+ */
+export function generateWhatsAppRenewalMessage(
+  clientName: string,
+  serviceName: string,
+  cutDate: string,
+  email?: string,
+  password?: string,
+  profileName?: string,
+  pin?: string,
+  renewedSubs?: ClientSubscription[],
+  lang?: "es" | "en",
+): string {
+  const l = resolveLang(lang);
+  const isEn = l === "en";
+
+  if (isEn) {
+    if (renewedSubs && renewedSubs.length > 1) {
+      let subsList = "";
+      renewedSubs.forEach((sub) => {
+        subsList += `\n📺 *${getPlatformDisplayName(sub.serviceName)}*\n📅 *New cut-off date:* ${sub.cutDate}`;
+        if (sub.email) subsList += `\n📧 *Email:* ${sub.email}`;
+        if (sub.password) subsList += `\n🔑 *Password:* ${sub.password}`;
+        if (sub.profileName) subsList += `\n👤 *Profile:* ${sub.profileName}`;
+        if (sub.pin) subsList += `\n🔒 *PIN:* ${sub.pin}`;
+        subsList += "\n";
+      });
+
+      return `Hello *${clientName}* 👋\n\n🎉 Your subscriptions have been *successfully renewed*! Here are the updated details:\n${subsList}\nThank you for renewing with us and for your trust! ✨ Enjoy your service 🍿`;
+    }
+
+    let credentialsText = "";
+    if (email) credentialsText += `\n📧 *Email:* ${email}`;
+    if (password) credentialsText += `\n🔑 *Password:* ${password}`;
+    if (profileName) credentialsText += `\n👤 *Profile:* ${profileName}`;
+    if (pin) credentialsText += `\n🔒 *PIN:* ${pin}`;
+
+    return `Hello *${clientName}* 👋\n\n🎉 Your *${getPlatformDisplayName(serviceName)}* service has been *successfully renewed*!\n📅 *New cut-off date:* ${cutDate}${credentialsText}\n\nThank you for renewing with us and for your trust! ✨ Enjoy your service 🍿`;
+  }
+
+  // Spanish (default)
+  if (renewedSubs && renewedSubs.length > 1) {
+    let subsList = "";
+    renewedSubs.forEach((sub) => {
+      subsList += `\n📺 *${getPlatformDisplayName(sub.serviceName)}*\n📅 *Nueva fecha de corte:* ${sub.cutDate}`;
+      if (sub.email) subsList += `\n📧 *Correo:* ${sub.email}`;
+      if (sub.password) subsList += `\n🔑 *Contraseña:* ${sub.password}`;
+      if (sub.profileName) subsList += `\n👤 *Perfil:* ${sub.profileName}`;
+      if (sub.pin) subsList += `\n🔒 *PIN:* ${sub.pin}`;
+      subsList += "\n";
+    });
+
+    return `¡Hola *${clientName}*! 👋\n\n🎉 ¡Sus suscripciones han sido *renovadas con éxito*! A continuación, los detalles actualizados:\n${subsList}\n¡Muchas gracias por su preferencia y por renovar con nosotros! ✨ Que disfrute de su servicio 🍿`;
+  }
+
+  let credentialsText = "";
+  if (email) credentialsText += `\n📧 *Correo:* ${email}`;
+  if (password) credentialsText += `\n🔑 *Contraseña:* ${password}`;
+  if (profileName) credentialsText += `\n👤 *Perfil:* ${profileName}`;
+  if (pin) credentialsText += `\n🔒 *PIN:* ${pin}`;
+
+  return `¡Hola *${clientName}*! 👋\n\n🎉 ¡Su servicio *${getPlatformDisplayName(serviceName)}* ha sido *renovado con éxito*!\n📅 *Nueva fecha de corte:* ${cutDate}${credentialsText}\n\n¡Muchas gracias por su preferencia y por renovar con nosotros! ✨ Que disfrute de su servicio 🍿`;
 }
 
 export type ClientHealthLevel =

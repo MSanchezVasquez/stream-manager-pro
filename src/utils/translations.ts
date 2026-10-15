@@ -364,6 +364,8 @@ export interface TranslationDictionary {
   // WhatsApp Modal
   "whatsapp.title": string;
   "whatsapp.subtitle": string;
+  "whatsapp.renewalTitle": string;
+  "whatsapp.renewalSubtitle": string;
   "whatsapp.formattedMsg": string;
   "whatsapp.copied": string;
   "whatsapp.copy": string;
@@ -785,6 +787,8 @@ export const TRANSLATIONS: Record<SupportedLanguage, TranslationDictionary> = {
     // WhatsApp Modal
     "whatsapp.title": "Notificación para WhatsApp",
     "whatsapp.subtitle": "Aviso de servicio para {name}",
+    "whatsapp.renewalTitle": "Aviso de Renovación por WhatsApp",
+    "whatsapp.renewalSubtitle": "Confirmación de renovación para {name}",
     "whatsapp.formattedMsg": "Mensaje Formateado (Puedes editarlo antes de enviar):",
     "whatsapp.copied": "¡Copiado!",
     "whatsapp.copy": "Copiar Texto",
@@ -1206,6 +1210,8 @@ export const TRANSLATIONS: Record<SupportedLanguage, TranslationDictionary> = {
     // WhatsApp Modal
     "whatsapp.title": "WhatsApp Notification",
     "whatsapp.subtitle": "Service notice for {name}",
+    "whatsapp.renewalTitle": "WhatsApp Renewal Confirmation",
+    "whatsapp.renewalSubtitle": "Renewal confirmation for {name}",
     "whatsapp.formattedMsg": "Formatted Message (You can edit before sending):",
     "whatsapp.copied": "Copied!",
     "whatsapp.copy": "Copy Text",
