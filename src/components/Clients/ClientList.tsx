@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { User } from "lucide-react";
 import { useDataStore } from "../../store/dataStore";
 import {
@@ -15,6 +15,28 @@ import { ClientInlineEditor } from "./ClientInlineEditor";
 import { DeleteClientModal } from "./DeleteClientModal";
 import { RenewClientModal } from "./RenewClientModal";
 import { useTranslation } from "../../utils/translations";
+
+function useColumnCount(): number {
+  const [columnCount, setColumnCount] = useState<number>(() => {
+    if (typeof window === "undefined") return 3;
+    if (window.innerWidth < 768) return 1;
+    if (window.innerWidth < 1280) return 2;
+    return 3;
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      const count = width < 768 ? 1 : width < 1280 ? 2 : 3;
+      setColumnCount((prev) => (prev !== count ? count : prev));
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  return columnCount;
+}
 
 interface ClientListProps {
   statusFilter: "active" | "inactive";
@@ -223,6 +245,17 @@ export const ClientList: React.FC<ClientListProps> = ({
     });
   }, [filteredClients, sortOrder]);
 
+  const columnCount = useColumnCount();
+
+  // Distribute clients across columns in round-robin order so horizontal left-to-right order is preserved without vertical empty voids
+  const columns = useMemo(() => {
+    const cols: Client[][] = Array.from({ length: columnCount }, () => []);
+    sortedClients.forEach((client, idx) => {
+      cols[idx % columnCount].push(client);
+    });
+    return cols;
+  }, [sortedClients, columnCount]);
+
   // Inline editing handlers
   const startInlineEdit = (client: Client) => {
     setInlineEditingClientId(client.id);
@@ -351,73 +384,77 @@ export const ClientList: React.FC<ClientListProps> = ({
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 items-start">
-          {sortedClients.map((client) => {
-            const visibleSubs =
-              client.subscriptions.filter(isSubMatchingFilters);
-            const health = hasActiveSubFilters
-              ? getClientAccountHealth({
-                  ...client,
-                  subscriptions: visibleSubs,
-                })
-              : getClientAccountHealth(client);
-            const isInlineEditing =
-              inlineEditingClientId === client.id && inlineClientData;
+        <div className="flex gap-6 items-start">
+          {columns.map((colClients, colIdx) => (
+            <div key={colIdx} className="flex-1 flex flex-col gap-6 min-w-0">
+              {colClients.map((client) => {
+                const visibleSubs =
+                  client.subscriptions.filter(isSubMatchingFilters);
+                const health = hasActiveSubFilters
+                  ? getClientAccountHealth({
+                      ...client,
+                      subscriptions: visibleSubs,
+                    })
+                  : getClientAccountHealth(client);
+                const isInlineEditing =
+                  inlineEditingClientId === client.id && inlineClientData;
 
-            if (isInlineEditing) {
-              return (
-                <ClientInlineEditor
-                  key={client.id}
-                  client={client}
-                  inlineClientData={inlineClientData}
-                  setInlineClientData={setInlineClientData}
-                  health={health}
-                  onSave={handleSaveInline}
-                  onCancel={cancelInlineEdit}
-                  onOpenDrawer={() => {
-                    cancelInlineEdit();
-                    setEditingClient(client);
-                    setIsClientModalOpen(true);
-                  }}
-                />
-              );
-            }
+                if (isInlineEditing) {
+                  return (
+                    <ClientInlineEditor
+                      key={client.id}
+                      client={client}
+                      inlineClientData={inlineClientData}
+                      setInlineClientData={setInlineClientData}
+                      health={health}
+                      onSave={handleSaveInline}
+                      onCancel={cancelInlineEdit}
+                      onOpenDrawer={() => {
+                        cancelInlineEdit();
+                        setEditingClient(client);
+                        setIsClientModalOpen(true);
+                      }}
+                    />
+                  );
+                }
 
-            return (
-              <ClientCard
-                key={client.id}
-                client={client}
-                visibleSubs={visibleSubs}
-                health={health}
-                hasActiveSubFilters={hasActiveSubFilters}
-                freeProfiles={freeProfiles}
-                showPasswords={showPasswords}
-                copiedField={copiedField}
-                onTogglePassword={togglePasswordVisibility}
-                onCopy={copyToClipboard}
-                onStartInlineEdit={startInlineEdit}
-                onOpenDrawer={(c) => {
-                  setEditingClient(c);
-                  setIsClientModalOpen(true);
-                }}
-                onDelete={handleDelete}
-                onReactivate={handleReactivateClient}
-                onNotifyWhatsApp={(sub) =>
-                  setWhatsAppSub({
-                    clientName: client.name,
-                    sub,
-                    phone: client.phone,
-                  })
-                }
-                onRenew={(c, sub) =>
-                  setClientToRenew({
-                    client: c,
-                    targetSubId: sub?.id,
-                  })
-                }
-              />
-            );
-          })}
+                return (
+                  <ClientCard
+                    key={client.id}
+                    client={client}
+                    visibleSubs={visibleSubs}
+                    health={health}
+                    hasActiveSubFilters={hasActiveSubFilters}
+                    freeProfiles={freeProfiles}
+                    showPasswords={showPasswords}
+                    copiedField={copiedField}
+                    onTogglePassword={togglePasswordVisibility}
+                    onCopy={copyToClipboard}
+                    onStartInlineEdit={startInlineEdit}
+                    onOpenDrawer={(c) => {
+                      setEditingClient(c);
+                      setIsClientModalOpen(true);
+                    }}
+                    onDelete={handleDelete}
+                    onReactivate={handleReactivateClient}
+                    onNotifyWhatsApp={(sub) =>
+                      setWhatsAppSub({
+                        clientName: client.name,
+                        sub,
+                        phone: client.phone,
+                      })
+                    }
+                    onRenew={(c, sub) =>
+                      setClientToRenew({
+                        client: c,
+                        targetSubId: sub?.id,
+                      })
+                    }
+                  />
+                );
+              })}
+            </div>
+          ))}
         </div>
       )}
 
