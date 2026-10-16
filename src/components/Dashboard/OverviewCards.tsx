@@ -104,13 +104,13 @@ export const OverviewCards: React.FC<{
           <div
             key={idx}
             onClick={() => onNavigateTab(card.tab)}
-            className="cursor-pointer p-3.5 sm:p-4 rounded-xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#1F1F23] shadow-sm hover:border-[#2D2D33] transition-all transform hover:-translate-y-0.5 relative overflow-hidden group flex flex-col justify-between"
+            className="cursor-pointer p-3.5 sm:p-4 rounded-xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#1F1F23] shadow-sm hover:border-[#2D2D33] transition-all transform hover:-translate-y-0.5 relative overflow-hidden group flex flex-col justify-between min-h-[96px] sm:min-h-[108px]"
           >
             <div
               className={`absolute -right-4 -bottom-4 w-20 h-20 rounded-full bg-linear-to-br ${card.color} blur-2xl group-hover:scale-150 transition-transform`}
             />
-            <div className="flex items-start justify-between gap-1.5 mb-1.5 sm:mb-2">
-              <span className="text-[10px] sm:text-xs font-semibold text-slate-500 dark:text-[#94949E] uppercase tracking-wider font-space line-clamp-2 leading-tight">
+            <div className="flex items-start justify-between gap-1.5 mb-2 min-h-[28px] sm:min-h-[32px]">
+              <span className="text-[10px] sm:text-xs font-semibold text-slate-500 dark:text-[#94949E] uppercase tracking-wider font-space line-clamp-2 leading-tight min-w-0 flex-1">
                 {card.title}
               </span>
               <div
@@ -120,7 +120,7 @@ export const OverviewCards: React.FC<{
               </div>
             </div>
             <div
-              className="font-bold text-slate-900 dark:text-[#E4E4E7] font-cascadia truncate text-xl sm:text-2xl"
+              className="font-bold text-slate-900 dark:text-[#E4E4E7] font-cascadia truncate text-xl sm:text-2xl mt-auto"
               title={String(card.value)}
             >
               {card.value}
