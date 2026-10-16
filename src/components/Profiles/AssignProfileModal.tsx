@@ -58,20 +58,20 @@ export const AssignProfileModal: React.FC<AssignProfileModalProps> = ({
           <X className="w-5 h-5" />
         </button>
 
-        <div className="flex items-center gap-3 mb-6">
-          <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400">
+        <div className="flex items-center gap-3 mb-6 min-w-0">
+          <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 shrink-0">
             <Sparkles className="w-6 h-6" />
           </div>
-          <div>
-            <h3 className="font-bold text-lg text-slate-900 dark:text-[#E4E4E7]">
+          <div className="min-w-0 flex-1">
+            <h3 className="font-bold text-lg text-slate-900 dark:text-[#E4E4E7] truncate">
               {t("profiles.assignTitle")}
             </h3>
-            <p className="text-xs text-slate-500 dark:text-[#94949E] flex items-center gap-1.5">
+            <p className="text-xs text-slate-500 dark:text-[#94949E] flex items-center gap-1.5 min-w-0">
               <PlatformIcon
                 platform={profile.serviceName}
-                className="w-4 h-4"
+                className="w-4 h-4 shrink-0"
               />
-              <span>
+              <span className="truncate" title={`${profile.serviceName} - ${profile.email}`}>
                 {profile.serviceName} - {profile.email}
               </span>
             </p>

@@ -191,30 +191,30 @@ export const FreeProfilesList: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header Controls */}
-      <div className="p-4 rounded-xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#1F1F23] shadow-sm flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400">
+      <div className="p-4 sm:p-5 rounded-xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#1F1F23] shadow-sm flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 shrink-0">
             <Sparkles className="w-5 h-5" />
           </div>
-          <div>
-            <h2 className="text-lg font-bold text-slate-900 dark:text-[#E4E4E7]">
+          <div className="min-w-0">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-[#E4E4E7] truncate">
               {t("profiles.title")}
             </h2>
-            <p className="text-xs text-slate-500 dark:text-[#94949E]">
+            <p className="text-xs text-slate-500 dark:text-[#94949E] truncate">
               {t("profiles.subtitle")}
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <div className="relative">
+        <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap min-w-0">
+          <div className="relative flex-1 min-w-[140px] sm:w-56">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#94949E]" />
             <input
               type="text"
               placeholder={t("profiles.search")}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-8 pr-3 py-1.5 text-xs rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-slate-50 dark:bg-[#1A1A1E] text-slate-900 dark:text-[#E4E4E7]"
+              className="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-slate-50 dark:bg-[#1A1A1E] text-slate-900 dark:text-[#E4E4E7] focus:outline-none focus:ring-2 focus:ring-amber-500"
             />
           </div>
 
@@ -222,8 +222,8 @@ export const FreeProfilesList: React.FC = () => {
             onClick={() => setIsImportFromSupplierModalOpen(true)}
             className="px-3.5 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-md shadow-purple-600/20 transition-all shrink-0 cursor-pointer"
           >
-            <Truck className="w-4 h-4" />
-            <span>{t("profiles.addFromSupplier")}</span>
+            <Truck className="w-4 h-4 shrink-0" />
+            <span className="whitespace-nowrap">{t("profiles.addFromSupplier")}</span>
           </button>
 
           <button
@@ -233,8 +233,8 @@ export const FreeProfilesList: React.FC = () => {
             }}
             className="px-3.5 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-md shadow-amber-600/20 transition-all shrink-0 cursor-pointer"
           >
-            <Plus className="w-4 h-4" />
-            <span>{t("profiles.add")}</span>
+            <Plus className="w-4 h-4 shrink-0" />
+            <span className="whitespace-nowrap">{t("profiles.add")}</span>
           </button>
         </div>
       </div>
@@ -257,22 +257,25 @@ export const FreeProfilesList: React.FC = () => {
             return (
               <div
                 key={prof.id}
-                className="p-4 rounded-xl border border-slate-200 dark:border-[#1F1F23] bg-white dark:bg-[#141418] shadow-sm hover:border-[#2D2D33] transition-all space-y-3 relative group"
+                className="p-4 rounded-xl border border-slate-200 dark:border-[#1F1F23] bg-white dark:bg-[#141418] shadow-sm hover:border-[#2D2D33] transition-all space-y-3 relative group min-w-0 overflow-hidden"
               >
-                <div className="flex items-center justify-between gap-2">
-                  <span
-                    className={badgeProps.className}
-                    style={badgeProps.style}
-                  >
-                    <PlatformIcon
-                      platform={prof.serviceName}
-                      className="w-3.5 h-3.5 shrink-0"
-                    />
-                    <span>{getPlatformDisplayName(prof.serviceName)}</span>
-                  </span>
+                {/* Platform Badge & Quantity Stepper */}
+                <div className="flex items-center justify-between gap-2 min-w-0">
+                  <div className="min-w-0 flex-1 mr-1">
+                    <span
+                      className={`${badgeProps.className.replace("shrink-0", "")} max-w-full inline-flex`}
+                      style={badgeProps.style}
+                    >
+                      <PlatformIcon
+                        platform={prof.serviceName}
+                        className="w-3.5 h-3.5 shrink-0"
+                      />
+                      <span className="truncate">{getPlatformDisplayName(prof.serviceName)}</span>
+                    </span>
+                  </div>
 
                   {/* Quantity Stepper & Quick Editor */}
-                  <div className="flex items-center gap-1 bg-amber-500/10 border border-amber-500/20 rounded-lg p-0.5 shadow-2xs">
+                  <div className="flex items-center gap-1 bg-amber-500/10 border border-amber-500/20 rounded-lg p-0.5 shadow-2xs shrink-0">
                     <button
                       type="button"
                       onClick={(e) => handleQuickQuantityChange(prof, -1, e)}
@@ -289,8 +292,8 @@ export const FreeProfilesList: React.FC = () => {
                       className="px-1.5 py-0.5 text-xs font-bold text-amber-700 dark:text-amber-400 hover:underline flex items-center gap-1 cursor-pointer font-cascadia"
                       title={isEn ? "Click to edit quantity" : "Clic para editar cantidad"}
                     >
-                      <span>{t("profiles.available", { count: prof.quantity })}</span>
-                      <Pencil className="w-2.5 h-2.5 opacity-60" />
+                      <span className="whitespace-nowrap">{t("profiles.available", { count: prof.quantity })}</span>
+                      <Pencil className="w-2.5 h-2.5 opacity-60 shrink-0" />
                     </button>
 
                     <button
@@ -305,10 +308,13 @@ export const FreeProfilesList: React.FC = () => {
                 </div>
 
                 {/* Email */}
-                <div className="flex items-center justify-between gap-2 bg-slate-50 dark:bg-[#0F0F12] px-2.5 py-1 rounded-lg border border-slate-200 dark:border-[#2D2D33]">
-                  <div className="flex items-center gap-1.5 truncate">
+                <div className="flex items-center justify-between gap-2 bg-slate-50 dark:bg-[#0F0F12] px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-[#2D2D33] min-w-0">
+                  <div className="flex items-center gap-1.5 min-w-0 flex-1">
                     <Mail className="w-3.5 h-3.5 text-[#94949E] shrink-0" />
-                    <span className="font-mono text-[11px] text-slate-800 dark:text-[#E4E4E7] truncate">
+                    <span
+                      className="font-mono text-[11px] text-slate-800 dark:text-[#E4E4E7] truncate select-all"
+                      title={prof.email}
+                    >
                       {prof.email}
                     </span>
                   </div>
@@ -316,7 +322,8 @@ export const FreeProfilesList: React.FC = () => {
                     onClick={() =>
                       copyToClipboard(prof.email, `fpemail-${prof.id}`)
                     }
-                    className="text-slate-400 hover:text-amber-500 p-0.5 shrink-0 cursor-pointer"
+                    className="text-slate-400 hover:text-amber-500 p-0.5 shrink-0 cursor-pointer transition-colors"
+                    title={isEn ? "Copy email" : "Copiar correo"}
                   >
                     {copiedField === `fpemail-${prof.id}` ? (
                       <Check className="w-3.5 h-3.5 text-emerald-500" />
@@ -327,17 +334,21 @@ export const FreeProfilesList: React.FC = () => {
                 </div>
 
                 {/* Password */}
-                <div className="flex items-center justify-between gap-2 bg-slate-50 dark:bg-[#0F0F12] px-2.5 py-1 rounded-lg border border-slate-200 dark:border-[#2D2D33]">
-                  <div className="flex items-center gap-1.5 truncate">
+                <div className="flex items-center justify-between gap-2 bg-slate-50 dark:bg-[#0F0F12] px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-[#2D2D33] min-w-0">
+                  <div className="flex items-center gap-1.5 min-w-0 flex-1">
                     <Key className="w-3.5 h-3.5 text-[#94949E] shrink-0" />
-                    <span className="font-mono text-[11px] text-slate-800 dark:text-[#E4E4E7] truncate">
+                    <span
+                      className="font-mono text-[11px] text-slate-800 dark:text-[#E4E4E7] truncate select-all"
+                      title={isPassVisible ? prof.password : undefined}
+                    >
                       {isPassVisible ? prof.password : "••••••••••••"}
                     </span>
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
                     <button
                       onClick={() => togglePassword(prof.id)}
-                      className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-0.5 cursor-pointer"
+                      className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-0.5 cursor-pointer transition-colors"
+                      title={isPassVisible ? (isEn ? "Hide password" : "Ocultar contraseña") : (isEn ? "Show password" : "Ver contraseña")}
                     >
                       {isPassVisible ? (
                         <EyeOff className="w-3.5 h-3.5" />
@@ -349,7 +360,8 @@ export const FreeProfilesList: React.FC = () => {
                       onClick={() =>
                         copyToClipboard(prof.password, `fppass-${prof.id}`)
                       }
-                      className="text-slate-400 hover:text-amber-500 p-0.5 cursor-pointer"
+                      className="text-slate-400 hover:text-amber-500 p-0.5 cursor-pointer transition-colors"
+                      title={isEn ? "Copy password" : "Copiar contraseña"}
                     >
                       {copiedField === `fppass-${prof.id}` ? (
                         <Check className="w-3.5 h-3.5 text-emerald-500" />
@@ -360,18 +372,22 @@ export const FreeProfilesList: React.FC = () => {
                   </div>
                 </div>
 
+                {/* Browser */}
                 {prof.browser && (
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-                    <Compass className="w-3.5 h-3.5 text-sky-500" />
-                    {t("suppliers.browser")}:{" "}
-                    <strong className="text-slate-700 dark:text-slate-300">
-                      {prof.browser}
-                    </strong>
-                  </p>
+                  <div className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1.5 min-w-0">
+                    <Compass className="w-3.5 h-3.5 text-sky-500 shrink-0" />
+                    <span className="truncate">
+                      {t("suppliers.browser")}:{" "}
+                      <strong className="text-slate-700 dark:text-slate-300 font-medium">
+                        {prof.browser}
+                      </strong>
+                    </span>
+                  </div>
                 )}
 
+                {/* Supplier & Expiration */}
                 {(prof.supplierName || prof.expirationDate) && (
-                  <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 flex-wrap gap-1 pt-0.5">
+                  <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 flex-wrap gap-1.5 pt-0.5 min-w-0">
                     {prof.supplierName && (
                       <span
                         title={
@@ -379,34 +395,35 @@ export const FreeProfilesList: React.FC = () => {
                             ? "Linked and automatically synchronized with supplier account"
                             : "Vinculado y sincronizado automáticamente con cuenta del proveedor"
                         }
-                        className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/20"
+                        className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/20 max-w-full min-w-0"
                       >
-                        <Truck className="w-2.5 h-2.5" />
-                        <span>{prof.supplierName}</span>
+                        <Truck className="w-2.5 h-2.5 shrink-0" />
+                        <span className="truncate max-w-[140px] sm:max-w-[180px]">{prof.supplierName}</span>
                       </span>
                     )}
                     {prof.expirationDate && (
-                      <span className="inline-flex items-center gap-1 font-cascadia text-[10px] text-amber-600 dark:text-amber-400">
-                        <Calendar className="w-2.5 h-2.5 text-amber-500" />
+                      <span className="inline-flex items-center gap-1 font-cascadia text-[10px] text-amber-600 dark:text-amber-400 shrink-0 ml-auto">
+                        <Calendar className="w-2.5 h-2.5 text-amber-500 shrink-0" />
                         <span>{prof.expirationDate}</span>
                       </span>
                     )}
                   </div>
                 )}
 
-                <div className="pt-2 flex items-center justify-between gap-2 border-t border-slate-100 dark:border-slate-800">
+                {/* Actions */}
+                <div className="pt-2 flex items-center justify-between gap-2 border-t border-slate-100 dark:border-slate-800 min-w-0">
                   <button
                     onClick={() => setSelectedProfileForAssign(prof)}
-                    className="flex-1 py-1.5 px-3 rounded-xl bg-amber-500/10 hover:bg-amber-500 text-amber-600 dark:text-amber-400 hover:text-white border border-amber-500/20 text-xs font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                    className="flex-1 min-w-0 py-1.5 px-3 rounded-xl bg-amber-500/10 hover:bg-amber-500 text-amber-600 dark:text-amber-400 hover:text-white border border-amber-500/20 text-xs font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                   >
-                    <UserCheck className="w-3.5 h-3.5" />
-                    <span>{t("profiles.assignToClient")}</span>
+                    <UserCheck className="w-3.5 h-3.5 shrink-0" />
+                    <span className="truncate">{t("profiles.assignToClient")}</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => openEditQuantityModal(prof)}
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-amber-500 hover:bg-amber-500/10 transition-colors cursor-pointer"
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-amber-500 hover:bg-amber-500/10 transition-colors cursor-pointer shrink-0"
                     title={isEn ? "Edit profile quantity" : "Editar cantidad de perfiles"}
                   >
                     <Pencil className="w-4 h-4" />
@@ -414,7 +431,7 @@ export const FreeProfilesList: React.FC = () => {
 
                   <button
                     onClick={() => setProfileToDelete(prof)}
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-500/10 transition-colors cursor-pointer"
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-500/10 transition-colors cursor-pointer shrink-0"
                     title={t("profiles.deleteTitle")}
                   >
                     <Trash2 className="w-4 h-4" />
@@ -617,17 +634,17 @@ export const FreeProfilesList: React.FC = () => {
             </div>
 
             {/* Account pill */}
-            <div className="p-3 mb-4 rounded-xl bg-slate-50 dark:bg-[#181820] border border-slate-200/70 dark:border-[#25252D] flex items-center gap-2.5">
+            <div className="p-3 mb-4 rounded-xl bg-slate-50 dark:bg-[#181820] border border-slate-200/70 dark:border-[#25252D] flex items-center gap-2.5 min-w-0">
               <PlatformIcon
                 platform={profileToEditQuantity.serviceName}
                 className="w-4 h-4 shrink-0"
               />
-              <div className="min-w-0">
-                <p className="text-xs font-mono font-medium text-slate-800 dark:text-slate-200 truncate">
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-mono font-medium text-slate-800 dark:text-slate-200 truncate" title={profileToEditQuantity.email}>
                   {profileToEditQuantity.email}
                 </p>
                 {profileToEditQuantity.supplierName && (
-                  <p className="text-[10px] text-purple-600 dark:text-purple-400 truncate">
+                  <p className="text-[10px] text-purple-600 dark:text-purple-400 truncate" title={profileToEditQuantity.supplierName}>
                     {profileToEditQuantity.supplierName}
                   </p>
                 )}
