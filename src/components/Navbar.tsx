@@ -66,7 +66,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
-  const themeBtnRef = useRef<HTMLButtonElement>(null);
+  const themeIconRef = useRef<HTMLSpanElement>(null);
   const avatarBtnRef = useRef<HTMLButtonElement>(null);
 
   const handleConfirmLogout = async () => {
@@ -123,16 +123,23 @@ export const Navbar: React.FC<NavbarProps> = ({
   }, []);
 
   const handleThemeToggle = () => {
-    if (themeBtnRef.current) {
-      gsap.to(themeBtnRef.current, {
-        rotate: theme === 'dark' ? 180 : 0,
-        scale: 1.2,
-        duration: 0.3,
-        yoyo: true,
-        repeat: 1,
-      });
-    }
     toggleTheme();
+    if (themeIconRef.current) {
+      gsap.killTweensOf(themeIconRef.current);
+      gsap.fromTo(
+        themeIconRef.current,
+        { rotate: -90, scale: 0.6, opacity: 0.5 },
+        {
+          rotate: 0,
+          scale: 1,
+          opacity: 1,
+          duration: 0.35,
+          ease: 'back.out(1.8)',
+          overwrite: 'auto',
+          clearProps: 'transform,opacity',
+        },
+      );
+    }
   };
 
   const handleSearchChange = (query: string) => {
@@ -219,7 +226,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               type="button"
               onClick={() => setActiveTab('alerts')}
-              className={`relative p-1.5 sm:p-2 rounded-lg sm:rounded-xl transition-all border shrink-0 ${
+              className={`relative w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-lg sm:rounded-xl transition-colors border shrink-0 ${
                 activeTab === 'alerts'
                   ? 'bg-white text-[#2242cc] border-white shadow-sm'
                   : 'bg-white/10 hover:bg-white/20 border-white/15 text-white'
@@ -228,7 +235,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               <Bell className="w-4 h-4" />
               {alertCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 min-w-4.25 h-4.25 px-1 rounded-full bg-amber-400 text-[#2242cc] text-[9px] font-black flex items-center justify-center animate-bounce shadow">
+                <span className="absolute -top-1.5 -right-1.5 min-w-4.25 h-4.25 px-1 rounded-full bg-amber-400 text-[#2242cc] text-[9px] font-black flex items-center justify-center animate-bounce shadow pointer-events-none">
                   {alertCount}
                 </span>
               )}
@@ -236,10 +243,9 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             {/* Theme Toggle Button */}
             <button
-              ref={themeBtnRef}
               type="button"
               onClick={handleThemeToggle}
-              className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 text-white transition-all shrink-0 cursor-pointer"
+              className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-lg sm:rounded-xl bg-white/10 hover:bg-white/20 active:scale-95 border border-white/15 text-white transition-colors shrink-0 cursor-pointer select-none"
               title={
                 theme === 'dark'
                   ? 'Cambiar a Modo Claro'
@@ -247,11 +253,16 @@ export const Navbar: React.FC<NavbarProps> = ({
               }
               aria-label="Cambiar tema"
             >
-              {theme === 'dark' ? (
-                <Sun className="w-4 h-4 text-amber-300" />
-              ) : (
-                <Moon className="w-4 h-4 text-white" />
-              )}
+              <span
+                ref={themeIconRef}
+                className="flex items-center justify-center w-4 h-4 pointer-events-none"
+              >
+                {theme === 'dark' ? (
+                  <Sun className="w-4 h-4 text-amber-300" />
+                ) : (
+                  <Moon className="w-4 h-4 text-white" />
+                )}
+              </span>
             </button>
 
             {/* User Profile Avatar with Popover */}
