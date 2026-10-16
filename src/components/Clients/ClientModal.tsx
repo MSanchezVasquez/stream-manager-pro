@@ -99,9 +99,11 @@ export const ClientModal: React.FC<ClientModalProps> = ({
 
     const originalBodyOverflow = document.body.style.overflow;
     const originalHtmlOverflow = document.documentElement.style.overflow;
+    const originalHtmlGutter = document.documentElement.style.scrollbarGutter;
 
     document.body.style.overflow = "hidden";
     document.documentElement.style.overflow = "hidden";
+    document.documentElement.style.scrollbarGutter = "auto";
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -113,6 +115,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
     return () => {
       document.body.style.overflow = originalBodyOverflow;
       document.documentElement.style.overflow = originalHtmlOverflow;
+      document.documentElement.style.scrollbarGutter = originalHtmlGutter;
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [isOpen, onClose]);
@@ -383,8 +386,8 @@ export const ClientModal: React.FC<ClientModalProps> = ({
         onTouchMove={(e) => e.stopPropagation()}
       />
 
-      <div className="fixed inset-y-0 right-0 max-w-full flex pl-10 pointer-events-none z-10">
-        <div className="w-full max-w-xl bg-white dark:bg-[#141418] border-l border-slate-200 dark:border-[#25252D] shadow-2xl flex flex-col pointer-events-auto animate-slide-in-right">
+      <div className="fixed inset-y-0 right-0 z-10 flex max-w-full justify-end pointer-events-none pl-6 sm:pl-10">
+        <div className="pointer-events-auto w-screen max-w-xl bg-white dark:bg-[#141418] border-l border-slate-200 dark:border-[#25252D] shadow-2xl flex flex-col h-full animate-slide-in-right">
           {/* Header */}
           <div className="px-6 py-5 border-b border-slate-200 dark:border-[#25252D] flex items-center justify-between bg-slate-50/80 dark:bg-[#101014]/80 backdrop-blur-md shrink-0">
             <div className="flex items-center gap-3">
