@@ -387,7 +387,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
       />
 
       <div className="fixed inset-0 z-10 flex pointer-events-none items-end sm:items-stretch sm:justify-end sm:pl-10">
-        <div className="pointer-events-auto w-full sm:w-screen sm:max-w-xl bg-white dark:bg-[#141418] rounded-t-3xl sm:rounded-none border-t sm:border-t-0 sm:border-l border-slate-200 dark:border-[#25252D] shadow-2xl flex flex-col max-h-[82vh] sm:max-h-full sm:h-full animate-slide-in-up sm:animate-slide-in-right overflow-hidden">
+        <div className="pointer-events-auto w-full sm:w-screen sm:max-w-xl bg-white dark:bg-[#141418] rounded-t-3xl sm:rounded-none border-t sm:border-t-0 sm:border-l border-slate-200 dark:border-[#25252D] shadow-2xl flex flex-col max-h-[82vh] sm:max-h-full sm:h-full client-drawer-motion overflow-hidden">
           {/* Mobile Drag Indicator Handle (only on mobile screens like Samsung A55) */}
           <div className="sm:hidden pt-3 pb-1 flex justify-center shrink-0 bg-slate-50/80 dark:bg-[#101014]/80">
             <div className="w-12 h-1.5 rounded-full bg-slate-300 dark:bg-[#2D2D35]" />

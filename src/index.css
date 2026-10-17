@@ -76,6 +76,17 @@ body {
   animation: slideInUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* Animación responsiva para modal de cliente: abajo en móviles (<640px) y desde la derecha en escritorio (>=640px) */
+.client-drawer-motion {
+  animation: slideInUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@media (min-width: 640px) {
+  .client-drawer-motion {
+    animation: slideInRight 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+  }
+}
+
 @keyframes indeterminateBar1 {
   0% {
     left: -35%;
