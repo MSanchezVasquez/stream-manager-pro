@@ -337,9 +337,21 @@ export const Navbar: React.FC<NavbarProps> = ({
       </div>
 
       {/* Level 2: Platform Showcase Ticker (Aligned with main page content width) */}
-      <div className="bg-black/15 py-1.5 overflow-hidden select-none pointer-events-none">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-          <div className="w-full flex items-center overflow-hidden marquee-mask">
+      <div className="bg-black/15 py-1.5 overflow-hidden select-none pointer-events-none relative">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full relative">
+          {/* Sombras / difuminado en los extremos para entrada y salida suave de los logos */}
+          <div className="pointer-events-none absolute left-4 sm:left-6 lg:left-8 top-0 bottom-0 w-8 sm:w-16 bg-gradient-to-r from-[#1d38ad] to-transparent z-10" />
+          <div className="pointer-events-none absolute right-4 sm:right-6 lg:right-8 top-0 bottom-0 w-8 sm:w-16 bg-gradient-to-l from-[#1d38ad] to-transparent z-10" />
+
+          <div
+            className="w-full flex items-center overflow-hidden marquee-mask"
+            style={{
+              WebkitMaskImage:
+                'linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.1) 8px, rgba(0, 0, 0, 0.45) 24px, black 56px, black calc(100% - 56px), rgba(0, 0, 0, 0.45) calc(100% - 24px), rgba(0, 0, 0, 0.1) calc(100% - 8px), transparent 100%)',
+              maskImage:
+                'linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.1) 8px, rgba(0, 0, 0, 0.45) 24px, black 56px, black calc(100% - 56px), rgba(0, 0, 0, 0.45) calc(100% - 24px), rgba(0, 0, 0, 0.1) calc(100% - 8px), transparent 100%)',
+            }}
+          >
             {/* Track 1 */}
             <div className="flex shrink-0 animate-marquee-scroll items-center gap-6 sm:gap-8 pr-6 sm:pr-8 py-0.5">
               {PLATFORMS_SEQUENCE.map((platform, idx) => (

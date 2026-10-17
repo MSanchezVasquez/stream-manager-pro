@@ -155,6 +155,63 @@ body {
   animation: marqueeInfinite 40s linear infinite;
 }
 
+/* Difuminado suave y sombras en los extremos para el ticker de aplicaciones en el header (fade-in / fade-out) */
+.marquee-mask {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(0, 0, 0, 0.05) 8px,
+    rgba(0, 0, 0, 0.3) 20px,
+    rgba(0, 0, 0, 0.75) 40px,
+    black 60px,
+    black calc(100% - 60px),
+    rgba(0, 0, 0, 0.75) calc(100% - 40px),
+    rgba(0, 0, 0, 0.3) calc(100% - 20px),
+    rgba(0, 0, 0, 0.05) calc(100% - 8px),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(0, 0, 0, 0.05) 8px,
+    rgba(0, 0, 0, 0.3) 20px,
+    rgba(0, 0, 0, 0.75) 40px,
+    black 60px,
+    black calc(100% - 60px),
+    rgba(0, 0, 0, 0.75) calc(100% - 40px),
+    rgba(0, 0, 0, 0.3) calc(100% - 20px),
+    rgba(0, 0, 0, 0.05) calc(100% - 8px),
+    transparent 100%
+  );
+}
+
+@media (max-width: 640px) {
+  .marquee-mask {
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(0, 0, 0, 0.08) 6px,
+      rgba(0, 0, 0, 0.4) 16px,
+      black 36px,
+      black calc(100% - 36px),
+      rgba(0, 0, 0, 0.4) calc(100% - 16px),
+      rgba(0, 0, 0, 0.08) calc(100% - 6px),
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(0, 0, 0, 0.08) 6px,
+      rgba(0, 0, 0, 0.4) 16px,
+      black 36px,
+      black calc(100% - 36px),
+      rgba(0, 0, 0, 0.4) calc(100% - 16px),
+      rgba(0, 0, 0, 0.08) calc(100% - 6px),
+      transparent 100%
+    );
+  }
+}
+
 /* Animación de rebote suave y lenta para el contador de notificaciones */
 @keyframes slowBounce {
   0%, 100% {
