@@ -386,10 +386,15 @@ export const ClientModal: React.FC<ClientModalProps> = ({
         onTouchMove={(e) => e.stopPropagation()}
       />
 
-      <div className="fixed inset-y-0 right-0 z-10 flex max-w-full justify-end pointer-events-none pl-6 sm:pl-10">
-        <div className="pointer-events-auto w-screen max-w-xl bg-white dark:bg-[#141418] border-l border-slate-200 dark:border-[#25252D] shadow-2xl flex flex-col h-full animate-slide-in-right">
+      <div className="fixed inset-0 z-10 flex pointer-events-none items-end sm:items-stretch sm:justify-end sm:pl-10">
+        <div className="pointer-events-auto w-full sm:w-screen sm:max-w-xl bg-white dark:bg-[#141418] rounded-t-3xl sm:rounded-none border-t sm:border-t-0 sm:border-l border-slate-200 dark:border-[#25252D] shadow-2xl flex flex-col max-h-[82vh] sm:max-h-full sm:h-full animate-slide-in-up sm:animate-slide-in-right overflow-hidden">
+          {/* Mobile Drag Indicator Handle (only on mobile screens like Samsung A55) */}
+          <div className="sm:hidden pt-3 pb-1 flex justify-center shrink-0 bg-slate-50/80 dark:bg-[#101014]/80">
+            <div className="w-12 h-1.5 rounded-full bg-slate-300 dark:bg-[#2D2D35]" />
+          </div>
+
           {/* Header */}
-          <div className="px-6 py-5 border-b border-slate-200 dark:border-[#25252D] flex items-center justify-between bg-slate-50/80 dark:bg-[#101014]/80 backdrop-blur-md shrink-0">
+          <div className="px-5 py-4 sm:px-6 sm:py-5 border-b border-slate-200 dark:border-[#25252D] flex items-center justify-between bg-slate-50/80 dark:bg-[#101014]/80 backdrop-blur-md shrink-0">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-2xl bg-indigo-600/10 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
                 <User className="w-5 h-5" />
@@ -468,7 +473,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
             onSubmit={handleSubmit}
             className="flex-1 flex flex-col min-h-0"
           >
-            <div className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-none [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-6 scrollbar-none [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
               {/* General info */}
               <div className="space-y-4 p-4 rounded-2xl bg-slate-50 dark:bg-[#181820] border border-slate-200 dark:border-[#25252D]">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-[#94949E]">
@@ -1040,7 +1045,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
             </div>
 
             {/* Sticky Actions Footer */}
-            <div className="px-6 py-4 bg-slate-50 dark:bg-[#101014] border-t border-slate-200 dark:border-[#25252D] flex items-center justify-end gap-3 shrink-0">
+            <div className="px-4 py-3 sm:px-6 sm:py-4 bg-slate-50 dark:bg-[#101014] border-t border-slate-200 dark:border-[#25252D] flex items-center justify-end gap-2.5 sm:gap-3 shrink-0">
               <button
                 type="button"
                 onClick={onClose}
