@@ -165,12 +165,12 @@ export const Navbar: React.FC<NavbarProps> = ({
       <div>
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-1.5 sm:gap-6">
           <div className="flex items-center gap-1.5 sm:gap-3 min-w-0">
-            {/* Sidebar Floating Toggle Button - ONLY on Tablet & Mobile, NEVER on laptop */}
+            {/* Sidebar Floating Toggle Button - ONLY on Tablet & Mobile (Hidden on iPhone SE / small screens <= 414px) */}
             {onToggleSidebar && activeTab !== 'profile' && (
               <button
                 type="button"
                 onClick={onToggleSidebar}
-                className="lg:hidden p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-white/10 hover:bg-white/20 active:bg-white/30 text-white transition-all cursor-pointer flex items-center justify-center shrink-0 border border-white/15"
+                className="navbar-mobile-menu-btn hidden min-[415px]:flex lg:hidden p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-white/10 hover:bg-white/20 active:bg-white/30 text-white transition-all cursor-pointer items-center justify-center shrink-0 border border-white/15"
                 title="Abrir menú de navegación"
                 aria-label="Abrir menú de navegación"
               >
@@ -222,7 +222,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* Right Action Icons & Profile (Guaranteed 100% visible on all mobile screens) */}
           <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
-            {/* Expiration Alerts Button with Bounce Badge */}
+            {/* Expiration Alerts Button with Slow Bounce Badge */}
             <button
               type="button"
               onClick={() => setActiveTab('alerts')}
@@ -235,7 +235,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               <Bell className="w-4 h-4" />
               {alertCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 min-w-4.25 h-4.25 px-1 rounded-full bg-amber-400 text-[#2242cc] text-[9px] font-black flex items-center justify-center animate-bounce shadow pointer-events-none">
+                <span className="absolute -top-1.5 -right-1.5 min-w-4.25 h-4.25 px-1 rounded-full bg-amber-400 text-[#2242cc] text-[9px] font-black flex items-center justify-center animate-bounce-slow shadow pointer-events-none">
                   {alertCount}
                 </span>
               )}

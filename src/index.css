@@ -131,9 +131,33 @@ body {
   animation: marqueeInfinite 40s linear infinite;
 }
 
-/* Máscara de desvanecimiento suave para entrada y salida de las plataformas */
-.marquee-mask {
-  mask-image: linear-gradient(to right, transparent 0%, black 48px, black calc(100% - 48px), transparent 100%);
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 48px, black calc(100% - 48px), transparent 100%);
+/* Animación de rebote suave y lenta para el contador de notificaciones */
+@keyframes slowBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  20% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-3.5px);
+  }
+  60% {
+    transform: translateY(-1.5px);
+  }
+  80% {
+    transform: translateY(0);
+  }
+}
+
+.animate-bounce-slow {
+  animation: slowBounce 2.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* Ocultar el botón de menú junto al logo en pantallas iPhone SE y móviles pequeños (<= 414px) */
+@media (max-width: 414px) {
+  .navbar-mobile-menu-btn {
+    display: none !important;
+  }
 }
 
