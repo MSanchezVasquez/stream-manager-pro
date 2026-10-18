@@ -151,34 +151,40 @@ export const SectionLoading: React.FC<{
   );
 };
 
-// 7. Fullscreen App Splash / Loading Overlay
+// 7. Fullscreen App Splash / Loading Overlay (Sin fondo / transparente con animación de carga de íconos circulares)
 export const FullScreenAppLoader: React.FC<{ message?: string }> = ({
   message = "Iniciando StreamManager Pro...",
 }) => {
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-slate-900/40 dark:bg-black/60 backdrop-brightness-[0.75] backdrop-blur-md animate-fade-in">
-      <div className="bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#25252D] rounded-3xl p-8 shadow-2xl flex flex-col items-center max-w-sm w-full mx-4 relative overflow-hidden">
-        {/* Glowing backdrop circle */}
-        <div className="absolute -top-12 -left-12 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none" />
-        <div className="absolute -bottom-12 -right-12 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl pointer-events-none" />
-
-        <div className="w-14 h-14 rounded-2xl bg-linear-to-tr from-indigo-600 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/25 mb-5 relative animate-pulse">
-          <AppLogo className="w-7 h-7 text-white" />
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center p-4 animate-fade-in pointer-events-none select-none">
+      <div className="flex flex-col items-center justify-center text-center max-w-sm w-full mx-auto">
+        {/* Ícono circular con animación de carga circular */}
+        <div className="relative mb-5 flex items-center justify-center">
+          <div className="w-16 h-16 rounded-full bg-linear-to-tr from-indigo-600 to-violet-500 flex items-center justify-center shadow-xl shadow-indigo-500/25 relative z-10">
+            <AppLogo className="w-8 h-8 text-white" />
+          </div>
+          <div className="absolute -inset-2.5 flex items-center justify-center pointer-events-none">
+            <CircularSpinner size={82} strokeWidth={2.5} className="text-indigo-500 dark:text-indigo-400" />
+          </div>
         </div>
 
-        <h3 className="text-lg font-bold text-slate-900 dark:text-[#E4E4E7] tracking-tight mb-1">
+        <h3 className="text-lg font-extrabold text-slate-900 dark:text-[#E4E4E7] tracking-tight mb-1 flex items-center gap-1.5 justify-center">
           StreamManager{" "}
-          <span className="text-indigo-500 text-xs px-2 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/20">
+          <span className="text-[10px] font-black uppercase tracking-wider text-indigo-600 dark:text-indigo-400 px-2 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/20">
             PRO
           </span>
         </h3>
 
-        <p className="text-xs text-slate-500 dark:text-[#94949E] font-medium mb-6 text-center">
+        <p className="text-xs text-slate-500 dark:text-[#94949E] font-medium mb-4 text-center">
           {message}
         </p>
 
-        <BeatSpinner size={8} />
+        {/* Indicador de carga circular */}
+        <div className="flex items-center justify-center">
+          <CircularSpinner size={24} strokeWidth={3} className="text-indigo-600 dark:text-indigo-400" />
+        </div>
       </div>
     </div>
   );
 };
+
