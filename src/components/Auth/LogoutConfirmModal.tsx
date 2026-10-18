@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import gsap from "gsap";
 import { CircularSpinner } from "../common/LoadingSpinners";
 import { useTranslation } from "../../utils/translations";
+import { useBodyScrollLock } from "../../utils/useBodyScrollLock";
 
 interface LogoutConfirmModalProps {
   isOpen: boolean;
@@ -15,26 +16,15 @@ export const LogoutConfirmModal: React.FC<LogoutConfirmModalProps> = ({
   onClose,
   onConfirm,
 }) => {
+  useBodyScrollLock(isOpen);
   const { t } = useTranslation();
   const modalRef = useRef<HTMLDivElement>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  // Animations when modal opens and Ultimate Scroll Lock
+  // Animations when modal opens
   useEffect(() => {
-    // Capturamos el contenedor principal de React
-    const rootEl = document.getElementById("root");
-
     if (isOpen) {
-      // 1. Bloqueo infalible con !important en todos los niveles
-      document.documentElement.style.setProperty(
-        "overflow",
-        "hidden",
-        "important",
-      );
-      document.body.style.setProperty("overflow", "hidden", "important");
-      if (rootEl) rootEl.style.setProperty("overflow", "hidden", "important");
-
       setIsLoggingOut(false);
 
       if (backdropRef.current) {
@@ -51,19 +41,7 @@ export const LogoutConfirmModal: React.FC<LogoutConfirmModalProps> = ({
           { scale: 1, opacity: 1, y: 0, duration: 0.25, ease: "power2.out" },
         );
       }
-    } else {
-      // 2. Restaurar estilos al cerrar
-      document.documentElement.style.removeProperty("overflow");
-      document.body.style.removeProperty("overflow");
-      if (rootEl) rootEl.style.removeProperty("overflow");
     }
-
-    // 3. Limpieza de seguridad si el modal desaparece
-    return () => {
-      document.documentElement.style.removeProperty("overflow");
-      document.body.style.removeProperty("overflow");
-      if (rootEl) rootEl.style.removeProperty("overflow");
-    };
   }, [isOpen]);
 
   if (!isOpen) return null;

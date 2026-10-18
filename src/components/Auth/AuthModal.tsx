@@ -16,6 +16,7 @@ import gsap from "gsap";
 
 import { LogoutConfirmModal } from "./LogoutConfirmModal";
 import { SetAccountPasswordModal } from "./SetAccountPasswordModal";
+import { useBodyScrollLock } from "../../utils/useBodyScrollLock";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -23,6 +24,7 @@ interface AuthModalProps {
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
+  useBodyScrollLock(isOpen);
   const {
     user,
     loginWithEmail,
@@ -143,11 +145,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-x-hidden overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-x-hidden overflow-y-auto overscroll-contain">
       {/* Backdrop Overlay with dimming effect (Estilo Sofascore) */}
       <div
         ref={overlayRef}
         onClick={handleAnimatedClose}
+        onTouchMove={(e) => e.preventDefault()}
         className="fixed inset-0 bg-black/15 dark:bg-black/35 backdrop-brightness-[0.75] transition-all duration-300 animate-fade-in"
       />
 

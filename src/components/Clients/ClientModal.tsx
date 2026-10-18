@@ -35,6 +35,7 @@ import {
   formatSubscriptionPeriod,
 } from "../../utils/platformHelpers";
 import { useTranslation } from "../../utils/translations";
+import { useBodyScrollLock } from "../../utils/useBodyScrollLock";
 
 interface ClientModalProps {
   isOpen: boolean;
@@ -93,31 +94,18 @@ export const ClientModal: React.FC<ClientModalProps> = ({
     initialClient,
   );
 
-  // Bloquear el scroll de la página de fondo cuando el drawer lateral está abierto
+  // Bloquear el scroll de la página de fondo en todas las pantallas cuando el modal está abierto
+  useBodyScrollLock(isOpen);
+
   useEffect(() => {
     if (!isOpen) return;
-
-    const originalBodyOverflow = document.body.style.overflow;
-    const originalHtmlOverflow = document.documentElement.style.overflow;
-    const originalHtmlGutter = document.documentElement.style.scrollbarGutter;
-
-    document.body.style.overflow = "hidden";
-    document.documentElement.style.overflow = "hidden";
-    document.documentElement.style.scrollbarGutter = "auto";
-
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         onClose();
       }
     };
     window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.body.style.overflow = originalBodyOverflow;
-      document.documentElement.style.overflow = originalHtmlOverflow;
-      document.documentElement.style.scrollbarGutter = originalHtmlGutter;
-      window.removeEventListener("keydown", handleKeyDown);
-    };
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onClose]);
 
   useEffect(() => {
@@ -383,7 +371,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
         className="fixed inset-0 bg-black/15 dark:bg-black/35 backdrop-brightness-[0.75] transition-all duration-300 animate-fade-in"
         onClick={onClose}
         onWheel={(e) => e.stopPropagation()}
-        onTouchMove={(e) => e.stopPropagation()}
+        onTouchMove={(e) => e.preventDefault()}
       />
 
       <div className="fixed inset-0 z-10 flex pointer-events-none items-end sm:items-stretch sm:justify-end sm:pl-10">

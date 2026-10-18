@@ -18,6 +18,7 @@ import { useAuthStore } from "../../store/authStore";
 import { LANGUAGES } from "../../utils/languages";
 import { useTranslation } from "../../utils/translations";
 import { LanguageFlag } from "../common/LanguageFlag";
+import { useBodyScrollLock } from "../../utils/useBodyScrollLock";
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -89,6 +90,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onOpenVaultModal,
   onOpenSetPasswordModal,
 }) => {
+  useBodyScrollLock(isOpen);
   const { user, hasGoogleProvider, hasPasswordProvider } = useAuthStore();
   const { themeMode, setThemeMode } = useThemeStore();
   const {
@@ -138,11 +140,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     LANGUAGES.find((l) => l.code === resolvedLanguage) || LANGUAGES[0];
 
   return ReactDOM.createPortal(
-    <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-9999 flex items-center justify-center p-4 overscroll-contain">
       {/* Fondo suave, claro y con visibilidad (Estilo Sofascore) */}
       <div
         ref={overlayRef}
         onClick={onClose}
+        onTouchMove={(e) => e.preventDefault()}
         className="fixed inset-0 bg-black/15 dark:bg-black/35 backdrop-brightness-[0.75] transition-all duration-300 animate-fade-in"
       />
 

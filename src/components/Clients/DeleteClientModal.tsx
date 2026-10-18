@@ -5,6 +5,7 @@ import { Client } from "../../types";
 import { isSubscriptionFromFreeProfile } from "../../store/dataStore";
 import { CircularSpinner } from "../common/LoadingSpinners";
 import { useTranslation } from "../../utils/translations";
+import { useBodyScrollLock } from "../../utils/useBodyScrollLock";
 
 interface DeleteClientModalProps {
   client: Client | null;
@@ -23,16 +24,18 @@ export const DeleteClientModal: React.FC<DeleteClientModalProps> = ({
   isDeleting,
   freeProfiles,
 }) => {
+  useBodyScrollLock(isOpen);
   const { t } = useTranslation();
   if (!isOpen || !client) return null;
 
   const isDeactivating = client.status === "active";
 
   return createPortal(
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 overscroll-contain">
       <div
         className="fixed inset-0 bg-black/15 dark:bg-black/35 backdrop-brightness-[0.75] transition-all duration-300 animate-fade-in"
         onClick={() => !isDeleting && onClose()}
+        onTouchMove={(e) => e.preventDefault()}
       />
       <div className="w-full max-w-sm rounded-2xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#25252D] shadow-2xl p-6 relative z-10 animate-scale-in">
         <div

@@ -16,6 +16,7 @@ import { CircularSpinner } from "../common/LoadingSpinners";
 import { Client, ClientSubscription } from "../../types";
 import { useDataStore } from "../../store/dataStore";
 import { useTranslation } from "../../utils/translations";
+import { useBodyScrollLock } from "../../utils/useBodyScrollLock";
 import {
   getPlatformConfig,
   getPlatformBadgeProps,
@@ -50,6 +51,7 @@ export const RenewClientModal: React.FC<RenewClientModalProps> = ({
   targetSubscriptionId,
   onNotifyWhatsApp,
 }) => {
+  useBodyScrollLock(isOpen);
   const { saveClient } = useDataStore();
   const { t, resolvedLanguage } = useTranslation();
 
@@ -71,11 +73,6 @@ export const RenewClientModal: React.FC<RenewClientModalProps> = ({
       setLastRenewedSubs([]);
       return;
     }
-
-    const originalBodyOverflow = document.body.style.overflow;
-    const originalHtmlOverflow = document.documentElement.style.overflow;
-    document.body.style.overflow = "hidden";
-    document.documentElement.style.overflow = "hidden";
 
     setRenewedSuccess(false);
 
@@ -107,11 +104,6 @@ export const RenewClientModal: React.FC<RenewClientModalProps> = ({
     });
     setCustomPrices(prices);
     setCustomCutDates({});
-
-    return () => {
-      document.body.style.overflow = originalBodyOverflow;
-      document.documentElement.style.overflow = originalHtmlOverflow;
-    };
   }, [isOpen, client, targetSubscriptionId]);
 
   // Recalculate cut dates when periodUnit, periodValue, or renewalBase changes
@@ -229,11 +221,12 @@ export const RenewClientModal: React.FC<RenewClientModalProps> = ({
   const todayStr = getTodayFormatted();
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overscroll-contain">
       {/* Fondo suave, claro y con visibilidad (Estilo Sofascore) */}
       <div
         className="fixed inset-0 bg-black/15 dark:bg-black/35 backdrop-brightness-[0.75] transition-all duration-300 animate-fade-in"
         onClick={onClose}
+        onTouchMove={(e) => e.preventDefault()}
       />
       <div className="w-full max-w-xl rounded-2xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#25252D] shadow-2xl p-6 relative z-10 flex flex-col max-h-[92vh] overflow-hidden animate-scale-in">
         {/* Close Button */}

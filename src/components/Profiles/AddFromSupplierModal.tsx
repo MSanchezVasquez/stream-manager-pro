@@ -25,6 +25,7 @@ import {
 } from "../../utils/platformHelpers";
 import { FreeProfile, SupplierAccount, StreamingPlatform } from "../../types";
 import { useTranslation } from "../../utils/translations";
+import { useBodyScrollLock } from "../../utils/useBodyScrollLock";
 
 interface AddFromSupplierModalProps {
   isOpen: boolean;
@@ -54,6 +55,7 @@ export const AddFromSupplierModal: React.FC<AddFromSupplierModalProps> = ({
   onClose,
   initialAccountId,
 }) => {
+  useBodyScrollLock(isOpen);
   const { suppliers, freeProfiles, saveFreeProfile } = useDataStore();
   const { t, resolvedLanguage } = useTranslation();
 
@@ -76,25 +78,15 @@ export const AddFromSupplierModal: React.FC<AddFromSupplierModalProps> = ({
   const [isBulkAdding, setIsBulkAdding] = useState(false);
   const [bulkSuccessMessage, setBulkSuccessMessage] = useState<string | null>(null);
 
-  // Scroll lock when modal is open
+  // Esc key listener when modal is open
   useEffect(() => {
     if (!isOpen) return;
-
-    const origBody = document.body.style.overflow;
-    const origHtml = document.documentElement.style.overflow;
-    document.body.style.overflow = "hidden";
-    document.documentElement.style.overflow = "hidden";
 
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
     window.addEventListener("keydown", handleKey);
-
-    return () => {
-      document.body.style.overflow = origBody;
-      document.documentElement.style.overflow = origHtml;
-      window.removeEventListener("keydown", handleKey);
-    };
+    return () => window.removeEventListener("keydown", handleKey);
   }, [isOpen, onClose]);
 
   // Extract and flatten all supplier accounts
@@ -315,11 +307,12 @@ export const AddFromSupplierModal: React.FC<AddFromSupplierModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 overscroll-contain">
       {/* Fondo suave, claro y con visibilidad (Estilo Sofascore) */}
       <div
         className="fixed inset-0 bg-black/15 dark:bg-black/35 backdrop-brightness-[0.75] transition-all duration-300 animate-fade-in"
         onClick={onClose}
+        onTouchMove={(e) => e.preventDefault()}
       />
       <div className="w-full max-w-4xl max-h-[92vh] rounded-2xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#25252D] shadow-2xl flex flex-col relative z-10 overflow-hidden animate-scale-in">
         {/* Header */}

@@ -19,6 +19,7 @@ import { CircularSpinner } from "../common/LoadingSpinners";
 import { Supplier, SupplierAccount } from "../../types";
 import { useDataStore } from "../../store/dataStore";
 import { useTranslation } from "../../utils/translations";
+import { useBodyScrollLock } from "../../utils/useBodyScrollLock";
 import {
   getPlatformDisplayName,
   getDaysRemaining,
@@ -41,6 +42,7 @@ function getTodayFormatted(): string {
 export const RenewSupplierAccountModal: React.FC<
   RenewSupplierAccountModalProps
 > = ({ isOpen, onClose, supplier, account }) => {
+  useBodyScrollLock(isOpen);
   const { saveSupplier } = useDataStore();
   const { t, resolvedLanguage } = useTranslation();
 
@@ -64,11 +66,6 @@ export const RenewSupplierAccountModal: React.FC<
       return;
     }
 
-    const originalBodyOverflow = document.body.style.overflow;
-    const originalHtmlOverflow = document.documentElement.style.overflow;
-    document.body.style.overflow = "hidden";
-    document.documentElement.style.overflow = "hidden";
-
     setRenewedSuccess(false);
     const initUnit = account.periodUnit || "months";
     const initVal = account.periodValue || 1;
@@ -89,11 +86,6 @@ export const RenewSupplierAccountModal: React.FC<
     setUpdatedPassword(account.password || "");
     setShowPasswordInput(false);
     setCopiedEmail(false);
-
-    return () => {
-      document.body.style.overflow = originalBodyOverflow;
-      document.documentElement.style.overflow = originalHtmlOverflow;
-    };
   }, [isOpen, account]);
 
   // Recalculate new expiration date whenever periodUnit, periodValue or renewalBase changes

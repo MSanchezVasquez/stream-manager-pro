@@ -15,6 +15,7 @@ import {
 import { Supplier, SupplierAccount, StreamingPlatform } from "../../types";
 import { useDataStore } from "../../store/dataStore";
 import { useTranslation } from "../../utils/translations";
+import { useBodyScrollLock } from "../../utils/useBodyScrollLock";
 
 interface SupplierModalProps {
   isOpen: boolean;
@@ -29,6 +30,7 @@ export const SupplierModal: React.FC<SupplierModalProps> = ({
   supplier,
   accountToEdit,
 }) => {
+  useBodyScrollLock(isOpen);
   const { saveSupplier } = useDataStore();
   const { t, resolvedLanguage } = useTranslation();
 
@@ -108,7 +110,15 @@ export const SupplierModal: React.FC<SupplierModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/15 dark:bg-black/35 backdrop-brightness-[0.75] transition-all duration-300 animate-fade-in">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/15 dark:bg-black/35 backdrop-brightness-[0.75] transition-all duration-300 animate-fade-in overscroll-contain"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+      onTouchMove={(e) => {
+        if (e.target === e.currentTarget) e.preventDefault();
+      }}
+    >
       <div className="w-full max-w-lg rounded-xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#1F1F23] shadow-2xl p-6 relative">
         <button
           onClick={onClose}

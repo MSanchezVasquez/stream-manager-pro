@@ -242,3 +242,12 @@ body {
   }
 }
 
+/* Bloqueo infalible de scroll en el fondo cuando cualquier modal está abierto */
+html.modal-scroll-locked,
+body.modal-scroll-locked,
+body.modal-scroll-locked #root {
+  overflow: hidden !important;
+  overscroll-behavior: none !important;
+  touch-action: none;
+}
+

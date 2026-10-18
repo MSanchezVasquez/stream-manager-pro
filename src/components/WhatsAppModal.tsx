@@ -3,6 +3,7 @@ import { MessageSquare, Copy, Check, ExternalLink, X } from 'lucide-react';
 import { generateWhatsAppMessage, generateWhatsAppRenewalMessage } from '../utils/platformHelpers';
 import { ClientSubscription } from '../types';
 import { useTranslation } from '../utils/translations';
+import { useBodyScrollLock } from '../utils/useBodyScrollLock';
 
 interface WhatsAppModalProps {
   isOpen: boolean;
@@ -33,6 +34,7 @@ export const WhatsAppModal: React.FC<WhatsAppModalProps> = ({
   isRenewal = false,
   renewedSubs,
 }) => {
+  useBodyScrollLock(isOpen);
   const { t, resolvedLanguage } = useTranslation();
   const [copied, setCopied] = useState(false);
 
@@ -97,11 +99,12 @@ export const WhatsAppModal: React.FC<WhatsAppModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overscroll-contain select-none">
       {/* Fondo suave, claro y con visibilidad (Estilo Sofascore) */}
       <div
         className="fixed inset-0 bg-black/15 dark:bg-black/35 backdrop-brightness-[0.75] transition-all duration-300 animate-fade-in"
         onClick={onClose}
+        onTouchMove={(e) => e.preventDefault()}
       />
       <div className="w-full max-w-lg rounded-2xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#25252D] shadow-2xl p-6 relative z-10 animate-scale-in">
         <button

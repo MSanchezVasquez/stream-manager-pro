@@ -14,6 +14,7 @@ import {
 import { useAuthStore } from "../../store/authStore";
 import { useVaultStore } from "../../store/vaultStore";
 import { CircularSpinner } from "../common/LoadingSpinners";
+import { useBodyScrollLock } from "../../utils/useBodyScrollLock";
 
 interface VaultUnlockModalProps {
   isOpen: boolean;
@@ -29,6 +30,7 @@ export const VaultUnlockModal: React.FC<VaultUnlockModalProps> = ({
   onClose,
   allowSkip = true,
 }) => {
+  useBodyScrollLock(isOpen);
   const { user } = useAuthStore();
   const {
     hasVaultConfigured,
@@ -143,11 +145,12 @@ export const VaultUnlockModal: React.FC<VaultUnlockModalProps> = ({
   };
 
   return ReactDOM.createPortal(
-    <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-9999 flex items-center justify-center p-4 overscroll-contain">
       {/* Backdrop (Estilo Sofascore) */}
       <div
         ref={overlayRef}
         onClick={allowSkip ? handleSkip : undefined}
+        onTouchMove={(e) => e.preventDefault()}
         className="fixed inset-0 bg-black/15 dark:bg-black/35 backdrop-brightness-[0.75] transition-all duration-300 animate-fade-in"
       />
 

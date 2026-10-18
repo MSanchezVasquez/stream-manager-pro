@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { useAuthStore } from "../../store/authStore";
 import { CircularSpinner } from "../common/LoadingSpinners";
+import { useBodyScrollLock } from "../../utils/useBodyScrollLock";
 
 interface SetAccountPasswordModalProps {
   isOpen: boolean;
@@ -36,6 +37,7 @@ export const SetAccountPasswordModal: React.FC<SetAccountPasswordModalProps> = (
   isOpen,
   onClose,
 }) => {
+  useBodyScrollLock(isOpen);
   const {
     user,
     hasPasswordProvider,
@@ -246,11 +248,12 @@ export const SetAccountPasswordModal: React.FC<SetAccountPasswordModalProps> = (
   };
 
   return ReactDOM.createPortal(
-    <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-9999 flex items-center justify-center p-4 overscroll-contain">
       {/* Backdrop (Estilo Sofascore) */}
       <div
         ref={overlayRef}
         onClick={onClose}
+        onTouchMove={(e) => e.preventDefault()}
         className="fixed inset-0 bg-black/15 dark:bg-black/35 backdrop-brightness-[0.75] transition-all duration-300 animate-fade-in"
       />
 

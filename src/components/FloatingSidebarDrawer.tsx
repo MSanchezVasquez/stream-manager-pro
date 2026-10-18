@@ -13,6 +13,7 @@ import {
 import { useDataStore } from "../store/dataStore";
 import { AppLogo } from "./AppLogo";
 import { useTranslation } from "../utils/translations";
+import { useBodyScrollLock } from "../utils/useBodyScrollLock";
 
 interface FloatingSidebarDrawerProps {
   isOpen: boolean;
@@ -29,26 +30,20 @@ export const FloatingSidebarDrawer: React.FC<FloatingSidebarDrawerProps> = ({
   setActiveTab,
   onOpenAddClientModal,
 }) => {
+  useBodyScrollLock(isOpen);
   const { clients, suppliers, freeProfiles } = useDataStore();
   const { t } = useTranslation();
 
-  // Bloquear el scroll del fondo cuando el drawer flotante está abierto
+  // Esc key listener
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-      const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === "Escape") {
-          onClose();
-        }
-      };
-      window.addEventListener("keydown", handleKeyDown);
-      return () => {
-        document.body.style.overflow = "";
-        window.removeEventListener("keydown", handleKeyDown);
-      };
-    } else {
-      document.body.style.overflow = "";
-    }
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onClose]);
 
   const { activeClientsCount, inactiveClientsCount } = useMemo(() => {
