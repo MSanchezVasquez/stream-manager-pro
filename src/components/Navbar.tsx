@@ -1,7 +1,5 @@
 import React, { useRef, useEffect, useState, useMemo } from 'react';
 import {
-  Sun,
-  Moon,
   Bell,
   Search,
   Menu,
@@ -10,7 +8,6 @@ import { AppLogo } from './AppLogo';
 import { PlatformIcon } from './common/PlatformIcon';
 import { ProfilePopover } from './Auth/ProfilePopover';
 import { LogoutConfirmModal } from './Auth/LogoutConfirmModal';
-import { useThemeStore } from '../store/themeStore';
 import { useAuthStore } from '../store/authStore';
 import { useDataStore } from '../store/dataStore';
 import { useTranslation } from '../utils/translations';
@@ -56,7 +53,6 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenSettingsModal,
   onToggleSidebar,
 }) => {
-  const { themeMode: theme, toggleTheme } = useThemeStore();
   const { user, logout } = useAuthStore();
   const { clients } = useDataStore();
   const { t } = useTranslation();
@@ -66,7 +62,6 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
-  const themeIconRef = useRef<HTMLSpanElement>(null);
   const avatarBtnRef = useRef<HTMLButtonElement>(null);
 
   const handleConfirmLogout = async () => {
@@ -122,26 +117,6 @@ export const Navbar: React.FC<NavbarProps> = ({
     }
   }, []);
 
-  const handleThemeToggle = () => {
-    toggleTheme();
-    if (themeIconRef.current) {
-      gsap.killTweensOf(themeIconRef.current);
-      gsap.fromTo(
-        themeIconRef.current,
-        { rotate: -90, scale: 0.6, opacity: 0.5 },
-        {
-          rotate: 0,
-          scale: 1,
-          opacity: 1,
-          duration: 0.35,
-          ease: 'back.out(1.8)',
-          overwrite: 'auto',
-          clearProps: 'transform,opacity',
-        },
-      );
-    }
-  };
-
   const handleSearchChange = (query: string) => {
     setSearchQuery(query);
     if (query.trim().length > 0) {
@@ -196,8 +171,10 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
           </div>
 
-          <div className="hidden md:flex flex-1 max-w-sm sm:max-w-md lg:max-w-lg mx-2 sm:mx-4">
-            <div className="relative w-full">
+          {/* Right Action Icons & Profile: Searchbar placed next to notifications button */}
+          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+            {/* Desktop Search Bar (Positioned right next to notifications button) */}
+            <div className="hidden md:flex relative w-48 sm:w-60 lg:w-72">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50 pointer-events-none" />
               <input
                 ref={searchInputRef}
@@ -218,10 +195,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </button>
               )}
             </div>
-          </div>
 
-          {/* Right Action Icons & Profile (Guaranteed 100% visible on all mobile screens) */}
-          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
             {/* Expiration Alerts Button with Slow Bounce Badge */}
             <button
               type="button"
@@ -239,30 +213,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                   {alertCount}
                 </span>
               )}
-            </button>
-
-            {/* Theme Toggle Button */}
-            <button
-              type="button"
-              onClick={handleThemeToggle}
-              className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-lg sm:rounded-xl bg-white/10 hover:bg-white/20 active:scale-95 border border-white/15 text-white transition-colors shrink-0 cursor-pointer select-none"
-              title={
-                theme === 'dark'
-                  ? 'Cambiar a Modo Claro'
-                  : 'Cambiar a Modo Oscuro'
-              }
-              aria-label="Cambiar tema"
-            >
-              <span
-                ref={themeIconRef}
-                className="flex items-center justify-center w-4 h-4 pointer-events-none"
-              >
-                {theme === 'dark' ? (
-                  <Sun className="w-4 h-4 text-amber-300" />
-                ) : (
-                  <Moon className="w-4 h-4 text-white" />
-                )}
-              </span>
             </button>
 
             {/* User Profile Avatar with Popover */}
