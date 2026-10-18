@@ -7,10 +7,8 @@ import {
   Copy,
   Check,
   MessageSquare,
-  Sparkles,
 } from "lucide-react";
 import { ClientSubscription } from "../../types";
-import { isSubscriptionFromFreeProfile } from "../../store/dataStore";
 import {
   getPlatformConfig,
   getPlatformBadgeProps,
@@ -73,22 +71,11 @@ export const ClientSubscriptionItem: React.FC<ClientSubscriptionItemProps> = ({
           </span>
         </span>
 
-        <div className="flex items-center gap-1.5 shrink-0 flex-wrap">
-          {isSubscriptionFromFreeProfile(sub, freeProfiles) && (
-            <span
-              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/20 whitespace-nowrap"
-              title={t("sub.freeProfileTitle")}
-            >
-              <Sparkles className="w-2.5 h-2.5 text-amber-500 shrink-0" />
-              <span>{t("sub.freeProfileBadge")}</span>
-            </span>
-          )}
-          <span
-            className={`px-2 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap shrink-0 ${statusInfo.badge}`}
-          >
-            {statusInfo.label}
-          </span>
-        </div>
+        <span
+          className={`px-2 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap shrink-0 ${statusInfo.badge}`}
+        >
+          {statusInfo.label}
+        </span>
       </div>
 
       {/* Dates */}
