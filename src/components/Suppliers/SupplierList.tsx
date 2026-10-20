@@ -284,21 +284,22 @@ export const SupplierList: React.FC = () => {
                     return (
                       <div
                         key={acc.id}
-                        className="p-4 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-slate-50/50 dark:bg-[#1A1A1E] space-y-3 relative group"
+                        className="p-4 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-slate-50/50 dark:bg-[#1A1A1E] space-y-3 relative group overflow-hidden"
                       >
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between gap-2">
                           <span
-                            className={badgeProps.className}
+                            className={`${badgeProps.className.replace(/\bshrink-0\b/g, "")} min-w-0 flex-1 flex items-center gap-1.5`}
                             style={badgeProps.style}
+                            title={getPlatformDisplayName(acc.serviceName)}
                           >
                             <PlatformIcon
                               platform={acc.serviceName}
                               className="w-3.5 h-3.5 shrink-0"
                             />
-                            <span>{getPlatformDisplayName(acc.serviceName)}</span>
+                            <span className="truncate min-w-0">{getPlatformDisplayName(acc.serviceName)}</span>
                           </span>
 
-                          <div className="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
+                          <div className="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity shrink-0">
                             <button
                               onClick={() => {
                                 setSelectedSupplier(supplier);
@@ -325,9 +326,12 @@ export const SupplierList: React.FC = () => {
 
                         {/* Email */}
                         <div className="flex items-center justify-between gap-2 bg-white dark:bg-[#0F0F12] px-2.5 py-1 rounded-lg border border-slate-200/80 dark:border-[#2D2D33]">
-                          <div className="flex items-center gap-1.5 truncate">
+                          <div className="flex items-center gap-1.5 min-w-0 flex-1">
                             <Mail className="w-3.5 h-3.5 text-[#94949E] shrink-0" />
-                            <span className="font-mono text-[11px] text-slate-800 dark:text-[#E4E4E7] truncate">
+                            <span
+                              className="font-mono text-[11px] text-slate-800 dark:text-[#E4E4E7] truncate min-w-0"
+                              title={acc.email}
+                            >
                               {acc.email}
                             </span>
                           </div>
@@ -347,9 +351,9 @@ export const SupplierList: React.FC = () => {
 
                         {/* Password */}
                         <div className="flex items-center justify-between gap-2 bg-white dark:bg-[#0F0F12] px-2.5 py-1 rounded-lg border border-slate-200/80 dark:border-[#2D2D33]">
-                          <div className="flex items-center gap-1.5 truncate">
+                          <div className="flex items-center gap-1.5 min-w-0 flex-1">
                             <Key className="w-3.5 h-3.5 text-[#94949E] shrink-0" />
-                            <span className="font-mono text-[11px] text-slate-800 dark:text-[#E4E4E7] truncate">
+                            <span className="font-mono text-[11px] text-slate-800 dark:text-[#E4E4E7] truncate min-w-0">
                               {isPassVisible ? acc.password : "••••••••••••"}
                             </span>
                           </div>

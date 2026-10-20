@@ -375,13 +375,13 @@ export const ExpirationAlerts: React.FC = () => {
               return (
                 <div
                   key={item.id}
-                  className="p-4.5 rounded-2xl border border-slate-200 dark:border-[#1F1F23] bg-slate-50/60 dark:bg-[#18181E] hover:border-slate-300 dark:hover:border-[#2D2D33] shadow-xs hover:shadow-sm transition-all flex flex-col justify-between gap-3.5"
+                  className="p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-[#1F1F23] bg-slate-50/60 dark:bg-[#18181E] hover:border-slate-300 dark:hover:border-[#2D2D33] shadow-xs hover:shadow-sm transition-all flex flex-col justify-between gap-3.5 overflow-hidden"
                 >
                   <div>
-                    {/* Top Row: Platform Badge + Status Badge (Guaranteed single-row alignment) */}
-                    <div className="flex items-center justify-between gap-2 mb-3 min-h-7">
+                    {/* Top Row: Platform Badge + Status Badge (Responsive & Overflow-safe) */}
+                    <div className="flex items-center justify-between gap-2 mb-3 min-h-7 flex-wrap sm:flex-nowrap">
                       <span
-                        className={`${badgeProps.className} shrink-0 max-w-[62%] sm:max-w-[65%]`}
+                        className={`${badgeProps.className.replace(/\bshrink-0\b/g, "")} min-w-0 flex-1 flex items-center gap-1.5`}
                         style={badgeProps.style}
                         title={getPlatformDisplayName(item.sub.serviceName)}
                       >
@@ -389,13 +389,13 @@ export const ExpirationAlerts: React.FC = () => {
                           platform={item.sub.serviceName}
                           className="w-3.5 h-3.5 shrink-0"
                         />
-                        <span className="font-semibold text-xs truncate">
+                        <span className="font-semibold text-xs truncate min-w-0">
                           {getPlatformDisplayName(item.sub.serviceName)}
                         </span>
                       </span>
 
                       <span
-                        className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold whitespace-nowrap shrink-0 shadow-2xs ${statusInfo.badge}`}
+                        className={`px-2.5 py-0.5 rounded-full text-[10.5px] sm:text-[11px] font-bold whitespace-nowrap shrink-0 shadow-2xs ${statusInfo.badge}`}
                       >
                         {statusInfo.label}
                       </span>
@@ -403,22 +403,25 @@ export const ExpirationAlerts: React.FC = () => {
 
                     {/* Clean Customer Identity Box */}
                     <div className="flex items-center justify-between gap-2 p-2 rounded-xl bg-white/70 dark:bg-[#121216] border border-slate-200/70 dark:border-[#25252D] mb-3">
-                      <div className="flex items-center gap-2 min-w-0">
+                      <div className="flex items-center gap-2 min-w-0 flex-1">
                         <div className="w-7 h-7 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 border border-blue-500/20">
                           <User className="w-3.5 h-3.5" />
                         </div>
-                        <div className="min-w-0">
+                        <div className="min-w-0 flex-1">
                           <div className="text-[9px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 leading-none mb-0.5">
                             Cliente
                           </div>
-                          <div className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate">
+                          <div
+                            className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate"
+                            title={item.displayName}
+                          >
                             {item.displayName}
                           </div>
                         </div>
                       </div>
 
                       {item.phone && (
-                        <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400 shrink-0 font-medium">
+                        <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400 shrink-0 font-medium pl-1">
                           {item.phone}
                         </span>
                       )}
@@ -428,7 +431,7 @@ export const ExpirationAlerts: React.FC = () => {
                     <div className="text-xs text-slate-500 dark:text-slate-400 space-y-1.5 px-0.5">
                       <div className="flex items-center gap-1.5">
                         <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                        <span>
+                        <span className="truncate">
                           {t("alerts.cutDate")}:{" "}
                           <strong className="text-slate-700 dark:text-slate-200 font-cascadia">
                             {item.dateStr}
@@ -437,24 +440,53 @@ export const ExpirationAlerts: React.FC = () => {
                       </div>
 
                       {item.email && (
-                        <div className="truncate text-slate-600 dark:text-slate-300 font-mono text-[11px]">
-                          {item.email}
+                        <div className="flex items-center justify-between gap-1.5 bg-white dark:bg-[#0F0F12] px-2.5 py-1 rounded-lg border border-slate-200/80 dark:border-[#2D2D33]">
+                          <div className="flex items-center gap-1.5 min-w-0 flex-1">
+                            <Mail className="w-3 h-3 text-[#94949E] shrink-0" />
+                            <span
+                              className="font-mono text-[11px] text-slate-800 dark:text-[#E4E4E7] truncate min-w-0"
+                              title={item.email}
+                            >
+                              {item.email}
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => copyToClipboard(item.email, `cemail-${item.id}`)}
+                            className="text-slate-400 hover:text-indigo-500 p-0.5 shrink-0 cursor-pointer"
+                            title="Copiar correo"
+                          >
+                            {copiedField === `cemail-${item.id}` ? (
+                              <Check className="w-3 h-3 text-emerald-500" />
+                            ) : (
+                              <Copy className="w-3 h-3" />
+                            )}
+                          </button>
                         </div>
                       )}
 
                       {item.profileName && (
-                        <div className="text-[11px] truncate">
-                          {t("sub.assignedProfile")}:{" "}
-                          <span className="font-semibold text-slate-800 dark:text-slate-200">
+                        <div className="text-[11px] flex items-center gap-1 min-w-0">
+                          <span className="text-slate-500 dark:text-slate-400 shrink-0">
+                            {t("sub.assignedProfile")}
+                          </span>
+                          <span
+                            className="font-semibold text-slate-800 dark:text-slate-200 truncate min-w-0"
+                            title={item.profileName}
+                          >
                             {item.profileName}
                           </span>
-                          {item.pin && ` (PIN: ${item.pin})`}
+                          {item.pin && (
+                            <span className="shrink-0 text-slate-500 dark:text-slate-400 font-mono text-[10px]">
+                              (PIN: {item.pin})
+                            </span>
+                          )}
                         </div>
                       )}
 
                       {typeof item.price === "number" && item.price > 0 && (
                         <div className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 font-cascadia pt-0.5">
-                          {t("sub.subPrice")}: S/ {item.price.toFixed(2)}
+                          {t("sub.subPrice")} S/ {item.price.toFixed(2)}
                         </div>
                       )}
                     </div>
@@ -501,13 +533,13 @@ export const ExpirationAlerts: React.FC = () => {
             return (
               <div
                 key={item.id}
-                className="p-4.5 rounded-2xl border border-purple-200/70 dark:border-purple-900/30 bg-purple-50/20 dark:bg-[#181520] hover:border-purple-300 dark:hover:border-purple-800/50 shadow-xs hover:shadow-sm transition-all flex flex-col justify-between gap-3.5"
+                className="p-4 sm:p-5 rounded-2xl border border-purple-200/70 dark:border-purple-900/30 bg-purple-50/20 dark:bg-[#181520] hover:border-purple-300 dark:hover:border-purple-800/50 shadow-xs hover:shadow-sm transition-all flex flex-col justify-between gap-3.5 overflow-hidden"
               >
                 <div>
-                  {/* Top Row: Platform Badge + Status Badge (Guaranteed single-row alignment) */}
-                  <div className="flex items-center justify-between gap-2 mb-3 min-h-7">
+                  {/* Top Row: Platform Badge + Status Badge (Responsive & Overflow-safe) */}
+                  <div className="flex items-center justify-between gap-2 mb-3 min-h-7 flex-wrap sm:flex-nowrap">
                     <span
-                      className={`${badgeProps.className} shrink-0 max-w-[62%] sm:max-w-[65%]`}
+                      className={`${badgeProps.className.replace(/\bshrink-0\b/g, "")} min-w-0 flex-1 flex items-center gap-1.5`}
                       style={badgeProps.style}
                       title={getPlatformDisplayName(item.account.serviceName)}
                     >
@@ -515,13 +547,13 @@ export const ExpirationAlerts: React.FC = () => {
                         platform={item.account.serviceName}
                         className="w-3.5 h-3.5 shrink-0"
                       />
-                      <span className="font-semibold text-xs truncate">
+                      <span className="font-semibold text-xs truncate min-w-0">
                         {getPlatformDisplayName(item.account.serviceName)}
                       </span>
                     </span>
 
                     <span
-                      className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold whitespace-nowrap shrink-0 shadow-2xs ${statusInfo.badge}`}
+                      className={`px-2.5 py-0.5 rounded-full text-[10.5px] sm:text-[11px] font-bold whitespace-nowrap shrink-0 shadow-2xs ${statusInfo.badge}`}
                     >
                       {statusInfo.label}
                     </span>
@@ -529,15 +561,18 @@ export const ExpirationAlerts: React.FC = () => {
 
                   {/* Clean Supplier Identity Box */}
                   <div className="flex items-center justify-between gap-2 p-2 rounded-xl bg-white/70 dark:bg-[#121216] border border-purple-200/60 dark:border-purple-900/25 mb-3">
-                    <div className="flex items-center gap-2 min-w-0">
+                    <div className="flex items-center gap-2 min-w-0 flex-1">
                       <div className="w-7 h-7 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0 border border-purple-500/20">
                         <Truck className="w-3.5 h-3.5" />
                       </div>
-                      <div className="min-w-0">
+                      <div className="min-w-0 flex-1">
                         <div className="text-[9px] font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 leading-none mb-0.5">
                           Proveedor
                         </div>
-                        <div className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate">
+                        <div
+                          className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate"
+                          title={item.displayName}
+                        >
                           {item.displayName}
                         </div>
                       </div>
@@ -548,7 +583,7 @@ export const ExpirationAlerts: React.FC = () => {
                   <div className="text-xs text-slate-500 dark:text-slate-400 space-y-1.5 px-0.5">
                     <div className="flex items-center gap-1.5">
                       <Calendar className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                      <span>
+                      <span className="truncate">
                         {t("suppliers.expires")}:{" "}
                         <strong className="text-slate-800 dark:text-slate-200 font-cascadia">
                           {item.dateStr}
@@ -558,9 +593,12 @@ export const ExpirationAlerts: React.FC = () => {
 
                     {/* Email with Copy */}
                     <div className="flex items-center justify-between gap-1.5 bg-white dark:bg-[#0F0F12] px-2.5 py-1 rounded-lg border border-slate-200/80 dark:border-[#2D2D33]">
-                      <div className="flex items-center gap-1.5 truncate">
+                      <div className="flex items-center gap-1.5 min-w-0 flex-1">
                         <Mail className="w-3 h-3 text-[#94949E] shrink-0" />
-                        <span className="font-mono text-[11px] text-slate-800 dark:text-[#E4E4E7] truncate">
+                        <span
+                          className="font-mono text-[11px] text-slate-800 dark:text-[#E4E4E7] truncate min-w-0"
+                          title={item.email}
+                        >
                           {item.email}
                         </span>
                       </div>
@@ -580,9 +618,9 @@ export const ExpirationAlerts: React.FC = () => {
 
                     {/* Password with Eye toggle & Copy */}
                     <div className="flex items-center justify-between gap-1.5 bg-white dark:bg-[#0F0F12] px-2.5 py-1 rounded-lg border border-slate-200/80 dark:border-[#2D2D33]">
-                      <div className="flex items-center gap-1.5 truncate">
+                      <div className="flex items-center gap-1.5 min-w-0 flex-1">
                         <Key className="w-3 h-3 text-[#94949E] shrink-0" />
-                        <span className="font-mono text-[11px] text-slate-800 dark:text-[#E4E4E7] truncate">
+                        <span className="font-mono text-[11px] text-slate-800 dark:text-[#E4E4E7] truncate min-w-0">
                           {showPasswords[item.account.id] ? item.account.password : "••••••••••••"}
                         </span>
                       </div>
@@ -615,15 +653,15 @@ export const ExpirationAlerts: React.FC = () => {
                     </div>
 
                     {/* Browser & Cost */}
-                    <div className="flex items-center justify-between gap-2 pt-0.5 flex-wrap">
+                    <div className="flex items-center justify-between gap-2 pt-0.5 min-w-0 flex-wrap">
                       {item.browser && (
-                        <div className="flex items-center gap-1 text-[11px]">
+                        <div className="flex items-center gap-1 text-[11px] min-w-0 flex-1 truncate">
                           <Compass className="w-3 h-3 text-sky-500 shrink-0" />
-                          <span>{item.browser}</span>
+                          <span className="truncate">{item.browser}</span>
                         </div>
                       )}
                       {typeof item.cost === "number" && item.cost > 0 && (
-                        <div className="flex items-center gap-1 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 font-cascadia ml-auto">
+                        <div className="flex items-center gap-1 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 font-cascadia shrink-0 ml-auto">
                           <Coins className="w-3 h-3 text-emerald-500 shrink-0" />
                           <span>S/ {item.cost.toFixed(2)}</span>
                         </div>

@@ -58,15 +58,19 @@ export const ClientSubscriptionItem: React.FC<ClientSubscriptionItemProps> = ({
   );
 
   return (
-    <div className="p-3.5 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-slate-50/70 dark:bg-[#1A1A1E] space-y-2 relative">
+    <div className="p-3.5 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-slate-50/70 dark:bg-[#1A1A1E] space-y-2 relative overflow-hidden">
       {/* Platform header */}
       <div className="flex items-center justify-between gap-2 flex-wrap">
-        <span className={badgeProps.className} style={badgeProps.style}>
+        <span
+          className={`${badgeProps.className.replace(/\bshrink-0\b/g, "")} min-w-0 flex-1 flex items-center gap-1.5`}
+          style={badgeProps.style}
+          title={getPlatformDisplayName(sub.serviceName)}
+        >
           <PlatformIcon
             platform={sub.serviceName}
             className="w-3.5 h-3.5 shrink-0"
           />
-          <span className="font-semibold whitespace-nowrap">
+          <span className="font-semibold truncate min-w-0">
             {getPlatformDisplayName(sub.serviceName)}
           </span>
         </span>
