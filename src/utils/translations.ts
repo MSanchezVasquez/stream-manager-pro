@@ -645,15 +645,15 @@ export const TRANSLATIONS: Record<SupportedLanguage, TranslationDictionary> = {
     "finance.addClient": "Nuevo Cliente",
 
     // Expiration Alerts
-    "alerts.title": "Alertas y Notificaciones de WhatsApp",
-    "alerts.filterAll": "Todas",
+    "alerts.title": "Alertas de Vencimiento y Renovación",
+    "alerts.filterAll": "Todos",
     "alerts.filterWarning": "Por Vencer (≤7d)",
     "alerts.filterExpired": "Vencidas",
-    "alerts.searchPlaceholder": "Buscar cliente, teléfono o plataforma...",
+    "alerts.searchPlaceholder": "Buscar por cliente, proveedor, correo...",
     "alerts.notifyWhatsApp": "Enviar WhatsApp",
     "alerts.noAlerts": "No hay alertas pendientes en este momento",
     "alerts.noAlertsDesc":
-      "Todas las suscripciones tienen más de 7 días de vigencia.",
+      "Todas las suscripciones y cuentas tienen más de 7 días de vigencia.",
     "alerts.client": "Cliente",
     "alerts.platform": "Plataforma",
     "alerts.status": "Estado",
@@ -1068,15 +1068,15 @@ export const TRANSLATIONS: Record<SupportedLanguage, TranslationDictionary> = {
     "finance.addClient": "New Client",
 
     // Expiration Alerts
-    "alerts.title": "WhatsApp Alerts & Notifications",
+    "alerts.title": "Renewal & Expiration Alerts",
     "alerts.filterAll": "All",
     "alerts.filterWarning": "Expiring (≤7d)",
     "alerts.filterExpired": "Expired",
-    "alerts.searchPlaceholder": "Search client, phone or platform...",
+    "alerts.searchPlaceholder": "Search by client, supplier, email...",
     "alerts.notifyWhatsApp": "Send WhatsApp",
     "alerts.noAlerts": "No pending alerts at this moment",
     "alerts.noAlertsDesc":
-      "All subscriptions have more than 7 days remaining.",
+      "All subscriptions and accounts have more than 7 days remaining.",
     "alerts.client": "Client",
     "alerts.platform": "Platform",
     "alerts.status": "Status",

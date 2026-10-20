@@ -25,6 +25,8 @@ import {
   EyeOff,
   Compass,
   Coins,
+  Layers,
+  X,
 } from "lucide-react";
 import { WhatsAppModal } from "../WhatsAppModal";
 import { RenewClientModal } from "../Clients/RenewClientModal";
@@ -202,103 +204,152 @@ export const ExpirationAlerts: React.FC = () => {
 
   return (
     <div className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#1F1F23] shadow-sm">
-      {/* Header and Filter Controls */}
-      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 mb-6">
-        <div>
-          <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-[#E4E4E7] flex items-center gap-2">
-            <ShieldAlert className="w-5 h-5 text-amber-500 shrink-0" />
-            <span>{t("alerts.title")}</span>
-          </h3>
-          <p className="text-xs text-slate-500 dark:text-[#94949E] mt-0.5">
-            {resolvedLanguage === "en"
-              ? "Client subscriptions and supplier accounts expiring in the next 7 days or already expired"
-              : "Suscripciones de clientes y cuentas de proveedores que vencen en los próximos 7 días o ya expiraron"}
-          </p>
+      {/* Top Header: Title & Spacious Search Bar */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-[#22222A]">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/20">
+            <ShieldAlert className="w-5 h-5" />
+          </div>
+          <div>
+            <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-tight font-space">
+              {t("alerts.title")}
+            </h3>
+            <p className="text-xs text-slate-500 dark:text-[#94949E] mt-0.5">
+              {resolvedLanguage === "en"
+                ? "Client subscriptions and supplier accounts requiring renewal or attention"
+                : "Suscripciones de clientes y cuentas de proveedores que requieren renovación o atención"}
+            </p>
+          </div>
         </div>
 
-        {/* Filter Controls */}
-        <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2 w-full lg:w-auto">
-          {/* Search Box */}
-          <div className="relative min-w-[180px] sm:w-52">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#94949E]" />
-            <input
-              type="text"
-              placeholder={t("alerts.searchPlaceholder")}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-slate-50 dark:bg-[#1A1A1E] text-slate-900 dark:text-[#E4E4E7] focus:outline-none focus:ring-1 focus:ring-indigo-500"
-            />
-          </div>
-
-          {/* Scope Filters: Todos | Clientes | Proveedores */}
-          <div className="flex items-center gap-1 bg-slate-100 dark:bg-[#1A1A1E] p-1 rounded-xl border border-slate-200/80 dark:border-[#2D2D33] shrink-0 overflow-x-auto">
+        {/* Spacious, fully readable searchbar */}
+        <div className="relative w-full md:w-80 sm:w-72 shrink-0">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+          <input
+            type="text"
+            placeholder={t("alerts.searchPlaceholder")}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-9 pr-8 py-2 text-xs rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-slate-50 dark:bg-[#1A1A1E] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all"
+          />
+          {search && (
             <button
-              onClick={() => setScope("all")}
-              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
+              type="button"
+              onClick={() => setSearch("")}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs p-1 cursor-pointer"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Control Bar: Perfectly Aligned Filters Row */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-3.5 mb-6">
+        {/* Scope Tabs: Todos | Clientes | Proveedores */}
+        <div className="inline-flex p-1 rounded-xl bg-slate-100 dark:bg-[#1A1A1E] border border-slate-200/80 dark:border-[#2D2D33] gap-1 self-start sm:self-auto overflow-x-auto max-w-full">
+          <button
+            type="button"
+            onClick={() => setScope("all")}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
+              scope === "all"
+                ? "bg-indigo-600 text-white shadow-xs"
+                : "text-slate-600 dark:text-[#94949E] hover:text-slate-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-[#25252D]"
+            }`}
+          >
+            <Layers className="w-3.5 h-3.5 shrink-0" />
+            <span>{t("alerts.filterAll")}</span>
+            <span
+              className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
                 scope === "all"
-                  ? "bg-indigo-600 text-white shadow-xs"
-                  : "text-slate-600 dark:text-[#94949E] hover:text-slate-900 dark:hover:text-white"
+                  ? "bg-white/20 text-white"
+                  : "bg-slate-200 dark:bg-[#2D2D35] text-slate-600 dark:text-slate-300"
               }`}
             >
-              {t("alerts.filterAll")} ({allAlertItems.length})
-            </button>
-            <button
-              onClick={() => setScope("clients")}
-              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all flex items-center gap-1 cursor-pointer whitespace-nowrap ${
-                scope === "clients"
-                  ? "bg-blue-600 text-white shadow-xs"
-                  : "text-slate-600 dark:text-[#94949E] hover:text-slate-900 dark:hover:text-white"
-              }`}
-            >
-              <User className="w-3 h-3" />
-              <span>Clientes ({clientAlertsCount})</span>
-            </button>
-            <button
-              onClick={() => setScope("suppliers")}
-              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all flex items-center gap-1 cursor-pointer whitespace-nowrap ${
-                scope === "suppliers"
-                  ? "bg-purple-600 text-white shadow-xs"
-                  : "text-slate-600 dark:text-[#94949E] hover:text-slate-900 dark:hover:text-white"
-              }`}
-            >
-              <Truck className="w-3 h-3" />
-              <span>Proveedores ({supplierAlertsCount})</span>
-            </button>
-          </div>
+              {allAlertItems.length}
+            </span>
+          </button>
 
-          {/* Urgency Filters: Todos | Por Vencer | Vencidos */}
-          <div className="flex items-center gap-1 bg-slate-100 dark:bg-[#1A1A1E] p-1 rounded-xl border border-slate-200/80 dark:border-[#2D2D33] shrink-0">
-            <button
-              onClick={() => setFilter("all")}
-              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                filter === "all"
-                  ? "bg-white dark:bg-[#25252D] text-slate-900 dark:text-white shadow-xs"
-                  : "text-slate-600 dark:text-[#94949E] hover:text-slate-900 dark:hover:text-white"
+          <button
+            type="button"
+            onClick={() => setScope("clients")}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
+              scope === "clients"
+                ? "bg-blue-600 text-white shadow-xs"
+                : "text-slate-600 dark:text-[#94949E] hover:text-slate-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-[#25252D]"
+            }`}
+          >
+            <User className="w-3.5 h-3.5 shrink-0" />
+            <span>Clientes</span>
+            <span
+              className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                scope === "clients"
+                  ? "bg-white/20 text-white"
+                  : "bg-slate-200 dark:bg-[#2D2D35] text-slate-600 dark:text-slate-300"
               }`}
             >
-              {t("alerts.filterAll")}
-            </button>
-            <button
-              onClick={() => setFilter("warning")}
-              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
-                filter === "warning"
-                  ? "bg-amber-500 text-white shadow-xs"
-                  : "text-slate-600 dark:text-[#94949E] hover:text-slate-900 dark:hover:text-white"
+              {clientAlertsCount}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setScope("suppliers")}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
+              scope === "suppliers"
+                ? "bg-purple-600 text-white shadow-xs"
+                : "text-slate-600 dark:text-[#94949E] hover:text-slate-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-[#25252D]"
+            }`}
+          >
+            <Truck className="w-3.5 h-3.5 shrink-0" />
+            <span>Proveedores</span>
+            <span
+              className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                scope === "suppliers"
+                  ? "bg-white/20 text-white"
+                  : "bg-slate-200 dark:bg-[#2D2D35] text-slate-600 dark:text-slate-300"
               }`}
             >
-              {t("alerts.filterWarning")}
-            </button>
-            <button
-              onClick={() => setFilter("expired")}
-              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
-                filter === "expired"
-                  ? "bg-red-600 text-white shadow-xs"
-                  : "text-slate-600 dark:text-[#94949E] hover:text-slate-900 dark:hover:text-white"
-              }`}
-            >
-              {t("alerts.filterExpired")}
-            </button>
-          </div>
+              {supplierAlertsCount}
+            </span>
+          </button>
+        </div>
+
+        {/* Urgency Filter Tabs: Todos | Por Vencer | Vencidas */}
+        <div className="inline-flex p-1 rounded-xl bg-slate-100 dark:bg-[#1A1A1E] border border-slate-200/80 dark:border-[#2D2D33] gap-1 self-start sm:self-auto">
+          <button
+            type="button"
+            onClick={() => setFilter("all")}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
+              filter === "all"
+                ? "bg-white dark:bg-[#25252D] text-slate-900 dark:text-white shadow-xs"
+                : "text-slate-600 dark:text-[#94949E] hover:text-slate-900 dark:hover:text-white"
+            }`}
+          >
+            {t("alerts.filterAll")}
+          </button>
+          <button
+            type="button"
+            onClick={() => setFilter("warning")}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
+              filter === "warning"
+                ? "bg-amber-500 text-white shadow-xs"
+                : "text-slate-600 dark:text-[#94949E] hover:text-slate-900 dark:hover:text-white"
+            }`}
+          >
+            {t("alerts.filterWarning")}
+          </button>
+          <button
+            type="button"
+            onClick={() => setFilter("expired")}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
+              filter === "expired"
+                ? "bg-red-600 text-white shadow-xs"
+                : "text-slate-600 dark:text-[#94949E] hover:text-slate-900 dark:hover:text-white"
+            }`}
+          >
+            {t("alerts.filterExpired")}
+          </button>
         </div>
       </div>
 
@@ -324,43 +375,57 @@ export const ExpirationAlerts: React.FC = () => {
               return (
                 <div
                   key={item.id}
-                  className="p-4.5 rounded-2xl border border-slate-200 dark:border-[#1F1F23] bg-slate-50/60 dark:bg-[#18181E] hover:border-slate-300 dark:hover:border-[#2D2D33] shadow-xs hover:shadow-sm transition-all flex flex-col justify-between gap-4"
+                  className="p-4.5 rounded-2xl border border-slate-200 dark:border-[#1F1F23] bg-slate-50/60 dark:bg-[#18181E] hover:border-slate-300 dark:hover:border-[#2D2D33] shadow-xs hover:shadow-sm transition-all flex flex-col justify-between gap-3.5"
                 >
                   <div>
-                    {/* Platform Badge & Status */}
-                    <div className="flex items-center justify-between gap-2 mb-3.5 flex-wrap">
+                    {/* Top Row: Platform Badge + Status Badge (Guaranteed single-row alignment) */}
+                    <div className="flex items-center justify-between gap-2 mb-3 min-h-7">
                       <span
-                        className={`${badgeProps.className} whitespace-nowrap shrink-0`}
+                        className={`${badgeProps.className} shrink-0 max-w-[62%] sm:max-w-[65%]`}
                         style={badgeProps.style}
+                        title={getPlatformDisplayName(item.sub.serviceName)}
                       >
                         <PlatformIcon
                           platform={item.sub.serviceName}
                           className="w-3.5 h-3.5 shrink-0"
                         />
-                        <span className="font-semibold">
+                        <span className="font-semibold text-xs truncate">
                           {getPlatformDisplayName(item.sub.serviceName)}
                         </span>
                       </span>
+
                       <span
-                        className={`px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap shrink-0 shadow-2xs ${statusInfo.badge}`}
+                        className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold whitespace-nowrap shrink-0 shadow-2xs ${statusInfo.badge}`}
                       >
                         {statusInfo.label}
                       </span>
                     </div>
 
-                    {/* Client Badge & Name */}
-                    <div className="flex items-center gap-2 mb-2 flex-wrap">
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 shrink-0">
-                        <User className="w-3 h-3" />
-                        <span>{t("alerts.client")}</span>
-                      </span>
-                      <h4 className="font-bold text-sm text-slate-900 dark:text-white truncate">
-                        {item.displayName}
-                      </h4>
+                    {/* Clean Customer Identity Box */}
+                    <div className="flex items-center justify-between gap-2 p-2 rounded-xl bg-white/70 dark:bg-[#121216] border border-slate-200/70 dark:border-[#25252D] mb-3">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <div className="w-7 h-7 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 border border-blue-500/20">
+                          <User className="w-3.5 h-3.5" />
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-[9px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 leading-none mb-0.5">
+                            Cliente
+                          </div>
+                          <div className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate">
+                            {item.displayName}
+                          </div>
+                        </div>
+                      </div>
+
+                      {item.phone && (
+                        <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400 shrink-0 font-medium">
+                          {item.phone}
+                        </span>
+                      )}
                     </div>
 
                     {/* Subscription Details */}
-                    <div className="text-xs text-slate-500 dark:text-slate-400 space-y-1.5">
+                    <div className="text-xs text-slate-500 dark:text-slate-400 space-y-1.5 px-0.5">
                       <div className="flex items-center gap-1.5">
                         <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                         <span>
@@ -378,7 +443,7 @@ export const ExpirationAlerts: React.FC = () => {
                       )}
 
                       {item.profileName && (
-                        <div className="text-[11px]">
+                        <div className="text-[11px] truncate">
                           {t("sub.assignedProfile")}:{" "}
                           <span className="font-semibold text-slate-800 dark:text-slate-200">
                             {item.profileName}
@@ -396,7 +461,7 @@ export const ExpirationAlerts: React.FC = () => {
                   </div>
 
                   {/* Actions: Renovar Cliente + Enviar WhatsApp */}
-                  <div className="flex items-center gap-2 pt-2 border-t border-slate-200/60 dark:border-[#22222A]">
+                  <div className="flex items-center gap-2 pt-2.5 border-t border-slate-200/60 dark:border-[#22222A] mt-auto">
                     <button
                       type="button"
                       onClick={() =>
@@ -436,43 +501,51 @@ export const ExpirationAlerts: React.FC = () => {
             return (
               <div
                 key={item.id}
-                className="p-4.5 rounded-2xl border border-purple-200/70 dark:border-purple-900/30 bg-purple-50/30 dark:bg-[#181520] hover:border-purple-300 dark:hover:border-purple-800/50 shadow-xs hover:shadow-sm transition-all flex flex-col justify-between gap-4"
+                className="p-4.5 rounded-2xl border border-purple-200/70 dark:border-purple-900/30 bg-purple-50/20 dark:bg-[#181520] hover:border-purple-300 dark:hover:border-purple-800/50 shadow-xs hover:shadow-sm transition-all flex flex-col justify-between gap-3.5"
               >
                 <div>
-                  {/* Platform Badge & Status */}
-                  <div className="flex items-center justify-between gap-2 mb-3.5 flex-wrap">
+                  {/* Top Row: Platform Badge + Status Badge (Guaranteed single-row alignment) */}
+                  <div className="flex items-center justify-between gap-2 mb-3 min-h-7">
                     <span
-                      className={`${badgeProps.className} whitespace-nowrap shrink-0`}
+                      className={`${badgeProps.className} shrink-0 max-w-[62%] sm:max-w-[65%]`}
                       style={badgeProps.style}
+                      title={getPlatformDisplayName(item.account.serviceName)}
                     >
                       <PlatformIcon
                         platform={item.account.serviceName}
                         className="w-3.5 h-3.5 shrink-0"
                       />
-                      <span className="font-semibold">
+                      <span className="font-semibold text-xs truncate">
                         {getPlatformDisplayName(item.account.serviceName)}
                       </span>
                     </span>
+
                     <span
-                      className={`px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap shrink-0 shadow-2xs ${statusInfo.badge}`}
+                      className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold whitespace-nowrap shrink-0 shadow-2xs ${statusInfo.badge}`}
                     >
                       {statusInfo.label}
                     </span>
                   </div>
 
-                  {/* Supplier Badge & Name */}
-                  <div className="flex items-center gap-2 mb-2 flex-wrap">
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-purple-500/15 text-purple-700 dark:text-purple-300 border border-purple-500/25 shrink-0">
-                      <Truck className="w-3 h-3" />
-                      <span>Proveedor</span>
-                    </span>
-                    <h4 className="font-bold text-sm text-slate-900 dark:text-white truncate">
-                      {item.displayName}
-                    </h4>
+                  {/* Clean Supplier Identity Box */}
+                  <div className="flex items-center justify-between gap-2 p-2 rounded-xl bg-white/70 dark:bg-[#121216] border border-purple-200/60 dark:border-purple-900/25 mb-3">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <div className="w-7 h-7 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0 border border-purple-500/20">
+                        <Truck className="w-3.5 h-3.5" />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="text-[9px] font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 leading-none mb-0.5">
+                          Proveedor
+                        </div>
+                        <div className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate">
+                          {item.displayName}
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
                   {/* Account Details */}
-                  <div className="text-xs text-slate-500 dark:text-slate-400 space-y-1.5">
+                  <div className="text-xs text-slate-500 dark:text-slate-400 space-y-1.5 px-0.5">
                     <div className="flex items-center gap-1.5">
                       <Calendar className="w-3.5 h-3.5 text-amber-500 shrink-0" />
                       <span>
@@ -546,9 +619,7 @@ export const ExpirationAlerts: React.FC = () => {
                       {item.browser && (
                         <div className="flex items-center gap-1 text-[11px]">
                           <Compass className="w-3 h-3 text-sky-500 shrink-0" />
-                          <span>
-                            {item.browser}
-                          </span>
+                          <span>{item.browser}</span>
                         </div>
                       )}
                       {typeof item.cost === "number" && item.cost > 0 && (
@@ -562,7 +633,7 @@ export const ExpirationAlerts: React.FC = () => {
                 </div>
 
                 {/* Actions: Renovar Cuenta de Proveedor */}
-                <div className="pt-2 border-t border-purple-200/50 dark:border-[#282235]">
+                <div className="pt-2.5 border-t border-purple-200/50 dark:border-[#282235] mt-auto">
                   <button
                     type="button"
                     onClick={() =>
