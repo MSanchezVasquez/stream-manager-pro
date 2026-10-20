@@ -11,6 +11,7 @@ import { LogoutConfirmModal } from './Auth/LogoutConfirmModal';
 import { useAuthStore } from '../store/authStore';
 import { useDataStore } from '../store/dataStore';
 import { useTranslation } from '../utils/translations';
+import { getDaysRemaining } from '../utils/platformHelpers';
 
 import gsap from 'gsap';
 
@@ -54,7 +55,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onToggleSidebar,
 }) => {
   const { user, logout } = useAuthStore();
-  const { clients } = useDataStore();
+  const { clients, suppliers } = useDataStore();
   const { t } = useTranslation();
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
@@ -81,31 +82,27 @@ export const Navbar: React.FC<NavbarProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // Calculate total alerts (cut-off in <= 5 days or expired)
+  // Calculate total alerts (cut-off in <= 5 days or expired) for clients & suppliers
   const alertCount = useMemo(() => {
-    return clients.reduce((acc, client) => {
+    const clientCount = clients.reduce((acc, client) => {
       if (client.status !== 'active') return acc;
       const count = client.subscriptions.filter((sub) => {
         if (!sub.cutDate) return false;
-        const parts = sub.cutDate.split('/');
-        if (parts.length === 3) {
-          let year = parseInt(parts[2], 10);
-          if (year < 100) year += 2000;
-          const target = new Date(
-            year,
-            parseInt(parts[1], 10) - 1,
-            parseInt(parts[0], 10),
-          );
-          const diff = Math.ceil(
-            (target.getTime() - Date.now()) / (1000 * 3600 * 24),
-          );
-          return diff <= 5;
-        }
-        return false;
+        return getDaysRemaining(sub.cutDate) <= 5;
       }).length;
       return acc + count;
     }, 0);
-  }, [clients]);
+
+    const supplierCount = suppliers.reduce((acc, supplier) => {
+      const count = (supplier.accounts || []).filter((account) => {
+        if (!account.expirationDate) return false;
+        return getDaysRemaining(account.expirationDate) <= 5;
+      }).length;
+      return acc + count;
+    }, 0);
+
+    return clientCount + supplierCount;
+  }, [clients, suppliers]);
 
   useEffect(() => {
     if (logoRef.current) {

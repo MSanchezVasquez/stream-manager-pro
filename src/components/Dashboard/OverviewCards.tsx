@@ -21,13 +21,22 @@ export const OverviewCards: React.FC<{
     0,
   );
 
-  const upcomingExpirations = activeClients.reduce((acc, c) => {
-    const warningSubs = c.subscriptions.filter((s) => {
-      const days = getDaysRemaining(s.cutDate);
-      return days <= 5;
-    });
-    return acc + warningSubs.length;
-  }, 0);
+  const upcomingExpirations =
+    activeClients.reduce((acc, c) => {
+      const warningSubs = c.subscriptions.filter((s) => {
+        const days = getDaysRemaining(s.cutDate);
+        return days <= 5;
+      });
+      return acc + warningSubs.length;
+    }, 0) +
+    suppliers.reduce((acc, s) => {
+      const warningAccs = (s.accounts || []).filter((a) => {
+        if (!a.expirationDate) return false;
+        const days = getDaysRemaining(a.expirationDate);
+        return days <= 5;
+      });
+      return acc + warningAccs.length;
+    }, 0);
 
   const totalSuppliers = suppliers.length;
   const totalFreeProfiles = freeProfiles.reduce(

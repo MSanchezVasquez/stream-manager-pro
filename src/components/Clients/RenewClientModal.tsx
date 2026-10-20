@@ -93,9 +93,8 @@ export const RenewClientModal: React.FC<RenewClientModalProps> = ({
     setPeriodValue(initVal);
     setPeriodInputStr(String(initVal));
 
-    // Initial base: if active, extend cutDate; if expired (<= 0 days), default to today
-    const isFirstActive = firstSub?.cutDate ? getDaysRemaining(firstSub.cutDate) > 0 : false;
-    setRenewalBase(isFirstActive ? "cutDate" : "today");
+    // Predeterminadamente siempre calcular a partir de la fecha de corte actual
+    setRenewalBase("cutDate");
 
     // Initialize custom prices
     const prices: Record<string, number | undefined> = {};
