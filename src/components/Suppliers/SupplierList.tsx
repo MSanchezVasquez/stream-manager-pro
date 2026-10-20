@@ -300,13 +300,6 @@ export const SupplierList: React.FC = () => {
 
                           <div className="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
                             <button
-                              onClick={() => setAccountToRenew({ supplier, account: acc })}
-                              className="p-1 text-slate-400 hover:text-emerald-500 cursor-pointer"
-                              title={t("suppliers.renewAccount")}
-                            >
-                              <RotateCw className="w-3.5 h-3.5" />
-                            </button>
-                            <button
                               onClick={() => {
                                 setSelectedSupplier(supplier);
                                 setAccountToEdit(acc);
