@@ -82,32 +82,22 @@ export const SupplierList: React.FC = () => {
     setTimeout(() => setCopiedField(null), 2000);
   };
 
-  const confirmDeleteAccount = async () => {
+  const confirmDeleteAccount = () => {
     if (!accountToDelete) return;
-    setIsDeleting(true);
-    try {
-      const updatedAccounts = accountToDelete.supplier.accounts.filter(
-        (a) => a.id !== accountToDelete.accountId,
-      );
-      await saveSupplier({
-        ...accountToDelete.supplier,
-        accounts: updatedAccounts,
-      });
-      setAccountToDelete(null);
-    } finally {
-      setIsDeleting(false);
-    }
+    const { supplier, accountId } = accountToDelete;
+    setAccountToDelete(null);
+    const updatedAccounts = supplier.accounts.filter((a) => a.id !== accountId);
+    saveSupplier({
+      ...supplier,
+      accounts: updatedAccounts,
+    });
   };
 
-  const confirmDeleteSupplier = async () => {
+  const confirmDeleteSupplier = () => {
     if (!supplierToDelete) return;
-    setIsDeleting(true);
-    try {
-      await deleteSupplier(supplierToDelete.id);
-      setSupplierToDelete(null);
-    } finally {
-      setIsDeleting(false);
-    }
+    const targetId = supplierToDelete.id;
+    setSupplierToDelete(null);
+    deleteSupplier(targetId);
   };
 
   const handleAddNewSupplierSubmit = async (e: React.FormEvent) => {

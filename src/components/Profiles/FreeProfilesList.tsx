@@ -133,15 +133,11 @@ export const FreeProfilesList: React.FC = () => {
     setTimeout(() => setCopiedField(null), 2000);
   };
 
-  const confirmDeleteProfile = async () => {
+  const confirmDeleteProfile = () => {
     if (!profileToDelete) return;
-    setIsDeleting(true);
-    try {
-      await deleteFreeProfile(profileToDelete.id);
-      setProfileToDelete(null);
-    } finally {
-      setIsDeleting(false);
-    }
+    const targetId = profileToDelete.id;
+    setProfileToDelete(null);
+    deleteFreeProfile(targetId);
   };
 
   const handleAddProfile = (e: React.FormEvent) => {
