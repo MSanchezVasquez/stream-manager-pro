@@ -163,13 +163,13 @@ function MainApp() {
             <button
               type="button"
               onClick={() => setIsMobileDrawerOpen(true)}
-              className="p-2 rounded-xl bg-[#FF5500] hover:bg-[#E64000] text-white shadow-md shadow-orange-600/20 transition-all cursor-pointer flex items-center justify-center shrink-0 active:scale-95 border border-white/20"
+              className="p-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white shadow-sm transition-all cursor-pointer flex items-center justify-center shrink-0 active:scale-95"
               title="Abrir menú de navegación"
               aria-label="Abrir menú de navegación"
             >
               <Menu className="w-5 h-5 text-white" />
             </button>
-            <span className="text-xs font-black text-[#FF5500] font-space uppercase tracking-wider">
+            <span className="text-xs font-bold text-slate-700 dark:text-slate-300 font-space uppercase tracking-wider">
               Menú
             </span>
           </div>
