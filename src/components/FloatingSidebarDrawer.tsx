@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo } from "react";
 import {
-  LayoutDashboard,
+  Home,
   Users,
   UserX,
   Truck,
@@ -9,11 +9,11 @@ import {
   ExternalLink,
   PlusCircle,
   X,
-} from 'lucide-react';
-import { useDataStore } from '../store/dataStore';
-import { AppLogo } from './AppLogo';
-import { useTranslation } from '../utils/translations';
-import { useBodyScrollLock } from '../utils/useBodyScrollLock';
+} from "lucide-react";
+import { useDataStore } from "../store/dataStore";
+import { AppLogo } from "./AppLogo";
+import { useTranslation } from "../utils/translations";
+import { useBodyScrollLock } from "../utils/useBodyScrollLock";
 
 interface FloatingSidebarDrawerProps {
   isOpen: boolean;
@@ -32,24 +32,24 @@ export const FloatingSidebarDrawer: React.FC<FloatingSidebarDrawerProps> = ({
 }) => {
   useBodyScrollLock(isOpen);
   const { clients, suppliers, freeProfiles } = useDataStore();
-  const { t } = useTranslation();
+  const { t, resolvedLanguage } = useTranslation();
 
   // Esc key listener
   useEffect(() => {
     if (!isOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
+      if (e.key === "Escape") {
         onClose();
       }
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onClose]);
 
   const { activeClientsCount, inactiveClientsCount } = useMemo(() => {
     return {
-      activeClientsCount: clients.filter((c) => c.status === 'active').length,
-      inactiveClientsCount: clients.filter((c) => c.status === 'inactive')
+      activeClientsCount: clients.filter((c) => c.status === "active").length,
+      inactiveClientsCount: clients.filter((c) => c.status === "inactive")
         .length,
     };
   }, [clients]);
@@ -63,51 +63,44 @@ export const FloatingSidebarDrawer: React.FC<FloatingSidebarDrawerProps> = ({
 
   const menuItems = [
     {
-      id: 'dashboard',
-      label: t('nav.overview'),
-      icon: LayoutDashboard,
+      id: "dashboard",
+      label: resolvedLanguage === "en" ? "Overview" : "Inicio",
+      icon: Home,
       badge: null,
     },
     {
-      id: 'clients_active',
-      label: t('nav.activeClients'),
+      id: "clients_active",
+      label: t("nav.activeClients"),
       icon: Users,
       badge: activeClientsCount,
-      badgeColor:
-        'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20',
     },
     {
-      id: 'clients_inactive',
-      label: t('nav.inactiveClients'),
+      id: "clients_inactive",
+      label: t("nav.inactiveClients"),
       icon: UserX,
       badge: inactiveClientsCount,
-      badgeColor: 'bg-slate-500/10 text-slate-500 border border-slate-500/20',
     },
     {
-      id: 'suppliers',
-      label: t('nav.suppliers'),
+      id: "suppliers",
+      label: t("nav.suppliers"),
       icon: Truck,
       badge: suppliersCount,
-      badgeColor:
-        'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20',
     },
     {
-      id: 'free_profiles',
-      label: t('nav.freeProfiles'),
+      id: "free_profiles",
+      label: t("nav.freeProfiles"),
       icon: Sparkles,
       badge: freeProfilesCount,
-      badgeColor:
-        'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20',
     },
     {
-      id: 'alerts',
-      label: t('nav.alertsWhatsapp'),
+      id: "alerts",
+      label: t("nav.alertsWhatsapp"),
       icon: BellRing,
       badge: null,
     },
     {
-      id: 'links',
-      label: t('nav.quickLinks'),
+      id: "links",
+      label: t("nav.quickLinks"),
       icon: ExternalLink,
       badge: null,
     },
@@ -127,29 +120,31 @@ export const FloatingSidebarDrawer: React.FC<FloatingSidebarDrawerProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 lg:hidden flex">
-      {/* Fondo oscuro transparente sin efecto opaco/difuminado - al hacer clic se cierra */}
+      {/* Backdrop */}
       <div
         className="fixed inset-0 bg-black/50 transition-opacity duration-300"
         onClick={onClose}
         aria-hidden="true"
       />
 
-      {/* Panel flotante lateral (Drawer) - flota sobre el contenido sin empujarlo */}
+      {/* Floating Drawer - WIN Style */}
       <aside
-        className="relative w-80 max-w-[85vw] bg-white dark:bg-[#0E0E12] h-full shadow-2xl border-r border-slate-200 dark:border-[#1F1F24] p-5 flex flex-col gap-4 overflow-y-auto z-10 animate-in slide-in-from-left duration-200"
+        className="relative w-80 max-w-[85vw] bg-gradient-to-b from-[#FF5500] via-[#FF5000] to-[#E64000] text-white h-full shadow-2xl rounded-r-3xl pt-5 pb-6 pl-2 pr-0 flex flex-col gap-4 overflow-y-auto z-10 animate-in slide-in-from-left duration-200 select-none"
         role="dialog"
         aria-modal="true"
         aria-label="Menú de navegación principal"
       >
-        {/* Header del sidebar flotante */}
-        <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-[#1F1F24]">
-          <div className="flex items-center gap-2.5">
-            <AppLogo className="w-7 h-7 text-[#2242cc] dark:text-indigo-400 shrink-0" />
+        {/* Header with Logo and Close Button */}
+        <div className="flex items-center justify-between pb-3 pr-4 border-b border-white/20">
+          <div className="flex items-center gap-2.5 px-2">
+            <div className="w-8 h-8 rounded-xl bg-white/20 backdrop-blur-xs flex items-center justify-center border border-white/25 shrink-0 shadow-xs">
+              <AppLogo className="w-4 h-4 text-white" />
+            </div>
             <div className="flex items-center gap-1.5">
-              <span className="font-extrabold text-base tracking-tight text-slate-900 dark:text-white">
+              <span className="font-extrabold text-base tracking-tight text-white font-space">
                 StreamManager
               </span>
-              <span className="text-[9px] uppercase tracking-wider bg-[#2242cc] text-white px-1.5 py-0.5 rounded font-black">
+              <span className="text-[9px] uppercase tracking-wider bg-white text-[#FF5500] px-1.5 py-0.5 rounded font-black shadow-xs">
                 PRO
               </span>
             </div>
@@ -158,79 +153,100 @@ export const FloatingSidebarDrawer: React.FC<FloatingSidebarDrawerProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1A1A1E] transition-colors cursor-pointer"
+            className="p-1.5 rounded-lg text-white/80 hover:text-white hover:bg-white/15 transition-colors cursor-pointer"
             aria-label="Cerrar menú"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Botón CTA Nuevo Cliente */}
-        <button
-          type="button"
-          onClick={handleAddNewClick}
-          className="w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white font-semibold text-sm shadow-md shadow-indigo-600/20 transition-all transform active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
-        >
-          <PlusCircle className="w-4 h-4" />
-          <span>{t('nav.newClientService')}</span>
-        </button>
+        {/* Primary Action Button */}
+        <div className="px-3">
+          <button
+            type="button"
+            onClick={handleAddNewClick}
+            className="w-full py-2.5 px-3 rounded-xl bg-white text-[#FF5500] hover:bg-orange-50 active:bg-orange-100 font-bold text-xs shadow-md shadow-black/10 transition-all transform active:scale-95 flex items-center justify-center gap-2 cursor-pointer select-none"
+          >
+            <PlusCircle className="w-4 h-4 text-[#FF5500] shrink-0" />
+            <span>{t("nav.newClientService")}</span>
+          </button>
+        </div>
 
-        {/* Menú de navegación */}
-        <div className="flex-1">
-          <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-[#80808C] px-1 pb-2 font-space">
-            Navegación
-          </div>
-          <nav className="p-1.5 rounded-2xl bg-slate-50 dark:bg-[#141418] border border-slate-200 dark:border-[#1F1F24] space-y-1">
-            {menuItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = activeTab === item.id;
-              return (
+        {/* Section Title: MENÚ */}
+        <div className="px-5 -mb-2">
+          <span className="text-[11px] font-extrabold uppercase tracking-widest text-white/90 font-space">
+            MENÚ
+          </span>
+        </div>
+
+        {/* Navigation Items List with WIN-style curved cutout */}
+        <nav className="flex-1 flex flex-col space-y-1">
+          {menuItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = activeTab === item.id;
+            return (
+              <div key={item.id} className="relative">
+                {isActive && (
+                  <>
+                    <svg
+                      className="absolute -top-4 right-0 w-4 h-4 pointer-events-none text-slate-50 dark:text-[#0A0A0C] fill-current z-20"
+                      viewBox="0 0 16 16"
+                      aria-hidden="true"
+                    >
+                      <path d="M16,0 L16,16 L0,16 C8.836556,16 16,8.836556 16,0 Z" />
+                    </svg>
+                    <svg
+                      className="absolute -bottom-4 right-0 w-4 h-4 pointer-events-none text-slate-50 dark:text-[#0A0A0C] fill-current z-20"
+                      viewBox="0 0 16 16"
+                      aria-hidden="true"
+                    >
+                      <path d="M16,16 L16,0 L0,0 C8.836556,0 16,7.163444 16,16 Z" />
+                    </svg>
+                  </>
+                )}
+
                 <button
                   key={item.id}
                   type="button"
                   onClick={() => handleItemClick(item.id)}
-                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors cursor-pointer ${
+                  className={`w-auto flex items-center justify-between py-2.5 transition-all duration-150 cursor-pointer relative z-10 ${
                     isActive
-                      ? 'bg-indigo-600/10 dark:bg-indigo-600/25 text-indigo-600 dark:text-indigo-400 font-semibold'
-                      : 'text-slate-600 dark:text-[#94949E] hover:bg-white dark:hover:bg-[#1C1C22] hover:text-slate-900 dark:hover:text-white'
+                      ? "ml-2.5 mr-0 pl-3.5 pr-4 bg-slate-50 dark:bg-[#0A0A0C] text-slate-900 dark:text-white rounded-l-2xl font-bold shadow-xs"
+                      : "mx-2.5 px-3.5 rounded-xl text-white/95 hover:text-white hover:bg-white/10 font-medium"
                   }`}
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
                     <Icon
                       className={`w-4 h-4 shrink-0 transition-colors ${
                         isActive
-                          ? 'text-indigo-600 dark:text-indigo-400'
-                          : 'text-[#94949E]'
+                          ? "text-[#FF5500] dark:text-[#FF6611]"
+                          : "text-white"
                       }`}
                     />
-                    <span className="truncate">{item.label}</span>
+                    <span className="truncate text-xs sm:text-sm">{item.label}</span>
                   </div>
 
                   {item.badge !== null && item.badge > 0 && (
                     <span
-                      className={`px-2 py-0.5 text-xs font-semibold rounded-full shrink-0 ${
+                      className={`px-2 py-0.5 text-[11px] font-black rounded-full shrink-0 transition-colors ${
                         isActive
-                          ? 'bg-indigo-600 text-white dark:bg-indigo-500'
-                          : item.badgeColor
+                          ? "bg-[#FF5500] text-white shadow-xs"
+                          : "bg-white/20 text-white backdrop-blur-xs"
                       }`}
                     >
                       {item.badge}
                     </span>
                   )}
                 </button>
-              );
-            })}
-          </nav>
-        </div>
+              </div>
+            );
+          })}
+        </nav>
 
-        {/* Footer del drawer flotante */}
-        <div className="pt-3 border-t border-slate-200 dark:border-[#1F1F24] text-center">
-          <p className="text-xs text-slate-400 dark:text-slate-500">
-            Toca fuera o presiona{' '}
-            <kbd className="font-mono bg-slate-100 dark:bg-[#1C1C22] px-1 py-0.5 rounded text-[10px]">
-              Esc
-            </kbd>{' '}
-            para cerrar
+        {/* Footer info */}
+        <div className="pt-3 pr-4 border-t border-white/20 text-center">
+          <p className="text-xs text-white/80">
+            Toca fuera o presiona <kbd className="font-mono bg-white/20 px-1 py-0.5 rounded text-[10px]">Esc</kbd> para cerrar
           </p>
         </div>
       </aside>

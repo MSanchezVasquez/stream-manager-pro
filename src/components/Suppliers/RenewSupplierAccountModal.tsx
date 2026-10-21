@@ -55,11 +55,14 @@ export const RenewSupplierAccountModal: React.FC<
   const [showPasswordInput, setShowPasswordInput] = useState<boolean>(false);
   const [copiedEmail, setCopiedEmail] = useState<boolean>(false);
 
+  const [isClosed, setIsClosed] = useState<boolean>(false);
+
   // Initialize modal state
   useEffect(() => {
     if (!isOpen || !account) {
       return;
     }
+    setIsClosed(false);
     const initUnit = account.periodUnit || "months";
     const initVal = account.periodValue || 1;
     setPeriodUnit(initUnit);
@@ -93,7 +96,7 @@ export const RenewSupplierAccountModal: React.FC<
     setCustomExpirationDate(addPeriodToDateString(baseDate, periodValue, periodUnit));
   }, [account, periodUnit, periodValue, renewalBase]);
 
-  if (!isOpen || !supplier || !account) return null;
+  if (!isOpen || isClosed || !supplier || !account) return null;
 
   const handleCopyEmail = () => {
     navigator.clipboard.writeText(account.email);
@@ -133,12 +136,20 @@ export const RenewSupplierAccountModal: React.FC<
       expirationDate: finalExpDate,
       password: updatedPassword.trim() ? updatedPassword.trim() : account.password,
       status: "active",
-      cost: isNaN(parsedCost) ? account.cost : parsedCost,
       periodValue,
       periodUnit,
       lastRenewedAt: today,
-      notes: finalNotes,
     };
+
+    if (!isNaN(parsedCost)) {
+      updatedAccount.cost = parsedCost;
+    } else if (account.cost !== undefined) {
+      updatedAccount.cost = account.cost;
+    }
+
+    if (finalNotes) {
+      updatedAccount.notes = finalNotes;
+    }
 
     const updatedAccounts = supplier.accounts.map((a) =>
       a.id === account.id ? updatedAccount : a,
@@ -149,12 +160,16 @@ export const RenewSupplierAccountModal: React.FC<
       accounts: updatedAccounts,
     };
 
-    // Cierre inmediato del modal (0ms de retraso)
+    // Cierre instantáneo del modal (0ms de retraso, desaparece en el acto)
+    setIsClosed(true);
     onClose();
 
-    saveSupplier(updatedSupplier).catch((err) => {
-      console.error("Error al guardar renovación de proveedor:", err);
-    });
+    // Guardado en background desacoplado del ciclo de render del modal
+    setTimeout(() => {
+      saveSupplier(updatedSupplier).catch((err) => {
+        console.error("Error al guardar renovación de proveedor:", err);
+      });
+    }, 0);
   };
 
   const daysRemaining = getDaysRemaining(account.expirationDate);

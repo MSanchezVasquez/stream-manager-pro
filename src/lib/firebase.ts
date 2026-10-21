@@ -149,6 +149,32 @@ export function subscribeCollection<T>(
 }
 
 /**
+ * Recursively cleans an object by removing all keys that have an undefined value.
+ * Firestore throws a fatal error if any field in an object or array is `undefined`.
+ */
+export function sanitizeForFirestore<T>(data: T): T {
+  if (data === null || data === undefined) {
+    return data;
+  }
+  if (Array.isArray(data)) {
+    return data
+      .filter((item) => item !== undefined)
+      .map((item) => sanitizeForFirestore(item)) as unknown as T;
+  }
+  if (typeof data === "object") {
+    if (data instanceof Date) return data;
+    const cleaned: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(data as Record<string, unknown>)) {
+      if (value !== undefined) {
+        cleaned[key] = sanitizeForFirestore(value);
+      }
+    }
+    return cleaned as T;
+  }
+  return data;
+}
+
+/**
  * Save or update document in a root collection
  */
 export async function saveDocument<T extends { id: string }>(
@@ -156,8 +182,9 @@ export async function saveDocument<T extends { id: string }>(
   docData: T,
 ) {
   try {
-    const docRef = doc(db, collectionName, docData.id);
-    await setDoc(docRef, docData, { merge: true });
+    const cleanDoc = sanitizeForFirestore(docData);
+    const docRef = doc(db, collectionName, cleanDoc.id);
+    await setDoc(docRef, cleanDoc, { merge: true });
     return true;
   } catch (error) {
     handleFirestoreError(error, "write", `${collectionName}/${docData.id}`);
@@ -234,8 +261,9 @@ export async function saveUserDocument<T extends { id: string }>(
 ) {
   if (!userId) return false;
   try {
-    const docRef = doc(db, "users", userId, collectionName, docData.id);
-    await setDoc(docRef, docData, { merge: true });
+    const cleanDoc = sanitizeForFirestore(docData);
+    const docRef = doc(db, "users", userId, collectionName, cleanDoc.id);
+    await setDoc(docRef, cleanDoc, { merge: true });
     return true;
   } catch (error) {
     handleFirestoreError(

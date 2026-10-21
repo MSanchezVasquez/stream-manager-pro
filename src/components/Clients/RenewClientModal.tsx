@@ -60,12 +60,14 @@ export const RenewClientModal: React.FC<RenewClientModalProps> = ({
   const [renewalBase, setRenewalBase] = useState<"cutDate" | "today">("cutDate");
   const [customCutDates, setCustomCutDates] = useState<Record<string, string>>({});
   const [customPrices, setCustomPrices] = useState<Record<string, number | undefined>>({});
+  const [isClosed, setIsClosed] = useState<boolean>(false);
 
   // Initialize state when modal opens
   useEffect(() => {
     if (!isOpen || !client) {
       return;
     }
+    setIsClosed(false);
 
     // Initial selected subscription(s)
     let initialIds: string[] = [];
@@ -115,7 +117,7 @@ export const RenewClientModal: React.FC<RenewClientModalProps> = ({
     setCustomCutDates(newDates);
   }, [client, periodUnit, periodValue, renewalBase]);
 
-  if (!isOpen || !client) return null;
+  if (!isOpen || isClosed || !client) return null;
 
   const handleToggleSub = (subId: string) => {
     setSelectedSubIds((prev) => {
@@ -195,16 +197,20 @@ export const RenewClientModal: React.FC<RenewClientModalProps> = ({
 
     const renewed = updatedSubscriptions.filter((s) => selectedSubIds.includes(s.id));
 
-    // Cierre inmediato del modal (0ms de retraso)
+    // Cierre instantáneo del modal (0ms de retraso, desaparece en el acto)
+    setIsClosed(true);
     onClose();
 
     if (shouldNotifyWhatsApp && onNotifyWhatsApp && renewed.length > 0) {
       onNotifyWhatsApp(renewed[0], client.name, client.phone, renewed);
     }
 
-    saveClient(updatedClient).catch((err) => {
-      console.error("Error al guardar renovación:", err);
-    });
+    // Guardado en background desacoplado del ciclo de render del modal
+    setTimeout(() => {
+      saveClient(updatedClient).catch((err) => {
+        console.error("Error al guardar renovación:", err);
+      });
+    }, 0);
   };
 
   const todayStr = getTodayFormatted();
