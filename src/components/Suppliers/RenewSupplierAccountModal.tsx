@@ -3,7 +3,6 @@ import {
   X,
   RotateCw,
   Calendar,
-  CheckCircle2,
   Copy,
   Check,
   Key,
@@ -15,7 +14,6 @@ import {
 } from "lucide-react";
 import { DatePicker } from "../common/DatePicker";
 import { PlatformIcon } from "../common/PlatformIcon";
-import { CircularSpinner } from "../common/LoadingSpinners";
 import { Supplier, SupplierAccount } from "../../types";
 import { useDataStore } from "../../store/dataStore";
 import { useTranslation } from "../../utils/translations";
@@ -56,17 +54,12 @@ export const RenewSupplierAccountModal: React.FC<
   const [updatedPassword, setUpdatedPassword] = useState<string>("");
   const [showPasswordInput, setShowPasswordInput] = useState<boolean>(false);
   const [copiedEmail, setCopiedEmail] = useState<boolean>(false);
-  const [isSaving, setIsSaving] = useState<boolean>(false);
-  const [renewedSuccess, setRenewedSuccess] = useState<boolean>(false);
 
   // Initialize modal state
   useEffect(() => {
     if (!isOpen || !account) {
-      setRenewedSuccess(false);
       return;
     }
-
-    setRenewedSuccess(false);
     const initUnit = account.periodUnit || "months";
     const initVal = account.periodValue || 1;
     setPeriodUnit(initUnit);
@@ -114,63 +107,54 @@ export const RenewSupplierAccountModal: React.FC<
     setPeriodUnit(unit);
   };
 
-  const handleConfirmRenewal = async () => {
-    setIsSaving(true);
-    try {
-      const today = getTodayFormatted();
-      const finalExpDate =
-        customExpirationDate ||
-        addPeriodToDateString(
-          renewalBase === "expirationDate" && account.expirationDate
-            ? account.expirationDate
-            : today,
-          periodValue,
-          periodUnit,
-        );
-
-      const parsedCost = parseFloat(renewalCost);
-
-      // Append renewal note if provided
-      let finalNotes = account.notes || "";
-      if (renewalNotes.trim()) {
-        const noteStamp = `[Renovado ${today} - +${periodValue} ${periodUnit}]: ${renewalNotes.trim()}`;
-        finalNotes = finalNotes ? `${finalNotes}\n${noteStamp}` : noteStamp;
-      }
-
-      const updatedAccount: SupplierAccount = {
-        ...account,
-        expirationDate: finalExpDate,
-        password: updatedPassword.trim() ? updatedPassword.trim() : account.password,
-        status: "active",
-        cost: isNaN(parsedCost) ? account.cost : parsedCost,
+  const handleConfirmRenewal = () => {
+    const today = getTodayFormatted();
+    const finalExpDate =
+      customExpirationDate ||
+      addPeriodToDateString(
+        renewalBase === "expirationDate" && account.expirationDate
+          ? account.expirationDate
+          : today,
         periodValue,
         periodUnit,
-        lastRenewedAt: today,
-        notes: finalNotes,
-      };
-
-      const updatedAccounts = supplier.accounts.map((a) =>
-        a.id === account.id ? updatedAccount : a,
       );
 
-      const updatedSupplier: Supplier = {
-        ...supplier,
-        accounts: updatedAccounts,
-      };
+    const parsedCost = parseFloat(renewalCost);
 
-      const success = await saveSupplier(updatedSupplier);
-      if (success) {
-        setRenewedSuccess(true);
-      } else {
-        alert(
-          resolvedLanguage === "en"
-            ? "Could not save supplier account renewal."
-            : "No se pudo guardar la renovación de la cuenta de proveedor.",
-        );
-      }
-    } finally {
-      setIsSaving(false);
+    // Append renewal note if provided
+    let finalNotes = account.notes || "";
+    if (renewalNotes.trim()) {
+      const noteStamp = `[Renovado ${today} - +${periodValue} ${periodUnit}]: ${renewalNotes.trim()}`;
+      finalNotes = finalNotes ? `${finalNotes}\n${noteStamp}` : noteStamp;
     }
+
+    const updatedAccount: SupplierAccount = {
+      ...account,
+      expirationDate: finalExpDate,
+      password: updatedPassword.trim() ? updatedPassword.trim() : account.password,
+      status: "active",
+      cost: isNaN(parsedCost) ? account.cost : parsedCost,
+      periodValue,
+      periodUnit,
+      lastRenewedAt: today,
+      notes: finalNotes,
+    };
+
+    const updatedAccounts = supplier.accounts.map((a) =>
+      a.id === account.id ? updatedAccount : a,
+    );
+
+    const updatedSupplier: Supplier = {
+      ...supplier,
+      accounts: updatedAccounts,
+    };
+
+    // Cierre inmediato del modal (0ms de retraso)
+    onClose();
+
+    saveSupplier(updatedSupplier).catch((err) => {
+      console.error("Error al guardar renovación de proveedor:", err);
+    });
   };
 
   const daysRemaining = getDaysRemaining(account.expirationDate);
@@ -215,76 +199,7 @@ export const RenewSupplierAccountModal: React.FC<
         </div>
 
         {/* Content */}
-        {renewedSuccess ? (
-          <div className="space-y-5 py-4 text-center animate-fade-in overflow-y-auto">
-            <div className="w-14 h-14 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 mx-auto flex items-center justify-center border border-emerald-500/30">
-              <CheckCircle2 className="w-8 h-8" />
-            </div>
-
-            <div>
-              <h4 className="text-base font-bold text-slate-900 dark:text-white">
-                {t("suppliers.renewSuccess")}
-              </h4>
-              <p className="text-xs text-slate-500 dark:text-[#94949E] mt-1 max-w-sm mx-auto">
-                {resolvedLanguage === "en"
-                  ? `The supplier license for ${account.email} has been extended.`
-                  : `La licencia del proveedor para ${account.email} ha sido extendida.`}
-              </p>
-            </div>
-
-            {/* Summary Box */}
-            <div className="p-4 rounded-xl bg-slate-50 dark:bg-[#1A1A1E] border border-slate-200/80 dark:border-[#2D2D33] space-y-2 text-left">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-500 dark:text-slate-400">
-                  {resolvedLanguage === "en" ? "Account / Email:" : "Cuenta / Correo:"}
-                </span>
-                <span className="font-mono font-bold text-slate-800 dark:text-white">
-                  {account.email}
-                </span>
-              </div>
-              <div className="flex items-center justify-between text-xs pt-1 border-t border-slate-200/50 dark:border-white/5">
-                <span className="text-slate-500 dark:text-slate-400">
-                  {t("suppliers.newExpiration")}:
-                </span>
-                <span className="font-cascadia font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
-                  <Calendar className="w-3.5 h-3.5" />
-                  {customExpirationDate}
-                </span>
-              </div>
-              {renewalCost && (
-                <div className="flex items-center justify-between text-xs pt-1 border-t border-slate-200/50 dark:border-white/5">
-                  <span className="text-slate-500 dark:text-slate-400">
-                    {t("suppliers.renewCost")}:
-                  </span>
-                  <span className="font-cascadia font-bold text-slate-800 dark:text-slate-200">
-                    S/ {parseFloat(renewalCost).toFixed(2)}
-                  </span>
-                </div>
-              )}
-            </div>
-
-            {/* Auto-sync notice */}
-            <div className="flex items-center gap-2 p-2.5 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-700 dark:text-purple-300 text-xs text-left">
-              <CheckCircle2 className="w-4 h-4 shrink-0 text-purple-500" />
-              <span>
-                {resolvedLanguage === "en"
-                  ? "Free profiles linked to this account were automatically synchronized."
-                  : "Los perfiles libres vinculados a esta cuenta se han actualizado automáticamente."}
-              </span>
-            </div>
-
-            <div className="flex justify-end pt-2">
-              <button
-                type="button"
-                onClick={onClose}
-                className="w-full py-2.5 px-5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold shadow-md shadow-purple-600/20 transition-all cursor-pointer"
-              >
-                {t("suppliers.close")}
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div className="space-y-4 overflow-y-auto pr-1 flex-1">
+        <div className="space-y-4 overflow-y-auto pr-1 flex-1">
             {/* Account Info Pill */}
             <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#1A1A1E] border border-slate-200/80 dark:border-[#2D2D33] flex items-center justify-between gap-2">
               <div className="flex items-center gap-2.5 min-w-0">
@@ -607,34 +522,25 @@ export const RenewSupplierAccountModal: React.FC<
               )}
             </div>
           </div>
-        )}
 
         {/* Modal Footer Actions */}
-        {!renewedSuccess && (
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200 dark:border-[#1F1F23] mt-4 shrink-0">
-            <button
-              type="button"
-              onClick={onClose}
-              disabled={isSaving}
-              className="px-4 py-2 rounded-xl border border-slate-200 dark:border-[#2D2D33] text-slate-600 dark:text-[#94949E] text-xs font-semibold hover:bg-slate-100 dark:hover:bg-[#1A1A1E] transition-colors cursor-pointer"
-            >
-              {t("suppliers.cancel")}
-            </button>
-            <button
-              type="button"
-              onClick={handleConfirmRenewal}
-              disabled={isSaving}
-              className="px-5 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold shadow-lg shadow-purple-600/20 transition-all flex items-center gap-2 disabled:opacity-60 cursor-pointer"
-            >
-              {isSaving ? (
-                <CircularSpinner size={16} className="text-white" />
-              ) : (
-                <RotateCw className="w-4 h-4" />
-              )}
-              <span>{t("suppliers.renewAccount")}</span>
-            </button>
-          </div>
-        )}
+        <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200 dark:border-[#1F1F23] mt-4 shrink-0">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2 rounded-xl border border-slate-200 dark:border-[#2D2D33] text-slate-600 dark:text-[#94949E] text-xs font-semibold hover:bg-slate-100 dark:hover:bg-[#1A1A1E] transition-colors cursor-pointer"
+          >
+            {t("suppliers.cancel")}
+          </button>
+          <button
+            type="button"
+            onClick={handleConfirmRenewal}
+            className="px-5 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold shadow-lg shadow-purple-600/20 transition-all flex items-center gap-2 cursor-pointer"
+          >
+            <RotateCw className="w-4 h-4" />
+            <span>{t("suppliers.renewAccount")}</span>
+          </button>
+        </div>
       </div>
     </div>
   );
