@@ -1,26 +1,25 @@
 import React from "react";
 import {
-  Zap,
-  UserPlus,
-  Sparkles,
-  MessageSquare,
-  Truck,
-  Package,
-  PackageOpen,
-  ShieldCheck,
-  AlertTriangle,
-  CheckCircle2,
-  ChevronRight,
+  TrendingUp,
+  BarChart3,
+  Activity,
   ArrowUpRight,
-  Calendar,
-  Layers,
-  Users,
+  ArrowDownRight,
   Tv,
+  Users,
+  ShieldCheck,
+  Calendar,
+  Wallet,
+  Sparkles,
+  ChevronRight,
+  CheckCircle2,
+  AlertCircle,
 } from "lucide-react";
 import { useDataStore } from "../../store/dataStore";
 import {
   getDaysRemaining,
   getPlatformDisplayName,
+  getPlatformConfig,
 } from "../../utils/platformHelpers";
 import { PlatformIcon } from "../common/PlatformIcon";
 import { useTranslation } from "../../utils/translations";
@@ -37,686 +36,698 @@ export const FinancialAndActivitySummary: React.FC<
   const { clients, suppliers, freeProfiles } = useDataStore();
 
   const isEn = resolvedLanguage === "en";
+
+  // Clientes activos
   const activeClients = clients.filter((c) => c.status === "active");
+  const totalClientsCount = clients.length;
+  const activeClientsCount = activeClients.length;
 
-  // 1. Stock y disponibilidad de perfiles libres agrupados por plataforma
-  const freeProfilesByPlatform: Record<
-    string,
-    { count: number; rawPlatform: string }
-  > = {};
+  // Suscripciones activas
+  const activeSubs = activeClients.flatMap((c) =>
+    (c.subscriptions || []).filter((s) => s.status === "active"),
+  );
+  const totalActiveSubsCount = activeSubs.length;
 
-  freeProfiles.forEach((p) => {
-    const displayName = getPlatformDisplayName(p.serviceName) || p.serviceName;
-    if (!freeProfilesByPlatform[displayName]) {
-      freeProfilesByPlatform[displayName] = {
-        count: 0,
-        rawPlatform: p.serviceName,
-      };
+  // 1. CÁLCULO FINANCIERO MENSUAL PROYECTADO
+  // Ingresos mensuales normalizados
+  let monthlyRevenue = 0;
+  activeSubs.forEach((s) => {
+    const p = Number(s.price) || 0;
+    if (p > 0) {
+      if (s.periodUnit === "years") {
+        monthlyRevenue += p / 12;
+      } else if (
+        s.periodUnit === "days" &&
+        s.periodValue &&
+        s.periodValue > 0
+      ) {
+        monthlyRevenue += (p / s.periodValue) * 30;
+      } else {
+        monthlyRevenue += p;
+      }
     }
-    freeProfilesByPlatform[displayName].count += p.quantity || 0;
   });
 
-  const totalFreeProfilesCount = freeProfiles.reduce(
-    (sum, p) => sum + (p.quantity || 0),
-    0,
-  );
+  // Costos mensuales a proveedores normalizados
+  let monthlyCost = 0;
+  let totalActiveSupplierAccounts = 0;
+  suppliers.forEach((sup) => {
+    (sup.accounts || []).forEach((acc) => {
+      if (acc.status === "active") {
+        totalActiveSupplierAccounts++;
+        const c = Number(acc.cost) || 0;
+        if (c > 0) {
+          if (acc.periodUnit === "years") {
+            monthlyCost += c / 12;
+          } else if (
+            acc.periodUnit === "days" &&
+            acc.periodValue &&
+            acc.periodValue > 0
+          ) {
+            monthlyCost += (c / acc.periodValue) * 30;
+          } else {
+            monthlyCost += c;
+          }
+        }
+      }
+    });
+  });
 
-  const platformsWithStock = Object.entries(freeProfilesByPlatform).sort(
-    (a, b) => b[1].count - a[1].count,
-  );
+  // Ganancia neta y margen
+  const netProfit = monthlyRevenue - monthlyCost;
+  const profitMargin =
+    monthlyRevenue > 0 ? (netProfit / monthlyRevenue) * 100 : 0;
+  const averageTicket =
+    activeClientsCount > 0 ? monthlyRevenue / activeClientsCount : 0;
+  const averageSubPrice =
+    totalActiveSubsCount > 0 ? monthlyRevenue / totalActiveSubsCount : 0;
 
-  // 2. Cuentas de proveedores y estado de vencimiento
-  let totalSupplierAccounts = 0;
-  let supplierAccountsExpiringSoon = 0;
-  let supplierAccountsExpired = 0;
+  // 2. RENDIMIENTO POR PLATAFORMA
+  const platformStats: Record<
+    string,
+    { count: number; revenue: number; rawPlatform: string }
+  > = {};
+
+  activeSubs.forEach((s) => {
+    const displayName =
+      getPlatformDisplayName(s.serviceName) || s.serviceName || "Otros";
+    if (!platformStats[displayName]) {
+      platformStats[displayName] = {
+        count: 0,
+        revenue: 0,
+        rawPlatform: s.serviceName,
+      };
+    }
+    platformStats[displayName].count += 1;
+
+    const p = Number(s.price) || 0;
+    if (p > 0) {
+      if (s.periodUnit === "years") {
+        platformStats[displayName].revenue += p / 12;
+      } else if (
+        s.periodUnit === "days" &&
+        s.periodValue &&
+        s.periodValue > 0
+      ) {
+        platformStats[displayName].revenue += (p / s.periodValue) * 30;
+      } else {
+        platformStats[displayName].revenue += p;
+      }
+    }
+  });
+
+  const sortedPlatforms = Object.entries(platformStats).sort(
+    (a, b) => b[1].revenue - a[1].revenue || b[1].count - a[1].count,
+  );
+  const topPlatform = sortedPlatforms[0] ? sortedPlatforms[0][0] : null;
+
+  // 3. SALUD DEL NEGOCIO Y FLUJO A 7 DÍAS
+  const retentionRate =
+    totalClientsCount > 0
+      ? Math.round((activeClientsCount / totalClientsCount) * 100)
+      : 100;
+
+  // Flujo próximo a 7 días (cobros clientes vs pagos proveedores)
+  let upcomingRevenue7d = 0;
+  let upcomingSubsCount7d = 0;
+
+  activeClients.forEach((c) => {
+    (c.subscriptions || []).forEach((s) => {
+      if (s.status === "active") {
+        const days = getDaysRemaining(s.cutDate);
+        if (days <= 7) {
+          upcomingRevenue7d += Number(s.price) || 0;
+          upcomingSubsCount7d++;
+        }
+      }
+    });
+  });
+
+  let upcomingCost7d = 0;
+  let upcomingSupplierCount7d = 0;
 
   suppliers.forEach((sup) => {
     (sup.accounts || []).forEach((acc) => {
-      totalSupplierAccounts++;
       if (acc.expirationDate) {
         const days = getDaysRemaining(acc.expirationDate);
-        if (days < 0) {
-          supplierAccountsExpired++;
-        } else if (days <= 7) {
-          supplierAccountsExpiringSoon++;
+        if (days <= 7) {
+          upcomingCost7d += Number(acc.cost) || 0;
+          upcomingSupplierCount7d++;
         }
       }
     });
   });
 
-  // 3. Suscripciones y clientes próximos a vencer (≤ 5 días)
-  let totalActiveSubs = 0;
-  let warningSubsCount = 0;
-  let expiredSubsCount = 0;
-
-  activeClients.forEach((client) => {
-    client.subscriptions.forEach((sub) => {
-      if (sub.status === "active") {
-        totalActiveSubs++;
-        const days = getDaysRemaining(sub.cutDate);
-        if (days < 0) {
-          expiredSubsCount++;
-        } else if (days <= 5) {
-          warningSubsCount++;
-        }
-      }
-    });
-  });
-
-  const totalAttentionSubs = warningSubsCount + expiredSubsCount;
+  const netCashflow7d = upcomingRevenue7d - upcomingCost7d;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 items-stretch">
-      {/* 1. Centro de Acciones Rápidas (Atajos de 1 clic) */}
-      <div className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#1F1F23] shadow-sm flex flex-col justify-between h-full">
+      {/* ========================================================= */}
+      {/* TARJETA 1: BALANCE Y RENTABILIDAD MENSUAL                */}
+      {/* ========================================================= */}
+      <div className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#1F1F23] shadow-sm flex flex-col justify-between h-full hover:border-slate-300 dark:hover:border-[#2A2A32] transition-colors">
         <div>
           {/* Header */}
           <div className="flex items-center justify-between gap-2.5 mb-4 pb-3 border-b border-slate-100 dark:border-[#1F1F25]">
             <div className="flex items-center gap-2.5 min-w-0 flex-1">
-              <div className="p-2 rounded-xl bg-amber-500/10 text-amber-500 shrink-0">
-                <Zap className="w-5 h-5" />
+              <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 shrink-0">
+                <TrendingUp className="w-5 h-5" />
               </div>
               <div className="min-w-0 flex-1">
                 <h3
                   className="font-bold text-sm text-slate-900 dark:text-white truncate"
-                  title={isEn ? "Quick Actions" : "Acciones Rápidas"}
+                  title={isEn ? "Financial Performance" : "Balance y Rentabilidad"}
                 >
-                  {isEn ? "Quick Actions" : "Acciones Rápidas"}
+                  {isEn ? "Financial Performance" : "Balance y Rentabilidad"}
                 </h3>
                 <p
                   className="text-[11px] text-slate-500 dark:text-slate-400 truncate"
                   title={
                     isEn
-                      ? "1-click operational shortcuts"
-                      : "Atajos operativos de 1 clic"
+                      ? "Monthly revenue & operational margin"
+                      : "Ingresos y margen operativo mensual"
                   }
                 >
                   {isEn
-                    ? "1-click operational shortcuts"
-                    : "Atajos operativos de 1 clic"}
-                </p>
-              </div>
-            </div>
-            <span className="shrink-0 whitespace-nowrap px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 font-cascadia">
-              {isEn ? "Direct" : "Atajos"}
-            </span>
-          </div>
-
-          {/* Body: 4 Botones de Acción Rápida */}
-          <div className="space-y-2.5">
-            {/* Botón 1: Nuevo Cliente / Venta */}
-            <button
-              type="button"
-              onClick={() => {
-                if (onOpenAddClientModal) {
-                  onOpenAddClientModal();
-                } else {
-                  onNavigateTab("clients_active");
-                }
-              }}
-              className="w-full p-2.5 sm:p-3 rounded-xl bg-slate-50 hover:bg-indigo-50/60 dark:bg-[#181820] dark:hover:bg-indigo-950/20 border border-slate-200/70 hover:border-indigo-400/50 dark:border-[#25252D] dark:hover:border-indigo-500/40 transition-all text-left flex items-center justify-between group cursor-pointer"
-            >
-              <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 group-hover:scale-105 transition-transform shrink-0">
-                  <UserPlus className="w-4 h-4" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors truncate">
-                    {isEn ? "New Client / Sale" : "Nueva Venta / Cliente"}
-                  </p>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
-                    {isEn
-                      ? "Register client and subscription"
-                      : "Registrar cliente y suscripción"}
-                  </p>
-                </div>
-              </div>
-              <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-indigo-500 group-hover:translate-x-0.5 transition-all shrink-0 ml-1.5" />
-            </button>
-
-            {/* Botón 2: Asignar Perfil Libre */}
-            <button
-              type="button"
-              onClick={() => onNavigateTab("free_profiles")}
-              className="w-full p-2.5 sm:p-3 rounded-xl bg-slate-50 hover:bg-sky-50/60 dark:bg-[#181820] dark:hover:bg-sky-950/20 border border-slate-200/70 hover:border-sky-400/50 dark:border-[#25252D] dark:hover:border-sky-500/40 transition-all text-left flex items-center justify-between group cursor-pointer"
-            >
-              <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                <div className="p-2 rounded-lg bg-sky-500/10 text-sky-600 dark:text-sky-400 group-hover:scale-105 transition-transform shrink-0">
-                  <Sparkles className="w-4 h-4" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors truncate">
-                    {isEn ? "Assign Free Profile" : "Asignar Perfil Libre"}
-                  </p>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
-                    {isEn
-                      ? `${totalFreeProfilesCount} profile(s) ready to sell`
-                      : `${totalFreeProfilesCount} perfil(es) listos para vender`}
-                  </p>
-                </div>
-              </div>
-              <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-sky-500 group-hover:translate-x-0.5 transition-all shrink-0 ml-1.5" />
-            </button>
-
-            {/* Botón 3: Recordatorios de WhatsApp */}
-            <button
-              type="button"
-              onClick={() => onNavigateTab("alerts")}
-              className="w-full p-2.5 sm:p-3 rounded-xl bg-slate-50 hover:bg-emerald-50/60 dark:bg-[#181820] dark:hover:bg-emerald-950/20 border border-slate-200/70 hover:border-emerald-400/50 dark:border-[#25252D] dark:hover:border-emerald-500/40 transition-all text-left flex items-center justify-between group cursor-pointer"
-            >
-              <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 group-hover:scale-105 transition-transform shrink-0">
-                  <MessageSquare className="w-4 h-4" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors truncate">
-                    {isEn ? "WhatsApp Alerts" : "Alertas de WhatsApp"}
-                  </p>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
-                    {isEn
-                      ? `${totalAttentionSubs} subscription(s) expiring soon`
-                      : `${totalAttentionSubs} suscripción(es) próximas a vencer`}
-                  </p>
-                </div>
-              </div>
-              <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-emerald-500 group-hover:translate-x-0.5 transition-all shrink-0 ml-1.5" />
-            </button>
-
-            {/* Botón 4: Cuentas de Proveedores */}
-            <button
-              type="button"
-              onClick={() => onNavigateTab("suppliers")}
-              className="w-full p-2.5 sm:p-3 rounded-xl bg-slate-50 hover:bg-purple-50/60 dark:bg-[#181820] dark:hover:bg-purple-950/20 border border-slate-200/70 hover:border-purple-400/50 dark:border-[#25252D] dark:hover:border-purple-500/40 transition-all text-left flex items-center justify-between group cursor-pointer"
-            >
-              <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                <div className="p-2 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 group-hover:scale-105 transition-transform shrink-0">
-                  <Truck className="w-4 h-4" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors truncate">
-                    {isEn ? "Supplier Accounts" : "Cuentas de Proveedores"}
-                  </p>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
-                    {isEn
-                      ? `${totalSupplierAccounts} master account(s) registered`
-                      : `${totalSupplierAccounts} cuenta(s) maestra(s) registradas`}
-                  </p>
-                </div>
-              </div>
-              <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-purple-500 group-hover:translate-x-0.5 transition-all shrink-0 ml-1.5" />
-            </button>
-          </div>
-        </div>
-
-        {/* Footer Card 1 */}
-        <div className="pt-4 mt-4 border-t border-slate-200/70 dark:border-[#25252D] flex items-center justify-between text-xs">
-          <span className="text-slate-500 dark:text-slate-400 text-[11px] truncate">
-            {isEn ? "StreamManager Pro Engine" : "Panel Operativo Pro"}
-          </span>
-          <span className="text-emerald-600 dark:text-emerald-400 font-semibold text-[11px] flex items-center gap-1 shrink-0 whitespace-nowrap">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            {isEn ? "Online" : "Activo"}
-          </span>
-        </div>
-      </div>
-
-      {/* 2. Stock y Disponibilidad de Perfiles Libres */}
-      <div className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#1F1F23] shadow-sm flex flex-col justify-between h-full">
-        <div>
-          {/* Header */}
-          <div className="flex items-center justify-between gap-2.5 mb-4 pb-3 border-b border-slate-100 dark:border-[#1F1F25]">
-            <div className="flex items-center gap-2.5 min-w-0 flex-1">
-              <div className="p-2 rounded-xl bg-sky-500/10 text-sky-500 shrink-0">
-                <Package className="w-5 h-5" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <h3
-                  className="font-bold text-sm text-slate-900 dark:text-white truncate"
-                  title={isEn ? "Available Stock" : "Stock de Perfiles"}
-                >
-                  {isEn ? "Available Stock" : "Stock de Perfiles"}
-                </h3>
-                <p
-                  className="text-[11px] text-slate-500 dark:text-slate-400 truncate"
-                  title={
-                    isEn
-                      ? "Free profiles ready to deliver"
-                      : "Perfiles libres listos para entrega"
-                  }
-                >
-                  {isEn
-                    ? "Free profiles ready to deliver"
-                    : "Perfiles libres listos para entrega"}
+                    ? "Monthly revenue & operational margin"
+                    : "Ingresos y margen operativo mensual"}
                 </p>
               </div>
             </div>
             <span
               className={`shrink-0 whitespace-nowrap px-2.5 py-0.5 rounded-full text-[10px] font-bold font-cascadia ${
-                totalFreeProfilesCount > 0
-                  ? "bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20"
-                  : "bg-slate-100 dark:bg-slate-800 text-slate-500 border border-slate-200 dark:border-slate-700"
+                profitMargin >= 40
+                  ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+                  : profitMargin >= 15
+                    ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
+                    : "bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20"
               }`}
             >
-              {totalFreeProfilesCount} {isEn ? "in stock" : "en stock"}
+              {profitMargin >= 0 ? "+" : ""}
+              {profitMargin.toFixed(1)}% {isEn ? "Margin" : "Margen"}
             </span>
           </div>
 
-          {/* Body: Lista de Plataformas con Stock */}
-          <div className="space-y-2.5">
-            {platformsWithStock.length === 0 ? (
-              <div className="p-5 rounded-xl bg-slate-50 dark:bg-[#181820] border border-dashed border-slate-200 dark:border-[#25252D] text-center flex flex-col items-center justify-center min-h-[224px]">
-                <PackageOpen className="w-7 h-7 text-slate-400 mb-2 opacity-60" />
-                <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                  {isEn ? "No free profiles in stock" : "Sin perfiles libres en stock"}
+          {/* Body: Indicadores Financieros */}
+          <div className="space-y-3">
+            {/* KPI Principal: Ganancia Neta Estimada */}
+            <div className="p-3.5 sm:p-4 rounded-xl bg-slate-50 dark:bg-[#181820] border border-slate-200/70 dark:border-[#25252D] flex items-center justify-between">
+              <div>
+                <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+                  {isEn ? "Estimated Net Profit / Mo" : "Ganancia Neta Estimada / Mes"}
                 </p>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 mb-3 max-w-[220px]">
-                  {isEn
-                    ? "Import profiles from suppliers to have stock ready to sell"
-                    : "Importa cuentas de proveedores para tener stock listo para vender"}
-                </p>
-                <button
-                  type="button"
-                  onClick={() => onNavigateTab("free_profiles")}
-                  className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-sky-600 hover:bg-sky-500 text-white shadow-xs transition-colors cursor-pointer"
-                >
-                  {isEn ? "+ Add Profiles" : "+ Añadir Perfiles"}
-                </button>
+                <div className="flex items-baseline gap-2">
+                  <span
+                    className={`text-2xl sm:text-3xl font-black font-cascadia tracking-tight ${
+                      netProfit >= 0
+                        ? "text-emerald-600 dark:text-emerald-400"
+                        : "text-rose-600 dark:text-rose-400"
+                    }`}
+                  >
+                    S/ {netProfit.toFixed(2)}
+                  </span>
+                </div>
               </div>
-            ) : (
-              <>
-                {platformsWithStock.slice(0, 4).map(([platName, info]) => (
-                  <div
-                    key={platName}
-                    className="p-2.5 sm:p-3 rounded-xl bg-slate-50 dark:bg-[#181820] border border-slate-200/70 dark:border-[#25252D] flex items-center justify-between gap-2.5 hover:border-slate-300 dark:hover:border-slate-700 transition-colors"
-                  >
-                    <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                      <div className="w-8 h-8 rounded-lg bg-white dark:bg-[#121216] border border-slate-200/60 dark:border-[#25252D] flex items-center justify-center shrink-0 shadow-xs">
-                        <PlatformIcon
-                          platform={info.rawPlatform}
-                          className="w-4 h-4"
-                        />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <span
-                          className="font-semibold text-xs text-slate-900 dark:text-slate-100 truncate block"
-                          title={platName}
-                        >
-                          {platName}
-                        </span>
-                        <span className="text-[11px] text-slate-500 dark:text-slate-400 truncate block">
-                          {info.count}{" "}
-                          {info.count === 1
-                            ? isEn
-                              ? "profile ready"
-                              : "perfil disponible"
-                            : isEn
-                              ? "profiles ready"
-                              : "perfiles disponibles"}
-                        </span>
-                      </div>
-                    </div>
+              <div
+                className={`p-2.5 rounded-xl shrink-0 ${
+                  netProfit >= 0
+                    ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                    : "bg-rose-500/10 text-rose-600 dark:text-rose-400"
+                }`}
+              >
+                <Wallet className="w-5 h-5" />
+              </div>
+            </div>
 
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      <span
-                        className={`px-2 py-0.5 rounded text-[10px] font-bold font-cascadia whitespace-nowrap ${
-                          info.count > 1
-                            ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
-                            : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
-                        }`}
-                      >
-                        {info.count > 1
-                          ? isEn
-                            ? "In Stock"
-                            : "En Stock"
-                          : isEn
-                            ? "Last 1"
-                            : "Último"}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => onNavigateTab("free_profiles")}
-                        className="p-1 rounded-lg text-slate-400 hover:text-sky-600 hover:bg-sky-50 dark:hover:bg-sky-950/30 transition-colors cursor-pointer"
-                        title={isEn ? "View in profiles" : "Ver en perfiles"}
-                      >
-                        <ArrowUpRight className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
+            {/* Fila Secundaria: Ingresos Brutos vs Costos Proveedor */}
+            <div className="grid grid-cols-2 gap-2.5">
+              {/* Ingresos Brutos */}
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#181820] border border-slate-200/70 dark:border-[#25252D]">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <ArrowUpRight className="w-3.5 h-3.5 text-emerald-500" />
+                  <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                    {isEn ? "Gross Revenue" : "Ingresos Brutos"}
+                  </span>
+                </div>
+                <p className="text-base font-bold text-slate-900 dark:text-white font-cascadia truncate">
+                  S/ {monthlyRevenue.toFixed(2)}
+                </p>
+                <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
+                  {totalActiveSubsCount}{" "}
+                  {totalActiveSubsCount === 1
+                    ? isEn
+                      ? "active sub"
+                      : "sub activa"
+                    : isEn
+                      ? "active subs"
+                      : "subs activas"}
+                </p>
+              </div>
 
-                {/* Si hay menos de 4 plataformas con stock, completamos los slots para mantener la alineación idéntica */}
-                {platformsWithStock.length < 4 && (
-                  <button
-                    type="button"
-                    onClick={() => onNavigateTab("free_profiles")}
-                    className="w-full p-2.5 sm:p-3 rounded-xl border border-dashed border-slate-200 dark:border-[#282832] hover:border-sky-500/40 hover:bg-sky-50/40 dark:hover:bg-sky-950/20 transition-all flex items-center justify-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-sky-600 dark:hover:text-sky-400 cursor-pointer"
-                  >
-                    <Sparkles className="w-3.5 h-3.5 text-sky-500 shrink-0" />
-                    <span className="truncate">
-                      {isEn ? "+ Add more stock" : "+ Añadir más perfiles libres"}
-                    </span>
-                  </button>
-                )}
+              {/* Costos Operativos */}
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#181820] border border-slate-200/70 dark:border-[#25252D]">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <ArrowDownRight className="w-3.5 h-3.5 text-purple-500" />
+                  <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                    {isEn ? "Supplier Costs" : "Costos Proveedor"}
+                  </span>
+                </div>
+                <p className="text-base font-bold text-slate-900 dark:text-white font-cascadia truncate">
+                  S/ {monthlyCost.toFixed(2)}
+                </p>
+                <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
+                  {totalActiveSupplierAccounts}{" "}
+                  {totalActiveSupplierAccounts === 1
+                    ? isEn
+                      ? "master acc"
+                      : "cuenta maestra"
+                    : isEn
+                      ? "master accs"
+                      : "cuentas maestras"}
+                </p>
+              </div>
+            </div>
 
-                {platformsWithStock.length === 1 && (
-                  <button
-                    type="button"
-                    onClick={() => onNavigateTab("suppliers")}
-                    className="w-full p-2.5 sm:p-3 rounded-xl border border-dashed border-slate-200 dark:border-[#282832] hover:border-purple-500/40 hover:bg-purple-50/40 dark:hover:bg-purple-950/20 transition-all flex items-center justify-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 cursor-pointer"
-                  >
-                    <Truck className="w-3.5 h-3.5 text-purple-500 shrink-0" />
-                    <span className="truncate">
-                      {isEn ? "Import supplier accounts" : "Importar cuentas de proveedor"}
-                    </span>
-                  </button>
-                )}
-              </>
-            )}
+            {/* Barra de Distribución Financiera */}
+            <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-[#181820] border border-slate-200/70 dark:border-[#25252D] space-y-1.5">
+              <div className="flex items-center justify-between text-[11px] font-medium text-slate-600 dark:text-slate-300">
+                <span className="flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+                  {isEn ? "Profit Share" : "Ganancia Neta"}:{" "}
+                  <strong className="font-cascadia">
+                    {monthlyRevenue > 0
+                      ? Math.max(0, Math.round((netProfit / monthlyRevenue) * 100))
+                      : 0}
+                    %
+                  </strong>
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />
+                  {isEn ? "Cost" : "Costo"}:{" "}
+                  <strong className="font-cascadia">
+                    {monthlyRevenue > 0
+                      ? Math.min(100, Math.round((monthlyCost / monthlyRevenue) * 100))
+                      : 0}
+                    %
+                  </strong>
+                </span>
+              </div>
+              <div className="w-full h-2 rounded-full bg-slate-200 dark:bg-[#25252D] overflow-hidden flex">
+                <div
+                  className="h-full bg-emerald-500 transition-all duration-500"
+                  style={{
+                    width: `${
+                      monthlyRevenue > 0
+                        ? Math.max(0, Math.min(100, (netProfit / monthlyRevenue) * 100))
+                        : 0
+                    }%`,
+                  }}
+                  title={isEn ? "Profit margin" : "Margen de ganancia"}
+                />
+                <div
+                  className="h-full bg-purple-500 transition-all duration-500"
+                  style={{
+                    width: `${
+                      monthlyRevenue > 0
+                        ? Math.max(0, Math.min(100, (monthlyCost / monthlyRevenue) * 100))
+                        : 0
+                    }%`,
+                  }}
+                  title={isEn ? "Supplier cost" : "Costo de compras"}
+                />
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Footer Card 2 */}
-        <div className="pt-4 mt-4 border-t border-slate-200/70 dark:border-[#25252D] flex items-center justify-between text-xs">
+        {/* Footer Card 1 */}
+        <div className="pt-3.5 mt-4 border-t border-slate-200/70 dark:border-[#25252D] flex items-center justify-between text-xs">
           <span className="text-slate-500 dark:text-slate-400 text-[11px] truncate">
-            {platformsWithStock.length}{" "}
-            {isEn ? "platforms with stock" : "plataformas con stock"}
+            {isEn ? "Avg / sub:" : "Promedio / sub:"}{" "}
+            <span className="font-semibold text-slate-700 dark:text-slate-200 font-cascadia">
+              S/ {averageSubPrice.toFixed(2)}
+            </span>
           </span>
           <button
             type="button"
-            onClick={() => onNavigateTab("free_profiles")}
-            className="text-sky-600 dark:text-sky-400 hover:underline font-semibold flex items-center gap-1 text-[11px] cursor-pointer shrink-0 whitespace-nowrap"
+            onClick={() => onNavigateTab("clients_active")}
+            className="text-emerald-600 dark:text-emerald-400 hover:underline font-semibold flex items-center gap-1 text-[11px] cursor-pointer shrink-0 whitespace-nowrap"
           >
-            <span>{isEn ? "Manage inventory" : "Gestionar inventario"}</span>
-            <ArrowUpRight className="w-3.5 h-3.5" />
+            <span>{isEn ? "View Active Clients" : "Ver Clientes Activos"}</span>
+            <ChevronRight className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
 
-      {/* 3. Estado Operativo de Proveedores & Vencimientos */}
-      <div className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#1F1F23] shadow-sm flex flex-col justify-between h-full">
+      {/* ========================================================= */}
+      {/* TARJETA 2: RENDIMIENTO Y DEMANDA POR PLATAFORMA           */}
+      {/* ========================================================= */}
+      <div className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#1F1F23] shadow-sm flex flex-col justify-between h-full hover:border-slate-300 dark:hover:border-[#2A2A32] transition-colors">
         <div>
           {/* Header */}
           <div className="flex items-center justify-between gap-2.5 mb-4 pb-3 border-b border-slate-100 dark:border-[#1F1F25]">
             <div className="flex items-center gap-2.5 min-w-0 flex-1">
-              <div className="p-2 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 shrink-0">
-                <ShieldCheck className="w-5 h-5" />
+              <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 shrink-0">
+                <BarChart3 className="w-5 h-5" />
               </div>
               <div className="min-w-0 flex-1">
                 <h3
                   className="font-bold text-sm text-slate-900 dark:text-white truncate"
-                  title={isEn ? "Suppliers & Status" : "Estado de Proveedores"}
+                  title={isEn ? "Platform Demand & Sales" : "Top Plataformas"}
                 >
-                  {isEn ? "Suppliers & Status" : "Estado de Proveedores"}
+                  {isEn ? "Platform Demand & Sales" : "Top Plataformas"}
                 </h3>
                 <p
                   className="text-[11px] text-slate-500 dark:text-slate-400 truncate"
                   title={
                     isEn
-                      ? "Accounts and service monitoring"
-                      : "Monitoreo y cuentas maestras"
+                      ? "Demand and billed revenue by service"
+                      : "Demanda y facturación por servicio"
                   }
                 >
                   {isEn
-                    ? "Accounts and service monitoring"
-                    : "Monitoreo y cuentas maestras"}
+                    ? "Demand and billed revenue by service"
+                    : "Demanda y facturación por servicio"}
                 </p>
               </div>
             </div>
-            <span className="shrink-0 whitespace-nowrap px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 font-cascadia">
-              {suppliers.length} {isEn ? "prov." : "proveed."}
+            <span className="shrink-0 whitespace-nowrap px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 font-cascadia">
+              {sortedPlatforms.length}{" "}
+              {sortedPlatforms.length === 1
+                ? isEn
+                  ? "service"
+                  : "servicio"
+                : isEn
+                  ? "services"
+                  : "servicios"}
             </span>
           </div>
 
-          {/* Body: 4 Filas de Estado Operativo con Idéntica Altura y Cero Desbordamiento */}
+          {/* Body: Lista de Top Plataformas */}
           <div className="space-y-2.5">
-            {/* Fila 1: Cuentas de Proveedores (Alerta prioritaria o Estado al día) */}
-            <div
-              onClick={() => onNavigateTab("suppliers")}
-              className={`w-full p-2.5 sm:p-3 rounded-xl border transition-all text-left flex items-center justify-between group cursor-pointer ${
-                supplierAccountsExpired > 0
-                  ? "bg-rose-500/10 hover:bg-rose-500/15 border-rose-500/30 dark:border-rose-500/30"
-                  : supplierAccountsExpiringSoon > 0
-                    ? "bg-amber-500/10 hover:bg-amber-500/15 border-amber-500/30 dark:border-amber-500/30"
-                    : "bg-slate-50 hover:bg-purple-50/60 dark:bg-[#181820] dark:hover:bg-purple-950/20 border-slate-200/70 hover:border-purple-400/50 dark:border-[#25252D] dark:hover:border-purple-500/40"
+            {sortedPlatforms.length === 0 ? (
+              <div className="p-5 rounded-xl bg-slate-50 dark:bg-[#181820] border border-dashed border-slate-200 dark:border-[#25252D] text-center flex flex-col items-center justify-center min-h-[200px]">
+                <Tv className="w-7 h-7 text-slate-400 mb-2 opacity-60" />
+                <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  {isEn ? "No active subscriptions yet" : "Sin suscripciones activas aún"}
+                </p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 mb-3 max-w-[220px]">
+                  {isEn
+                    ? "Add client subscriptions to view platform breakdown"
+                    : "Registra suscripciones de clientes para ver el ranking"}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (onOpenAddClientModal) {
+                      onOpenAddClientModal();
+                    } else {
+                      onNavigateTab("clients_active");
+                    }
+                  }}
+                  className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white shadow-xs transition-colors cursor-pointer"
+                >
+                  {isEn ? "+ New Client" : "+ Nueva Venta"}
+                </button>
+              </div>
+            ) : (
+              sortedPlatforms.slice(0, 4).map(([platName, info], idx) => {
+                const config = getPlatformConfig(platName);
+                const subShare =
+                  totalActiveSubsCount > 0
+                    ? Math.round((info.count / totalActiveSubsCount) * 100)
+                    : 0;
+
+                return (
+                  <div
+                    key={platName}
+                    className="p-2.5 sm:p-3 rounded-xl bg-slate-50 dark:bg-[#181820] border border-slate-200/70 dark:border-[#25252D] hover:border-indigo-400/50 dark:hover:border-indigo-500/40 transition-all flex flex-col gap-2"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                        <div className="w-8 h-8 rounded-lg bg-white dark:bg-[#121216] border border-slate-200/60 dark:border-[#25252D] flex items-center justify-center shrink-0 shadow-xs">
+                          <PlatformIcon
+                            platform={info.rawPlatform}
+                            className="w-4 h-4"
+                          />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-1.5">
+                            <span
+                              className="font-bold text-xs text-slate-900 dark:text-slate-100 truncate block"
+                              title={platName}
+                            >
+                              {platName}
+                            </span>
+                            {idx === 0 && (
+                              <span className="px-1.5 py-0.2 rounded text-[9px] font-black uppercase bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 shrink-0">
+                                {isEn ? "Top #1" : "Top #1"}
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-[11px] text-slate-500 dark:text-slate-400 truncate block">
+                            {info.count}{" "}
+                            {info.count === 1
+                              ? isEn
+                                ? "client"
+                                : "cliente"
+                              : isEn
+                                ? "clients"
+                                : "clientes"}{" "}
+                            ({subShare}%)
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="text-right shrink-0">
+                        <span className="text-xs font-bold text-slate-900 dark:text-slate-100 font-cascadia block">
+                          S/ {info.revenue.toFixed(2)}
+                        </span>
+                        <span className="text-[10px] text-slate-400 dark:text-slate-500">
+                          {isEn ? "/month" : "/mes"}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Barra de progreso de participación */}
+                    <div className="w-full h-1.5 rounded-full bg-slate-200/80 dark:bg-[#25252D] overflow-hidden">
+                      <div
+                        className="h-full rounded-full transition-all duration-500"
+                        style={{
+                          width: `${Math.max(5, subShare)}%`,
+                          backgroundColor: config.color || "#6366F1",
+                        }}
+                      />
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
+
+        {/* Footer Card 2 */}
+        <div className="pt-3.5 mt-4 border-t border-slate-200/70 dark:border-[#25252D] flex items-center justify-between text-xs">
+          <span className="text-slate-500 dark:text-slate-400 text-[11px] truncate">
+            {topPlatform ? (
+              <>
+                {isEn ? "Star service:" : "Servicio estrella:"}{" "}
+                <strong className="text-indigo-600 dark:text-indigo-400 font-semibold">
+                  {topPlatform}
+                </strong>
+              </>
+            ) : (
+              isEn ? "No sales registered" : "Sin ventas registradas"
+            )}
+          </span>
+          <button
+            type="button"
+            onClick={() => onNavigateTab("free_profiles")}
+            className="text-indigo-600 dark:text-indigo-400 hover:underline font-semibold flex items-center gap-1 text-[11px] cursor-pointer shrink-0 whitespace-nowrap"
+          >
+            <span>{isEn ? "Profiles Stock" : "Stock de Perfiles"}</span>
+            <ChevronRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      </div>
+
+      {/* ========================================================= */}
+      {/* TARJETA 3: SALUD DEL NEGOCIO Y FLUJO A 7 DÍAS             */}
+      {/* ========================================================= */}
+      <div className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#1F1F23] shadow-sm flex flex-col justify-between h-full hover:border-slate-300 dark:hover:border-[#2A2A32] transition-colors">
+        <div>
+          {/* Header */}
+          <div className="flex items-center justify-between gap-2.5 mb-4 pb-3 border-b border-slate-100 dark:border-[#1F1F25]">
+            <div className="flex items-center gap-2.5 min-w-0 flex-1">
+              <div className="p-2 rounded-xl bg-sky-500/10 text-sky-600 dark:text-sky-400 shrink-0">
+                <Activity className="w-5 h-5" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <h3
+                  className="font-bold text-sm text-slate-900 dark:text-white truncate"
+                  title={isEn ? "Business Health & Cashflow" : "Salud del Negocio y Flujo"}
+                >
+                  {isEn ? "Business Health & Cashflow" : "Salud del Negocio y Flujo"}
+                </h3>
+                <p
+                  className="text-[11px] text-slate-500 dark:text-slate-400 truncate"
+                  title={
+                    isEn
+                      ? "Retention and 7-day upcoming cashflow"
+                      : "Retención y cobros proyectados a 7 días"
+                  }
+                >
+                  {isEn
+                    ? "Retention and 7-day upcoming cashflow"
+                    : "Retención y cobros proyectados a 7 días"}
+                </p>
+              </div>
+            </div>
+            <span
+              className={`shrink-0 whitespace-nowrap px-2.5 py-0.5 rounded-full text-[10px] font-bold font-cascadia ${
+                retentionRate >= 80
+                  ? "bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20"
+                  : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
               }`}
             >
-              <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                <div
-                  className={`p-2 rounded-lg group-hover:scale-105 transition-transform shrink-0 ${
-                    supplierAccountsExpired > 0
-                      ? "bg-rose-500/20 text-rose-600 dark:text-rose-400"
-                      : supplierAccountsExpiringSoon > 0
-                        ? "bg-amber-500/20 text-amber-600 dark:text-amber-400"
-                        : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-                  }`}
-                >
-                  {supplierAccountsExpired > 0 || supplierAccountsExpiringSoon > 0 ? (
-                    <AlertTriangle className="w-4 h-4" />
-                  ) : (
-                    <ShieldCheck className="w-4 h-4" />
-                  )}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p
-                    className={`text-xs font-bold transition-colors truncate ${
-                      supplierAccountsExpired > 0
-                        ? "text-rose-900 dark:text-rose-200"
-                        : supplierAccountsExpiringSoon > 0
-                          ? "text-amber-900 dark:text-amber-200"
-                          : "text-slate-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400"
+              {retentionRate}% {isEn ? "Retention" : "Retención"}
+            </span>
+          </div>
+
+          {/* Body: Salud Operativa y Flujo a 7 días */}
+          <div className="space-y-3">
+            {/* 2 Cajas de Métricas: Retención y Ticket Promedio (ARPU) */}
+            <div className="grid grid-cols-2 gap-2.5">
+              {/* Tasa de Retención */}
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#181820] border border-slate-200/70 dark:border-[#25252D]">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                    {isEn ? "Retention" : "Retención"}
+                  </span>
+                  <div
+                    className={`w-2 h-2 rounded-full ${
+                      retentionRate >= 80 ? "bg-emerald-500" : "bg-amber-500"
                     }`}
-                  >
-                    {supplierAccountsExpired > 0
-                      ? isEn
-                        ? `¡${supplierAccountsExpired} master account(s) expired!`
-                        : `¡${supplierAccountsExpired} cuenta(s) maestra(s) vencida(s)!`
-                      : supplierAccountsExpiringSoon > 0
-                        ? isEn
-                          ? `${supplierAccountsExpiringSoon} master account(s) expiring`
-                          : `${supplierAccountsExpiringSoon} cuenta(s) por vencer (≤7d)`
-                        : isEn
-                          ? "Master Accounts Up to Date"
-                          : "Cuentas Maestras al Día"}
-                  </p>
-                  <p
-                    className={`text-[11px] truncate ${
-                      supplierAccountsExpired > 0
-                        ? "text-rose-700 dark:text-rose-300 font-medium"
-                        : supplierAccountsExpiringSoon > 0
-                          ? "text-amber-700 dark:text-amber-300 font-medium"
-                          : "text-slate-500 dark:text-slate-400"
-                    }`}
-                  >
-                    {supplierAccountsExpired > 0
-                      ? isEn
-                        ? "Renew urgently with supplier"
-                        : "Renovar urgente con proveedor"
-                      : supplierAccountsExpiringSoon > 0
-                        ? isEn
-                          ? "Renew before cutoff date"
-                          : "Renovar antes del corte"
-                        : isEn
-                          ? `${totalSupplierAccounts} active supplier account(s)`
-                          : `${totalSupplierAccounts} cuenta(s) activas con proveedores`}
-                  </p>
+                  />
                 </div>
+                <p className="text-xl font-black text-slate-900 dark:text-white font-cascadia">
+                  {retentionRate}%
+                </p>
+                <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
+                  {activeClientsCount}/{totalClientsCount}{" "}
+                  {isEn ? "active clients" : "clientes activos"}
+                </p>
               </div>
-              <div className="flex items-center gap-1.5 shrink-0 ml-1.5">
+
+              {/* Ticket Promedio (ARPU) */}
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#181820] border border-slate-200/70 dark:border-[#25252D]">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                    {isEn ? "Avg Ticket" : "Ticket Promedio"}
+                  </span>
+                  <Users className="w-3.5 h-3.5 text-sky-500" />
+                </div>
+                <p className="text-xl font-black text-slate-900 dark:text-white font-cascadia truncate">
+                  S/ {averageTicket.toFixed(2)}
+                </p>
+                <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
+                  {isEn ? "per active client" : "por cliente activo"}
+                </p>
+              </div>
+            </div>
+
+            {/* Caja de Flujo Proyectado a 7 Días */}
+            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-[#181820] border border-slate-200/70 dark:border-[#25252D] space-y-2.5">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                  <Calendar className="w-3.5 h-3.5 text-amber-500" />
+                  {isEn ? "7-Day Projected Cashflow" : "Flujo Proyectado (Próx. 7 días)"}
+                </span>
                 <span
-                  className={`px-2 py-0.5 rounded text-[10px] font-bold font-cascadia whitespace-nowrap ${
-                    supplierAccountsExpired > 0
-                      ? "bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/30"
-                      : supplierAccountsExpiringSoon > 0
-                        ? "bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30"
-                        : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+                  className={`text-xs font-bold font-cascadia ${
+                    netCashflow7d >= 0
+                      ? "text-emerald-600 dark:text-emerald-400"
+                      : "text-rose-600 dark:text-rose-400"
                   }`}
                 >
-                  {supplierAccountsExpired > 0
-                    ? isEn
-                      ? "Expired"
-                      : "Vencida(s)"
-                    : supplierAccountsExpiringSoon > 0
-                      ? isEn
-                        ? "Expiring"
-                        : "Por Vencer"
-                      : isEn
-                        ? "Up to date"
-                        : "Al Día"}
+                  {netCashflow7d >= 0 ? "+" : ""}S/ {netCashflow7d.toFixed(2)}
                 </span>
-                <ArrowUpRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-purple-500 transition-colors" />
               </div>
-            </div>
 
-            {/* Fila 2: Vencimientos de Clientes (Alertas WhatsApp) */}
-            <div
-              onClick={() => onNavigateTab("alerts")}
-              className={`w-full p-2.5 sm:p-3 rounded-xl border transition-all text-left flex items-center justify-between group cursor-pointer ${
-                totalAttentionSubs > 0
-                  ? "bg-amber-500/10 hover:bg-amber-500/15 border-amber-500/30 dark:border-amber-500/30"
-                  : "bg-slate-50 hover:bg-emerald-50/60 dark:bg-[#181820] dark:hover:bg-emerald-950/20 border-slate-200/70 hover:border-emerald-400/50 dark:border-[#25252D] dark:hover:border-emerald-500/40"
-              }`}
-            >
-              <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                <div
-                  className={`p-2 rounded-lg group-hover:scale-105 transition-transform shrink-0 ${
-                    totalAttentionSubs > 0
-                      ? "bg-amber-500/20 text-amber-600 dark:text-amber-400"
-                      : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-                  }`}
-                >
-                  {totalAttentionSubs > 0 ? (
-                    <Calendar className="w-4 h-4" />
-                  ) : (
-                    <CheckCircle2 className="w-4 h-4" />
-                  )}
+              <div className="space-y-1.5 text-[11px]">
+                {/* Cobros a clientes */}
+                <div className="flex items-center justify-between p-2 rounded-lg bg-emerald-500/5 border border-emerald-500/15">
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                    <span className="text-slate-700 dark:text-slate-300 truncate">
+                      {isEn ? "Client collections" : "Cobros a clientes"}
+                    </span>
+                    <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold shrink-0">
+                      ({upcomingSubsCount7d}{" "}
+                      {upcomingSubsCount7d === 1
+                        ? isEn
+                          ? "sub"
+                          : "corte"
+                        : isEn
+                          ? "subs"
+                          : "cortes"}
+                      )
+                    </span>
+                  </div>
+                  <span className="font-bold text-emerald-600 dark:text-emerald-400 font-cascadia shrink-0 ml-1">
+                    +S/ {upcomingRevenue7d.toFixed(2)}
+                  </span>
                 </div>
-                <div className="min-w-0 flex-1">
-                  <p
-                    className={`text-xs font-bold transition-colors truncate ${
-                      totalAttentionSubs > 0
-                        ? "text-amber-900 dark:text-amber-200"
-                        : "text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400"
-                    }`}
-                  >
-                    {totalAttentionSubs > 0
-                      ? isEn
-                        ? `${totalAttentionSubs} subscription(s) expiring`
-                        : `${totalAttentionSubs} suscripción(es) por vencer`
-                      : isEn
-                        ? "Subscriptions Up to Date"
-                        : "Suscripciones al Día"}
-                  </p>
-                  <p
-                    className={`text-[11px] truncate ${
-                      totalAttentionSubs > 0
-                        ? "text-amber-700 dark:text-amber-300 font-medium"
-                        : "text-slate-500 dark:text-slate-400"
-                    }`}
-                  >
-                    {totalAttentionSubs > 0
-                      ? isEn
-                        ? "Requires WhatsApp alert (≤5d)"
-                        : "Requiere aviso WhatsApp (≤5d)"
-                      : isEn
-                        ? "No client cutoffs in next 5 days"
-                        : "Sin cortes en los próximos 5 días"}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-1.5 shrink-0 ml-1.5">
-                <span
-                  className={`px-2 py-0.5 rounded text-[10px] font-bold font-cascadia whitespace-nowrap ${
-                    totalAttentionSubs > 0
-                      ? "bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30"
-                      : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
-                  }`}
-                >
-                  {totalAttentionSubs > 0
-                    ? isEn
-                      ? "Alert"
-                      : "Avisar"
-                    : isEn
-                      ? "Up to date"
-                      : "Al Día"}
-                </span>
-                <ArrowUpRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-500 transition-colors" />
-              </div>
-            </div>
 
-            {/* Fila 3: Clientes Activos en Servicio */}
-            <div
-              onClick={() => onNavigateTab("clients_active")}
-              className="w-full p-2.5 sm:p-3 rounded-xl bg-slate-50 hover:bg-blue-50/60 dark:bg-[#181820] dark:hover:bg-blue-950/20 border border-slate-200/70 hover:border-blue-400/50 dark:border-[#25252D] dark:hover:border-blue-500/40 transition-all text-left flex items-center justify-between group cursor-pointer"
-            >
-              <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                <div className="p-2 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 group-hover:scale-105 transition-transform shrink-0">
-                  <Users className="w-4 h-4" />
+                {/* Pagos a proveedores */}
+                <div className="flex items-center justify-between p-2 rounded-lg bg-purple-500/5 border border-purple-500/15">
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <AlertCircle className="w-3.5 h-3.5 text-purple-500 shrink-0" />
+                    <span className="text-slate-700 dark:text-slate-300 truncate">
+                      {isEn ? "Supplier payments" : "Pagos a proveedores"}
+                    </span>
+                    <span className="text-[10px] text-purple-600 dark:text-purple-400 font-semibold shrink-0">
+                      ({upcomingSupplierCount7d}{" "}
+                      {upcomingSupplierCount7d === 1
+                        ? isEn
+                          ? "acc"
+                          : "cuenta"
+                        : isEn
+                          ? "accs"
+                          : "cuentas"}
+                      )
+                    </span>
+                  </div>
+                  <span className="font-bold text-purple-600 dark:text-purple-400 font-cascadia shrink-0 ml-1">
+                    -S/ {upcomingCost7d.toFixed(2)}
+                  </span>
                 </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate">
-                    {activeClients.length}{" "}
-                    {isEn ? "Active Clients" : "Clientes Activos"}
-                  </p>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
-                    {totalActiveSubs}{" "}
-                    {isEn
-                      ? "active subscriptions in service"
-                      : "suscripciones en servicio activo"}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-1.5 shrink-0 ml-1.5">
-                <span className="px-2 py-0.5 rounded text-[10px] font-bold font-cascadia whitespace-nowrap bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
-                  {isEn ? "Active" : "Activos"}
-                </span>
-                <ArrowUpRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-500 transition-colors" />
-              </div>
-            </div>
-
-            {/* Fila 4: Proveedores Registrados */}
-            <div
-              onClick={() => onNavigateTab("suppliers")}
-              className="w-full p-2.5 sm:p-3 rounded-xl bg-slate-50 hover:bg-purple-50/60 dark:bg-[#181820] dark:hover:bg-purple-950/20 border border-slate-200/70 hover:border-purple-400/50 dark:border-[#25252D] dark:hover:border-purple-500/40 transition-all text-left flex items-center justify-between group cursor-pointer"
-            >
-              <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                <div className="p-2 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 group-hover:scale-105 transition-transform shrink-0">
-                  <Truck className="w-4 h-4" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors truncate">
-                    {suppliers.length}{" "}
-                    {isEn ? "Registered Suppliers" : "Proveedores Registrados"}
-                  </p>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
-                    {totalSupplierAccounts}{" "}
-                    {isEn
-                      ? "master accounts managed"
-                      : "cuentas maestras gestionadas"}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-1.5 shrink-0 ml-1.5">
-                <span className="px-2 py-0.5 rounded text-[10px] font-bold font-cascadia whitespace-nowrap bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
-                  {suppliers.length} {isEn ? "prov." : "proveed."}
-                </span>
-                <ArrowUpRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-purple-500 transition-colors" />
               </div>
             </div>
           </div>
         </div>
 
         {/* Footer Card 3 */}
-        <div className="pt-4 mt-4 border-t border-slate-200/70 dark:border-[#25252D] flex items-center justify-between text-xs">
+        <div className="pt-3.5 mt-4 border-t border-slate-200/70 dark:border-[#25252D] flex items-center justify-between text-xs">
           <span className="text-slate-500 dark:text-slate-400 text-[11px] truncate">
-            {isEn ? "Continuous Monitoring" : "Monitoreo Continuo"}
+            {upcomingSubsCount7d > 0 ? (
+              <>
+                <strong className="text-amber-600 dark:text-amber-400 font-semibold font-cascadia">
+                  {upcomingSubsCount7d}
+                </strong>{" "}
+                {isEn ? "renewals due this week" : "renovaciones por vencer (≤7d)"}
+              </>
+            ) : (
+              isEn ? "No immediate renewals due" : "Sin cobros urgentes esta semana"
+            )}
           </span>
           <button
             type="button"
             onClick={() => onNavigateTab("alerts")}
-            className="text-purple-600 dark:text-purple-400 hover:underline font-semibold flex items-center gap-1 text-[11px] cursor-pointer shrink-0 whitespace-nowrap"
+            className="text-sky-600 dark:text-sky-400 hover:underline font-semibold flex items-center gap-1 text-[11px] cursor-pointer shrink-0 whitespace-nowrap"
           >
-            <span>{isEn ? "View all alerts" : "Ver alertas de clientes"}</span>
-            <ArrowUpRight className="w-3.5 h-3.5" />
+            <span>{isEn ? "View Expirations" : "Ver Alertas de Corte"}</span>
+            <ChevronRight className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
