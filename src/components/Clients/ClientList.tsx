@@ -501,6 +501,7 @@ export const ClientList: React.FC<ClientListProps> = ({
           profileName={whatsAppSub.sub.profileName}
           pin={whatsAppSub.sub.pin}
           phone={whatsAppSub.phone}
+          price={whatsAppSub.sub.price}
           isRenewal={whatsAppSub.isRenewal}
           renewedSubs={whatsAppSub.allRenewedSubs}
         />

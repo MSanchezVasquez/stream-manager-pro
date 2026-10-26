@@ -11,6 +11,7 @@ export interface TranslationDictionary {
   "nav.suppliers": string;
   "nav.freeProfiles": string;
   "nav.alertsWhatsapp": string;
+  "nav.messageTemplates": string;
   "nav.quickLinks": string;
   "nav.searchPlaceholder": string;
   "nav.expirations": string;
@@ -416,6 +417,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, TranslationDictionary> = {
     "nav.suppliers": "Proveedores",
     "nav.freeProfiles": "Perfiles Libres",
     "nav.alertsWhatsapp": "Alertas & WhatsApp",
+    "nav.messageTemplates": "Plantillas de Mensajes",
     "nav.quickLinks": "Enlaces Rápidos",
     "nav.searchPlaceholder": "Buscar cliente, correo o cuenta...",
     "nav.expirations": "Vencimientos",
@@ -837,6 +839,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, TranslationDictionary> = {
     "nav.suppliers": "Suppliers",
     "nav.freeProfiles": "Free Profiles",
     "nav.alertsWhatsapp": "Alerts & WhatsApp",
+    "nav.messageTemplates": "Message Templates",
     "nav.quickLinks": "Quick Links",
     "nav.searchPlaceholder": "Search client, email or account...",
     "nav.expirations": "Expirations",

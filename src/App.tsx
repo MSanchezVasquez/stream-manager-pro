@@ -16,6 +16,7 @@ import { ClientList } from './components/Clients/ClientList';
 import { SupplierList } from './components/Suppliers/SupplierList';
 import { FreeProfilesList } from './components/Profiles/FreeProfilesList';
 import { QuickLinksView } from './components/Links/QuickLinksView';
+import { MessageTemplatesView } from './components/Templates/MessageTemplatesView';
 import { ClientModal } from './components/Clients/ClientModal';
 import { AuthModal } from './components/Auth/AuthModal';
 import { AuthScreen } from './components/Auth/AuthScreen';
@@ -225,6 +226,8 @@ function MainApp() {
             {activeTab === 'free_profiles' && <FreeProfilesList />}
 
             {activeTab === 'alerts' && <ExpirationAlerts />}
+
+            {activeTab === 'templates' && <MessageTemplatesView />}
 
             {activeTab === 'links' && <QuickLinksView />}
           </div>

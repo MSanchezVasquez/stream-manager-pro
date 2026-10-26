@@ -706,6 +706,7 @@ export const ExpirationAlerts: React.FC = () => {
           profileName={selectedSub.sub.profileName}
           pin={selectedSub.sub.pin}
           phone={selectedSub.phone}
+          price={selectedSub.sub.price}
           isRenewal={selectedSub.isRenewal}
           renewedSubs={selectedSub.renewedSubs}
         />

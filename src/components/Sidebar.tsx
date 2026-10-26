@@ -6,6 +6,7 @@ import {
   Truck,
   Sparkles,
   BellRing,
+  MessageSquareText,
   ExternalLink,
   PlusCircle,
 } from 'lucide-react';
@@ -84,6 +85,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
       id: 'alerts',
       label: t('nav.alertsWhatsapp'),
       icon: BellRing,
+      badge: null,
+      badgeColor: '',
+    },
+    {
+      id: 'templates',
+      label: t('nav.messageTemplates'),
+      icon: MessageSquareText,
       badge: null,
       badgeColor: '',
     },
