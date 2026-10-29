@@ -19,7 +19,7 @@ import { useThemeStore } from "../../store/themeStore";
 import { CircularSpinner } from "../common/LoadingSpinners";
 
 export const AuthScreen: React.FC = () => {
-  const { loginWithEmail, registerWithEmail, loginWithGoogle, loginAsGuest } =
+  const { loginWithEmail, registerWithEmail, loginWithGoogle } =
     useAuthStore();
   const theme = useThemeStore((state) => state.themeMode);
   const toggleTheme = useThemeStore((state) => state.toggleTheme);
@@ -78,18 +78,13 @@ export const AuthScreen: React.FC = () => {
     }
 
     setIsSubmitting(true);
-
-    // Aquí es donde ocurre la magia limpia:
     const result = await loginWithEmail(cleanEmail, cleanPassword);
-
     setIsSubmitting(false);
 
     if (result.success) {
       setSuccessMsg("¡Inicio de sesión exitoso! Accediendo...");
-      // Usualmente aquí no necesitas hacer más porque el AuthProvider
-      // detectará el cambio de estado y redirigirá la app automáticamente.
     } else {
-      setErrorMsg(result.error || "Ocurrió un error");
+      setErrorMsg(result.error || "Ocurrió un error al iniciar sesión.");
     }
   };
 
@@ -102,13 +97,11 @@ export const AuthScreen: React.FC = () => {
     const cleanEmail = regEmail.trim();
     const cleanPassword = regPassword.trim();
 
-    // 1. Validate Username
     if (!cleanName) {
       setErrorMsg("Por favor ingresa tu nombre de usuario.");
       return;
     }
 
-    // 2. Validate Email
     if (!cleanEmail) {
       setErrorMsg("Por favor ingresa tu correo electrónico.");
       return;
@@ -122,7 +115,6 @@ export const AuthScreen: React.FC = () => {
       return;
     }
 
-    // 3. Validate Password
     if (!cleanPassword) {
       setErrorMsg("Por favor ingresa una contraseña.");
       return;
@@ -177,36 +169,19 @@ export const AuthScreen: React.FC = () => {
     }
   };
 
-  const handleGuestAuth = async () => {
-    setErrorMsg("");
-    setSuccessMsg("");
-    setUnauthorizedDomain(null);
-    setIsSubmitting(true);
-    try {
-      const res = await loginAsGuest();
-      if (!res.success && res.error) {
-        setErrorMsg(res.error);
-      }
-    } catch (err: any) {
-      setErrorMsg(err?.message || "Error al ingresar como invitado.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   return (
-    <div className="min-h-screen w-full flex flex-col items-center justify-between p-4 sm:p-6 lg:p-8 bg-gradient-to-br from-slate-100 via-indigo-50/40 to-slate-200 dark:from-[#0A0A0E] dark:via-[#111118] dark:to-[#08080C] text-slate-900 dark:text-[#E4E4E7] transition-colors duration-300 relative overflow-hidden">
-      {/* App Header & Branding (outside auth forms) */}
-      <header className="w-full max-w-5xl flex items-center justify-between pt-2 pb-4 z-10">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-500 text-white flex items-center justify-center shadow-lg shadow-indigo-500/20">
-            <Tv className="w-5 h-5" />
+    <div className="min-h-screen w-full flex flex-col items-center justify-between p-3 sm:p-6 lg:p-8 bg-gradient-to-br from-slate-100 via-indigo-50/40 to-slate-200 dark:from-[#0A0A0E] dark:via-[#111118] dark:to-[#08080C] text-slate-900 dark:text-[#E4E4E7] transition-colors duration-300 relative overflow-y-auto">
+      {/* App Header & Branding */}
+      <header className="w-full max-w-5xl flex items-center justify-between pt-2 pb-3 sm:pb-4 z-10 shrink-0">
+        <div className="flex items-center gap-2.5 sm:gap-3">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-500 text-white flex items-center justify-center shadow-lg shadow-indigo-500/20 shrink-0">
+            <Tv className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
           <div>
-            <h1 className="text-xl font-black tracking-tight text-slate-900 dark:text-white leading-none">
+            <h1 className="text-lg sm:text-xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
               GestorStreaming
             </h1>
-            <p className="text-xs font-medium text-slate-600 dark:text-slate-300">
+            <p className="text-[11px] sm:text-xs font-medium text-slate-600 dark:text-slate-300">
               Administración de Cuentas, Perfiles y Proveedores
             </p>
           </div>
@@ -216,7 +191,7 @@ export const AuthScreen: React.FC = () => {
           type="button"
           onClick={toggleTheme}
           aria-label={theme === "dark" ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
-          className="min-w-[44px] min-h-[44px] p-2.5 rounded-2xl bg-white/90 dark:bg-[#1A1A22]/90 backdrop-blur-md border border-slate-300 dark:border-[#2D2D38] text-slate-800 dark:text-[#E4E4E7] hover:scale-105 active:scale-95 shadow-md transition-all flex items-center justify-center cursor-pointer"
+          className="min-w-[44px] min-h-[44px] p-2.5 rounded-xl sm:rounded-2xl bg-white/90 dark:bg-[#1A1A22]/90 backdrop-blur-md border border-slate-300 dark:border-[#2D2D38] text-slate-800 dark:text-[#E4E4E7] hover:scale-105 active:scale-95 shadow-md transition-all flex items-center justify-center cursor-pointer"
           title={theme === "dark" ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
         >
           {theme === "dark" ? (
@@ -231,26 +206,65 @@ export const AuthScreen: React.FC = () => {
       <main
         id="main-content"
         role="main"
-        className="relative w-full max-w-4xl min-h-[520px] bg-white dark:bg-[#141419] rounded-[32px] border border-slate-200/90 dark:border-[#23232A] shadow-2xl overflow-hidden flex flex-col md:flex-row my-auto"
+        className="relative w-full max-w-md md:max-w-4xl bg-white dark:bg-[#141419] rounded-2xl sm:rounded-3xl md:rounded-[32px] border border-slate-200/90 dark:border-[#23232A] shadow-2xl overflow-hidden flex flex-col md:flex-row my-auto transition-all duration-300"
       >
-        {/* LEFT COLUMN: REGISTRATION FORM (Exposed when isRegister === true) */}
+        {/* Mobile Segmented Toggle (Only on mobile screens < md) */}
+        <div className="md:hidden p-4 sm:p-5 pb-0">
+          <div className="flex items-center p-1 bg-slate-100 dark:bg-[#1C1C24] rounded-xl border border-slate-200 dark:border-[#272730]">
+            <button
+              type="button"
+              onClick={() => {
+                setErrorMsg("");
+                setSuccessMsg("");
+                setIsRegister(false);
+              }}
+              className={`flex-1 min-h-[42px] py-2 px-3 text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer ${
+                !isRegister
+                  ? "bg-white dark:bg-indigo-600 text-indigo-600 dark:text-white shadow-sm"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+              }`}
+            >
+              Iniciar Sesión
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setErrorMsg("");
+                setSuccessMsg("");
+                setIsRegister(true);
+              }}
+              className={`flex-1 min-h-[42px] py-2 px-3 text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer ${
+                isRegister
+                  ? "bg-white dark:bg-indigo-600 text-indigo-600 dark:text-white shadow-sm"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+              }`}
+            >
+              Crear Cuenta
+            </button>
+          </div>
+        </div>
+
+        {/* REGISTRATION FORM COLUMN */}
         <div
-          className={`w-full md:w-1/2 p-8 sm:p-10 flex flex-col justify-center transition-all duration-500 ${
+          className={`w-full md:w-1/2 p-5 sm:p-8 md:p-10 flex flex-col justify-center transition-all duration-500 ${
             isRegister
-              ? "opacity-100 z-10 pointer-events-auto"
-              : "opacity-0 pointer-events-none"
+              ? "flex opacity-100 z-10 pointer-events-auto"
+              : "hidden md:flex md:opacity-0 md:pointer-events-none"
           }`}
         >
           <div className="max-w-sm mx-auto w-full">
-            <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white mb-1.5 text-center">
-              Registration
-            </h2>
-            <p className="text-xs text-center text-slate-700 dark:text-slate-200 mb-6 font-medium">
-              Crea tu cuenta para comenzar a gestionar
-            </p>
+            {/* Title block with clean typography and spacing */}
+            <div className="text-center mb-6">
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                Crear Cuenta
+              </h2>
+              <p className="mt-1.5 text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-medium">
+                Regístrate para comenzar a gestionar tus cuentas
+              </p>
+            </div>
 
             {errorMsg && isRegister && (
-              <div className="mb-4 p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-900 dark:text-amber-200 text-xs animate-fade-in space-y-2">
+              <div className="mb-5 p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-900 dark:text-amber-200 text-xs animate-fade-in space-y-2">
                 <div className="flex items-start gap-2 font-medium text-left">
                   <AlertCircle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
                   <span className="flex-1">{errorMsg}</span>
@@ -264,16 +278,16 @@ export const AuthScreen: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => handleCopyDomain(unauthorizedDomain)}
-                        className="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-medium flex items-center gap-1 shrink-0 text-[11px] transition-colors shadow-sm ml-auto"
+                        className="min-h-[40px] px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-medium flex items-center gap-1.5 shrink-0 text-[11px] transition-colors shadow-sm ml-auto cursor-pointer"
                       >
                         {domainCopied ? (
                           <>
-                            <Check className="w-3 h-3 text-emerald-300" />
+                            <Check className="w-3.5 h-3.5 text-emerald-300" />
                             <span>¡Copiado!</span>
                           </>
                         ) : (
                           <>
-                            <Copy className="w-3 h-3" />
+                            <Copy className="w-3.5 h-3.5" />
                             <span>Copiar dominio</span>
                           </>
                         )}
@@ -284,68 +298,74 @@ export const AuthScreen: React.FC = () => {
                       <strong>Authentication → Configuración → Dominios autorizados</strong>{" "}
                       y agrega este dominio para habilitar Google Sign-In.
                     </p>
-                    <div className="pt-1.5 border-t border-slate-200 dark:border-slate-800 text-[10px] text-indigo-600 dark:text-indigo-400 font-medium">
-                      💡 También puedes registrarte usando el formulario de correo y contraseña arriba.
-                    </div>
                   </div>
                 )}
               </div>
             )}
 
             {successMsg && isRegister && (
-              <div className="mb-4 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-medium text-center animate-fade-in">
+              <div className="mb-5 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-xs font-semibold text-center animate-fade-in">
                 {successMsg}
               </div>
             )}
 
             <form onSubmit={handleRegisterSubmit} className="space-y-3.5">
               <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 text-left">
+                  Nombre de usuario
+                </label>
                 <div className="relative">
                   <UserIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-600 dark:text-slate-300" />
                   <input
                     type="text"
                     required
-                    placeholder="Username / Nombre de usuario"
+                    placeholder="Tu nombre o empresa"
                     value={regName}
                     onChange={(e) => {
                       setRegName(e.target.value);
                       if (errorMsg) setErrorMsg("");
                     }}
-                    className="w-full pl-10 pr-4 py-3 rounded-2xl border border-slate-300 dark:border-[#272730] bg-slate-100/90 dark:bg-[#1C1C24] text-slate-900 dark:text-white text-xs placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
+                    className="w-full pl-10 pr-4 py-3 rounded-xl sm:rounded-2xl border border-slate-300 dark:border-[#272730] bg-slate-50 dark:bg-[#1C1C24] text-slate-900 dark:text-white text-xs placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
                   />
                 </div>
               </div>
 
               <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 text-left">
+                  Correo electrónico
+                </label>
                 <div className="relative">
                   <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-600 dark:text-slate-300" />
                   <input
                     type="email"
                     required
-                    placeholder="Email / Correo (ej. usuario@gmail.com)"
+                    placeholder="ejemplo@correo.com"
                     value={regEmail}
                     onChange={(e) => {
                       setRegEmail(e.target.value);
                       if (errorMsg) setErrorMsg("");
                     }}
-                    className="w-full pl-10 pr-4 py-3 rounded-2xl border border-slate-300 dark:border-[#272730] bg-slate-100/90 dark:bg-[#1C1C24] text-slate-900 dark:text-white text-xs placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
+                    className="w-full pl-10 pr-4 py-3 rounded-xl sm:rounded-2xl border border-slate-300 dark:border-[#272730] bg-slate-50 dark:bg-[#1C1C24] text-slate-900 dark:text-white text-xs placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
                   />
                 </div>
               </div>
 
               <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 text-left">
+                  Contraseña
+                </label>
                 <div className="relative">
                   <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-600 dark:text-slate-300" />
                   <input
                     type={showPassword ? "text" : "password"}
                     required
-                    placeholder="Password / Contraseña (mínimo 6 car.)"
+                    placeholder="Mínimo 6 caracteres"
                     value={regPassword}
                     onChange={(e) => {
                       setRegPassword(e.target.value);
                       if (errorMsg) setErrorMsg("");
                     }}
-                    className="w-full pl-10 pr-12 py-3 rounded-2xl border border-slate-300 dark:border-[#272730] bg-slate-100/90 dark:bg-[#1C1C24] text-slate-900 dark:text-white text-xs placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
+                    className="w-full pl-10 pr-12 py-3 rounded-xl sm:rounded-2xl border border-slate-300 dark:border-[#272730] bg-slate-50 dark:bg-[#1C1C24] text-slate-900 dark:text-white text-xs placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
                   />
                   <button
                     type="button"
@@ -362,33 +382,40 @@ export const AuthScreen: React.FC = () => {
                 </div>
               </div>
 
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full min-h-[44px] py-3 px-4 rounded-2xl bg-[#6366F1] hover:bg-[#4F46E5] text-white font-bold text-xs shadow-lg shadow-indigo-500/25 transition-all flex items-center justify-center gap-2 disabled:opacity-60 cursor-pointer"
-              >
-                {isSubmitting ? (
-                  <CircularSpinner size={16} className="text-white" />
-                ) : (
-                  <span>Register</span>
-                )}
-              </button>
+              <div className="pt-1">
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full min-h-[46px] py-3 px-4 rounded-xl sm:rounded-2xl bg-[#6366F1] hover:bg-[#4F46E5] text-white font-bold text-xs shadow-lg shadow-indigo-500/25 transition-all flex items-center justify-center gap-2 disabled:opacity-60 cursor-pointer"
+                >
+                  {isSubmitting ? (
+                    <CircularSpinner size={16} className="text-white" />
+                  ) : (
+                    <span>Registrarse</span>
+                  )}
+                </button>
+              </div>
             </form>
 
-            <div className="my-5 flex items-center justify-center">
-              <span className="text-xs font-medium text-slate-600 dark:text-slate-300">
-                o regístrate con otras opciones
-              </span>
+            <div className="relative my-5">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-slate-200 dark:border-slate-800" />
+              </div>
+              <div className="relative flex justify-center text-xs">
+                <span className="bg-white dark:bg-[#141419] px-3 font-medium text-slate-500 dark:text-slate-400">
+                  o continúa con
+                </span>
+              </div>
             </div>
 
-            {/* Social & Alternate Logins */}
-            <div className="space-y-2.5">
+            {/* Social Logins */}
+            <div>
               <button
                 type="button"
                 onClick={handleGoogleAuth}
                 disabled={isSubmitting}
                 aria-label="Registrarse con Google"
-                className="w-full min-h-[44px] py-2.5 px-4 rounded-xl border border-slate-300 dark:border-[#272730] bg-slate-50 dark:bg-[#1C1C24] hover:bg-slate-100 dark:hover:bg-[#252530] flex items-center justify-center gap-2.5 text-slate-800 dark:text-white transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm text-xs font-semibold disabled:opacity-60 cursor-pointer"
+                className="w-full min-h-[46px] py-2.5 px-4 rounded-xl border border-slate-300 dark:border-[#272730] bg-slate-50 dark:bg-[#1C1C24] hover:bg-slate-100 dark:hover:bg-[#252530] flex items-center justify-center gap-2.5 text-slate-800 dark:text-white transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm text-xs font-semibold disabled:opacity-60 cursor-pointer"
               >
                 <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
                   <path
@@ -412,41 +439,47 @@ export const AuthScreen: React.FC = () => {
               </button>
             </div>
 
-            {/* Mobile switch trigger */}
-            <div className="mt-6 text-center md:hidden">
-              <button
-                type="button"
-                onClick={() => {
-                  setErrorMsg("");
-                  setSuccessMsg("");
-                  setIsRegister(false);
-                }}
-                className="min-h-[44px] inline-flex items-center justify-center text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer"
-              >
-                ¿Ya tienes cuenta? Inicia sesión
-              </button>
+            {/* Mobile bottom switch link */}
+            <div className="mt-5 text-center md:hidden">
+              <p className="text-xs text-slate-600 dark:text-slate-400">
+                ¿Ya tienes una cuenta?{" "}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setErrorMsg("");
+                    setSuccessMsg("");
+                    setIsRegister(false);
+                  }}
+                  className="font-bold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer inline-flex items-center min-h-[44px] px-1"
+                >
+                  Inicia sesión aquí
+                </button>
+              </p>
             </div>
           </div>
         </div>
 
-        {/* RIGHT COLUMN: LOGIN FORM (Exposed when isRegister === false) */}
+        {/* LOGIN FORM COLUMN */}
         <div
-          className={`w-full md:w-1/2 p-8 sm:p-10 flex flex-col justify-center transition-all duration-500 ${
+          className={`w-full md:w-1/2 p-5 sm:p-8 md:p-10 flex flex-col justify-center transition-all duration-500 ${
             !isRegister
-              ? "opacity-100 z-10 pointer-events-auto"
-              : "opacity-0 pointer-events-none"
+              ? "flex opacity-100 z-10 pointer-events-auto"
+              : "hidden md:flex md:opacity-0 md:pointer-events-none"
           }`}
         >
           <div className="max-w-sm mx-auto w-full">
-            <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white mb-1.5 text-center">
-              Login
-            </h2>
-            <p className="text-xs text-center text-slate-700 dark:text-slate-200 mb-6 font-medium">
-              Ingresa tus credenciales para acceder al gestor
-            </p>
+            {/* Title block with clean typography and spacing */}
+            <div className="text-center mb-6">
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                Iniciar Sesión
+              </h2>
+              <p className="mt-1.5 text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-medium">
+                Ingresa tus credenciales para acceder al gestor
+              </p>
+            </div>
 
             {errorMsg && !isRegister && (
-              <div className="mb-4 p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-900 dark:text-amber-200 text-xs animate-fade-in space-y-2">
+              <div className="mb-5 p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-900 dark:text-amber-200 text-xs animate-fade-in space-y-2">
                 <div className="flex items-start gap-2 font-medium text-left">
                   <AlertCircle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
                   <span className="flex-1">{errorMsg}</span>
@@ -460,16 +493,16 @@ export const AuthScreen: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => handleCopyDomain(unauthorizedDomain)}
-                        className="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-medium flex items-center gap-1 shrink-0 text-[11px] transition-colors shadow-sm ml-auto"
+                        className="min-h-[40px] px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-medium flex items-center gap-1.5 shrink-0 text-[11px] transition-colors shadow-sm ml-auto cursor-pointer"
                       >
                         {domainCopied ? (
                           <>
-                            <Check className="w-3 h-3 text-emerald-300" />
+                            <Check className="w-3.5 h-3.5 text-emerald-300" />
                             <span>¡Copiado!</span>
                           </>
                         ) : (
                           <>
-                            <Copy className="w-3 h-3" />
+                            <Copy className="w-3.5 h-3.5" />
                             <span>Copiar dominio</span>
                           </>
                         )}
@@ -480,51 +513,67 @@ export const AuthScreen: React.FC = () => {
                       <strong>Authentication → Configuración → Dominios autorizados</strong>{" "}
                       y agrega este dominio para habilitar Google Sign-In.
                     </p>
-                    <div className="pt-1.5 border-t border-slate-200 dark:border-slate-800 text-[10px] text-indigo-600 dark:text-indigo-400 font-medium">
-                      💡 También puedes iniciar sesión o registrarte usando correo y contraseña.
-                    </div>
                   </div>
                 )}
               </div>
             )}
 
             {successMsg && !isRegister && (
-              <div className="mb-4 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-medium text-center animate-fade-in">
+              <div className="mb-5 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-xs font-semibold text-center animate-fade-in">
                 {successMsg}
               </div>
             )}
 
             <form onSubmit={handleLoginSubmit} className="space-y-3.5">
               <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 text-left">
+                  Correo electrónico
+                </label>
                 <div className="relative">
                   <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-600 dark:text-slate-300" />
                   <input
                     type="email"
                     required
-                    placeholder="Email / Correo Electrónico"
+                    placeholder="ejemplo@correo.com"
                     value={loginEmail}
                     onChange={(e) => {
                       setLoginEmail(e.target.value);
                       if (errorMsg) setErrorMsg("");
                     }}
-                    className="w-full pl-10 pr-4 py-3 rounded-2xl border border-slate-300 dark:border-[#272730] bg-slate-100/90 dark:bg-[#1C1C24] text-slate-900 dark:text-white text-xs placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
+                    className="w-full pl-10 pr-4 py-3 rounded-xl sm:rounded-2xl border border-slate-300 dark:border-[#272730] bg-slate-50 dark:bg-[#1C1C24] text-slate-900 dark:text-white text-xs placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
                   />
                 </div>
               </div>
 
               <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 text-left">
+                    Contraseña
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setErrorMsg(
+                        "Por favor contacta al administrador o ingresa con Google.",
+                      )
+                    }
+                    className="text-[11px] font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors cursor-pointer"
+                  >
+                    ¿Olvidaste tu contraseña?
+                  </button>
+                </div>
                 <div className="relative">
                   <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-600 dark:text-slate-300" />
                   <input
                     type={showPassword ? "text" : "password"}
                     required
-                    placeholder="Password / Contraseña"
+                    placeholder="Ingresa tu contraseña"
                     value={loginPassword}
                     onChange={(e) => {
                       setLoginPassword(e.target.value);
                       if (errorMsg) setErrorMsg("");
                     }}
-                    className="w-full pl-10 pr-12 py-3 rounded-2xl border border-slate-300 dark:border-[#272730] bg-slate-100/90 dark:bg-[#1C1C24] text-slate-900 dark:text-white text-xs placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
+                    className="w-full pl-10 pr-12 py-3 rounded-xl sm:rounded-2xl border border-slate-300 dark:border-[#272730] bg-slate-50 dark:bg-[#1C1C24] text-slate-900 dark:text-white text-xs placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
                   />
                   <button
                     type="button"
@@ -541,47 +590,40 @@ export const AuthScreen: React.FC = () => {
                 </div>
               </div>
 
-              <div className="text-right">
+              <div className="pt-1">
                 <button
-                  type="button"
-                  onClick={() =>
-                    setErrorMsg(
-                      "Por favor contacta al administrador o ingresa con Google.",
-                    )
-                  }
-                  className="min-h-[44px] inline-flex items-center text-xs font-bold text-slate-800 hover:text-indigo-600 dark:text-slate-200 dark:hover:text-indigo-400 transition-colors cursor-pointer"
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full min-h-[46px] py-3 px-4 rounded-xl sm:rounded-2xl bg-[#6366F1] hover:bg-[#4F46E5] text-white font-bold text-xs shadow-lg shadow-indigo-500/25 transition-all flex items-center justify-center gap-2 disabled:opacity-60 cursor-pointer"
                 >
-                  Forgot Password?
+                  {isSubmitting ? (
+                    <CircularSpinner size={16} className="text-white" />
+                  ) : (
+                    <span>Iniciar Sesión</span>
+                  )}
                 </button>
               </div>
-
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full min-h-[44px] py-3 px-4 rounded-2xl bg-[#6366F1] hover:bg-[#4F46E5] text-white font-bold text-xs shadow-lg shadow-indigo-500/25 transition-all flex items-center justify-center gap-2 disabled:opacity-60 cursor-pointer"
-              >
-                {isSubmitting ? (
-                  <CircularSpinner size={16} className="text-white" />
-                ) : (
-                  <span>Login</span>
-                )}
-              </button>
             </form>
 
-            <div className="my-5 flex items-center justify-center">
-              <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">
-                o ingresa con otras opciones
-              </span>
+            <div className="relative my-5">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-slate-200 dark:border-slate-800" />
+              </div>
+              <div className="relative flex justify-center text-xs">
+                <span className="bg-white dark:bg-[#141419] px-3 font-medium text-slate-500 dark:text-slate-400">
+                  o continúa con
+                </span>
+              </div>
             </div>
 
-            {/* Social & Alternate Logins */}
-            <div className="space-y-2.5">
+            {/* Social Logins */}
+            <div>
               <button
                 type="button"
                 onClick={handleGoogleAuth}
                 disabled={isSubmitting}
                 aria-label="Iniciar sesión con Google"
-                className="w-full min-h-[44px] py-2.5 px-4 rounded-xl border border-slate-300 dark:border-[#272730] bg-slate-50 dark:bg-[#1C1C24] hover:bg-slate-100 dark:hover:bg-[#252530] flex items-center justify-center gap-2.5 text-slate-800 dark:text-white transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm text-xs font-semibold disabled:opacity-60 cursor-pointer"
+                className="w-full min-h-[46px] py-2.5 px-4 rounded-xl border border-slate-300 dark:border-[#272730] bg-slate-50 dark:bg-[#1C1C24] hover:bg-slate-100 dark:hover:bg-[#252530] flex items-center justify-center gap-2.5 text-slate-800 dark:text-white transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm text-xs font-semibold disabled:opacity-60 cursor-pointer"
               >
                 <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
                   <path
@@ -605,19 +647,22 @@ export const AuthScreen: React.FC = () => {
               </button>
             </div>
 
-            {/* Mobile switch trigger */}
-            <div className="mt-6 text-center md:hidden">
-              <button
-                type="button"
-                onClick={() => {
-                  setErrorMsg("");
-                  setSuccessMsg("");
-                  setIsRegister(true);
-                }}
-                className="min-h-[44px] inline-flex items-center justify-center text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer"
-              >
-                ¿No tienes cuenta? Regístrate aquí
-              </button>
+            {/* Mobile bottom switch link */}
+            <div className="mt-5 text-center md:hidden">
+              <p className="text-xs text-slate-600 dark:text-slate-400">
+                ¿No tienes una cuenta?{" "}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setErrorMsg("");
+                    setSuccessMsg("");
+                    setIsRegister(true);
+                  }}
+                  className="font-bold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer inline-flex items-center min-h-[44px] px-1"
+                >
+                  Regístrate aquí
+                </button>
+              </p>
             </div>
           </div>
         </div>
@@ -630,7 +675,7 @@ export const AuthScreen: React.FC = () => {
               : "left-0 rounded-r-[120px] rounded-l-none"
           }`}
         >
-          {/* Content when in LOGIN MODE (Prompting to Register) */}
+          {/* Prompting to Register when in Login Mode */}
           <div
             className={`transition-all duration-500 flex flex-col items-center max-w-xs ${
               isRegister
@@ -638,11 +683,11 @@ export const AuthScreen: React.FC = () => {
                 : "opacity-100 scale-100"
             }`}
           >
-            <h3 className="text-3xl font-extrabold mb-3 tracking-tight">
-              Hello, Welcome!
+            <h3 className="text-3xl font-extrabold mb-2 tracking-tight">
+              ¡Hola, Bienvenido!
             </h3>
-            <p className="text-xs text-white mb-8 font-semibold leading-relaxed">
-              Don't have an account?
+            <p className="text-xs sm:text-sm text-indigo-100 mb-7 font-medium leading-relaxed">
+              ¿No tienes una cuenta registrada todavía?
             </p>
             <button
               type="button"
@@ -651,13 +696,13 @@ export const AuthScreen: React.FC = () => {
                 setSuccessMsg("");
                 setIsRegister(true);
               }}
-              className="py-3 px-10 rounded-full border-2 border-white/90 hover:bg-white hover:text-indigo-600 text-white font-bold text-xs tracking-wider transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg cursor-pointer"
+              className="min-h-[44px] py-2.5 px-8 rounded-full border-2 border-white/90 hover:bg-white hover:text-indigo-600 text-white font-bold text-xs tracking-wider transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg cursor-pointer"
             >
-              Register
+              Crear Cuenta
             </button>
           </div>
 
-          {/* Content when in REGISTER MODE (Prompting to Login) */}
+          {/* Prompting to Login when in Register Mode */}
           <div
             className={`transition-all duration-500 flex flex-col items-center max-w-xs ${
               !isRegister
@@ -665,11 +710,11 @@ export const AuthScreen: React.FC = () => {
                 : "opacity-100 scale-100"
             }`}
           >
-            <h3 className="text-3xl font-extrabold mb-3 tracking-tight">
-              Welcome Back!
+            <h3 className="text-3xl font-extrabold mb-2 tracking-tight">
+              ¡Bienvenido de nuevo!
             </h3>
-            <p className="text-xs text-white mb-8 font-semibold leading-relaxed">
-              Already have an account?
+            <p className="text-xs sm:text-sm text-indigo-100 mb-7 font-medium leading-relaxed">
+              ¿Ya tienes una cuenta registrada?
             </p>
             <button
               type="button"
@@ -678,53 +723,53 @@ export const AuthScreen: React.FC = () => {
                 setSuccessMsg("");
                 setIsRegister(false);
               }}
-              className="py-3 px-10 rounded-full border-2 border-white/90 hover:bg-white hover:text-indigo-600 text-white font-bold text-xs tracking-wider transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg cursor-pointer"
+              className="min-h-[44px] py-2.5 px-8 rounded-full border-2 border-white/90 hover:bg-white hover:text-indigo-600 text-white font-bold text-xs tracking-wider transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg cursor-pointer"
             >
-              Login
+              Iniciar Sesión
             </button>
           </div>
         </div>
       </main>
 
-      {/* FOOTER FEATURE HIGHLIGHTS (Informative section explaining the app) */}
-      <footer className="w-full max-w-4xl grid grid-cols-1 sm:grid-cols-3 gap-4 py-4 z-10">
-        <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-white/80 dark:bg-[#141419]/80 backdrop-blur-md border border-slate-200/90 dark:border-[#23232A]">
-          <div className="w-9 h-9 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+      {/* FOOTER FEATURE HIGHLIGHTS */}
+      <footer className="w-full max-w-4xl grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-4 pt-4 pb-2 z-10 shrink-0">
+        <div className="flex items-center gap-3 p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-white/80 dark:bg-[#141419]/80 backdrop-blur-md border border-slate-200/90 dark:border-[#23232A]">
+          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
             <Tv className="w-4 h-4" />
           </div>
           <div>
-            <h4 className="text-xs font-bold text-slate-900 dark:text-white">
+            <h4 className="text-xs font-bold text-slate-900 dark:text-white leading-tight">
               Cuentas & Servicios
             </h4>
-            <p className="text-xs font-medium text-slate-700 dark:text-slate-200">
+            <p className="text-[11px] sm:text-xs font-medium text-slate-600 dark:text-slate-300">
               Organiza suscripciones y perfiles
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-white/80 dark:bg-[#141419]/80 backdrop-blur-md border border-slate-200/90 dark:border-[#23232A]">
-          <div className="w-9 h-9 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+        <div className="flex items-center gap-3 p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-white/80 dark:bg-[#141419]/80 backdrop-blur-md border border-slate-200/90 dark:border-[#23232A]">
+          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
             <Users className="w-4 h-4" />
           </div>
           <div>
-            <h4 className="text-xs font-bold text-slate-900 dark:text-white">
+            <h4 className="text-xs font-bold text-slate-900 dark:text-white leading-tight">
               Clientes & Proveedores
             </h4>
-            <p className="text-xs font-medium text-slate-700 dark:text-slate-200">
+            <p className="text-[11px] sm:text-xs font-medium text-slate-600 dark:text-slate-300">
               Gestión de perfiles asignados y libres
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-white/80 dark:bg-[#141419]/80 backdrop-blur-md border border-slate-200/90 dark:border-[#23232A]">
-          <div className="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+        <div className="flex items-center gap-3 p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-white/80 dark:bg-[#141419]/80 backdrop-blur-md border border-slate-200/90 dark:border-[#23232A]">
+          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
             <Bell className="w-4 h-4" />
           </div>
           <div>
-            <h4 className="text-xs font-bold text-slate-900 dark:text-white">
+            <h4 className="text-xs font-bold text-slate-900 dark:text-white leading-tight">
               Alertas de Vencimiento
             </h4>
-            <p className="text-xs font-medium text-slate-700 dark:text-slate-200">
+            <p className="text-[11px] sm:text-xs font-medium text-slate-600 dark:text-slate-300">
               Control de corte y recordatorios
             </p>
           </div>
