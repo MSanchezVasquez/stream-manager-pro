@@ -206,16 +206,18 @@ export const AuthScreen: React.FC = () => {
             <h1 className="text-xl font-black tracking-tight text-slate-900 dark:text-white leading-none">
               GestorStreaming
             </h1>
-            <p className="text-[11px] font-medium text-slate-500 dark:text-[#8E8E9A]">
+            <p className="text-xs font-medium text-slate-600 dark:text-slate-300">
               Administración de Cuentas, Perfiles y Proveedores
             </p>
           </div>
         </div>
 
         <button
+          type="button"
           onClick={toggleTheme}
-          className="p-3 rounded-2xl bg-white/80 dark:bg-[#1A1A22]/80 backdrop-blur-md border border-slate-200/80 dark:border-[#2D2D38] text-slate-700 dark:text-[#E4E4E7] hover:scale-105 active:scale-95 shadow-md transition-all"
-          title="Cambiar tema"
+          aria-label={theme === "dark" ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
+          className="min-w-[44px] min-h-[44px] p-2.5 rounded-2xl bg-white/90 dark:bg-[#1A1A22]/90 backdrop-blur-md border border-slate-300 dark:border-[#2D2D38] text-slate-800 dark:text-[#E4E4E7] hover:scale-105 active:scale-95 shadow-md transition-all flex items-center justify-center cursor-pointer"
+          title={theme === "dark" ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
         >
           {theme === "dark" ? (
             <Sun className="w-5 h-5 text-amber-400" />
@@ -226,7 +228,11 @@ export const AuthScreen: React.FC = () => {
       </header>
 
       {/* Main Container Card */}
-      <div className="relative w-full max-w-4xl min-h-[520px] bg-white dark:bg-[#141419] rounded-[32px] border border-slate-200/90 dark:border-[#23232A] shadow-2xl overflow-hidden flex flex-col md:flex-row my-auto">
+      <main
+        id="main-content"
+        role="main"
+        className="relative w-full max-w-4xl min-h-[520px] bg-white dark:bg-[#141419] rounded-[32px] border border-slate-200/90 dark:border-[#23232A] shadow-2xl overflow-hidden flex flex-col md:flex-row my-auto"
+      >
         {/* LEFT COLUMN: REGISTRATION FORM (Exposed when isRegister === true) */}
         <div
           className={`w-full md:w-1/2 p-8 sm:p-10 flex flex-col justify-center transition-all duration-500 ${
@@ -339,12 +345,13 @@ export const AuthScreen: React.FC = () => {
                       setRegPassword(e.target.value);
                       if (errorMsg) setErrorMsg("");
                     }}
-                    className="w-full pl-10 pr-10 py-3 rounded-2xl border border-slate-200 dark:border-[#272730] bg-slate-100/70 dark:bg-[#1C1C24] text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-[#71717A] focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
+                    className="w-full pl-10 pr-12 py-3 rounded-2xl border border-slate-300 dark:border-[#272730] bg-slate-100/90 dark:bg-[#1C1C24] text-slate-900 dark:text-white text-xs placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-white"
+                    aria-label={showPassword ? "Ocultar contraseña" : "Ver contraseña"}
+                    className="absolute right-1 top-1/2 -translate-y-1/2 min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white cursor-pointer transition-colors"
                   >
                     {showPassword ? (
                       <EyeOff className="w-4 h-4" />
@@ -358,7 +365,7 @@ export const AuthScreen: React.FC = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-3 px-4 rounded-2xl bg-[#6366F1] hover:bg-[#4F46E5] text-white font-bold text-xs shadow-lg shadow-indigo-500/25 transition-all flex items-center justify-center gap-2 disabled:opacity-60"
+                className="w-full min-h-[44px] py-3 px-4 rounded-2xl bg-[#6366F1] hover:bg-[#4F46E5] text-white font-bold text-xs shadow-lg shadow-indigo-500/25 transition-all flex items-center justify-center gap-2 disabled:opacity-60 cursor-pointer"
               >
                 {isSubmitting ? (
                   <CircularSpinner size={16} className="text-white" />
@@ -369,7 +376,7 @@ export const AuthScreen: React.FC = () => {
             </form>
 
             <div className="my-5 flex items-center justify-center">
-              <span className="text-[11px] text-slate-400 dark:text-[#71717A]">
+              <span className="text-xs font-medium text-slate-600 dark:text-slate-300">
                 o regístrate con otras opciones
               </span>
             </div>
@@ -380,7 +387,8 @@ export const AuthScreen: React.FC = () => {
                 type="button"
                 onClick={handleGoogleAuth}
                 disabled={isSubmitting}
-                className="w-full py-2.5 px-4 rounded-xl border border-slate-200 dark:border-[#272730] bg-slate-50 dark:bg-[#1C1C24] hover:bg-slate-100 dark:hover:bg-[#252530] flex items-center justify-center gap-2.5 text-slate-700 dark:text-white transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm text-xs font-semibold disabled:opacity-60"
+                aria-label="Registrarse con Google"
+                className="w-full min-h-[44px] py-2.5 px-4 rounded-xl border border-slate-300 dark:border-[#272730] bg-slate-50 dark:bg-[#1C1C24] hover:bg-slate-100 dark:hover:bg-[#252530] flex items-center justify-center gap-2.5 text-slate-800 dark:text-white transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm text-xs font-semibold disabled:opacity-60 cursor-pointer"
               >
                 <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
                   <path
@@ -413,7 +421,7 @@ export const AuthScreen: React.FC = () => {
                   setSuccessMsg("");
                   setIsRegister(false);
                 }}
-                className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline"
+                className="min-h-[44px] inline-flex items-center justify-center text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer"
               >
                 ¿Ya tienes cuenta? Inicia sesión
               </button>
@@ -499,14 +507,14 @@ export const AuthScreen: React.FC = () => {
                       setLoginEmail(e.target.value);
                       if (errorMsg) setErrorMsg("");
                     }}
-                    className="w-full pl-10 pr-4 py-3 rounded-2xl border border-slate-200 dark:border-[#272730] bg-slate-100/70 dark:bg-[#1C1C24] text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-[#71717A] focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
+                    className="w-full pl-10 pr-4 py-3 rounded-2xl border border-slate-300 dark:border-[#272730] bg-slate-100/90 dark:bg-[#1C1C24] text-slate-900 dark:text-white text-xs placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
                   />
                 </div>
               </div>
 
               <div>
                 <div className="relative">
-                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-[#71717A]" />
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 dark:text-slate-400" />
                   <input
                     type={showPassword ? "text" : "password"}
                     required
@@ -516,12 +524,13 @@ export const AuthScreen: React.FC = () => {
                       setLoginPassword(e.target.value);
                       if (errorMsg) setErrorMsg("");
                     }}
-                    className="w-full pl-10 pr-10 py-3 rounded-2xl border border-slate-200 dark:border-[#272730] bg-slate-100/70 dark:bg-[#1C1C24] text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-[#71717A] focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
+                    className="w-full pl-10 pr-12 py-3 rounded-2xl border border-slate-300 dark:border-[#272730] bg-slate-100/90 dark:bg-[#1C1C24] text-slate-900 dark:text-white text-xs placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-white"
+                    aria-label={showPassword ? "Ocultar contraseña" : "Ver contraseña"}
+                    className="absolute right-1 top-1/2 -translate-y-1/2 min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white cursor-pointer transition-colors"
                   >
                     {showPassword ? (
                       <EyeOff className="w-4 h-4" />
@@ -540,7 +549,7 @@ export const AuthScreen: React.FC = () => {
                       "Por favor contacta al administrador o ingresa con Google.",
                     )
                   }
-                  className="text-[11px] font-medium text-slate-500 hover:text-indigo-600 dark:text-[#94949E] dark:hover:text-indigo-400 transition-colors"
+                  className="min-h-[44px] inline-flex items-center text-xs font-semibold text-slate-700 hover:text-indigo-600 dark:text-slate-300 dark:hover:text-indigo-400 transition-colors cursor-pointer"
                 >
                   Forgot Password?
                 </button>
@@ -549,7 +558,7 @@ export const AuthScreen: React.FC = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-3 px-4 rounded-2xl bg-[#6366F1] hover:bg-[#4F46E5] text-white font-bold text-xs shadow-lg shadow-indigo-500/25 transition-all flex items-center justify-center gap-2 disabled:opacity-60"
+                className="w-full min-h-[44px] py-3 px-4 rounded-2xl bg-[#6366F1] hover:bg-[#4F46E5] text-white font-bold text-xs shadow-lg shadow-indigo-500/25 transition-all flex items-center justify-center gap-2 disabled:opacity-60 cursor-pointer"
               >
                 {isSubmitting ? (
                   <CircularSpinner size={16} className="text-white" />
@@ -560,7 +569,7 @@ export const AuthScreen: React.FC = () => {
             </form>
 
             <div className="my-5 flex items-center justify-center">
-              <span className="text-[11px] text-slate-400 dark:text-[#71717A]">
+              <span className="text-xs font-medium text-slate-600 dark:text-slate-300">
                 o ingresa con otras opciones
               </span>
             </div>
@@ -571,7 +580,8 @@ export const AuthScreen: React.FC = () => {
                 type="button"
                 onClick={handleGoogleAuth}
                 disabled={isSubmitting}
-                className="w-full py-2.5 px-4 rounded-xl border border-slate-200 dark:border-[#272730] bg-slate-50 dark:bg-[#1C1C24] hover:bg-slate-100 dark:hover:bg-[#252530] flex items-center justify-center gap-2.5 text-slate-700 dark:text-white transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm text-xs font-semibold disabled:opacity-60"
+                aria-label="Iniciar sesión con Google"
+                className="w-full min-h-[44px] py-2.5 px-4 rounded-xl border border-slate-300 dark:border-[#272730] bg-slate-50 dark:bg-[#1C1C24] hover:bg-slate-100 dark:hover:bg-[#252530] flex items-center justify-center gap-2.5 text-slate-800 dark:text-white transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm text-xs font-semibold disabled:opacity-60 cursor-pointer"
               >
                 <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
                   <path
@@ -604,7 +614,7 @@ export const AuthScreen: React.FC = () => {
                   setSuccessMsg("");
                   setIsRegister(true);
                 }}
-                className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline"
+                className="min-h-[44px] inline-flex items-center justify-center text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer"
               >
                 ¿No tienes cuenta? Regístrate aquí
               </button>
@@ -641,7 +651,7 @@ export const AuthScreen: React.FC = () => {
                 setSuccessMsg("");
                 setIsRegister(true);
               }}
-              className="py-3 px-10 rounded-full border-2 border-white/90 hover:bg-white hover:text-indigo-600 text-white font-bold text-xs tracking-wider transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg"
+              className="py-3 px-10 rounded-full border-2 border-white/90 hover:bg-white hover:text-indigo-600 text-white font-bold text-xs tracking-wider transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg cursor-pointer"
             >
               Register
             </button>
@@ -668,17 +678,17 @@ export const AuthScreen: React.FC = () => {
                 setSuccessMsg("");
                 setIsRegister(false);
               }}
-              className="py-3 px-10 rounded-full border-2 border-white/90 hover:bg-white hover:text-indigo-600 text-white font-bold text-xs tracking-wider transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg"
+              className="py-3 px-10 rounded-full border-2 border-white/90 hover:bg-white hover:text-indigo-600 text-white font-bold text-xs tracking-wider transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg cursor-pointer"
             >
               Login
             </button>
           </div>
         </div>
-      </div>
+      </main>
 
       {/* FOOTER FEATURE HIGHLIGHTS (Informative section explaining the app) */}
       <footer className="w-full max-w-4xl grid grid-cols-1 sm:grid-cols-3 gap-4 py-4 z-10">
-        <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-white/60 dark:bg-[#141419]/60 backdrop-blur-md border border-slate-200/80 dark:border-[#23232A]">
+        <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-white/80 dark:bg-[#141419]/80 backdrop-blur-md border border-slate-200/90 dark:border-[#23232A]">
           <div className="w-9 h-9 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
             <Tv className="w-4 h-4" />
           </div>
@@ -686,13 +696,13 @@ export const AuthScreen: React.FC = () => {
             <h4 className="text-xs font-bold text-slate-800 dark:text-white">
               Cuentas & Servicios
             </h4>
-            <p className="text-[11px] text-slate-500 dark:text-[#8E8E9A]">
+            <p className="text-xs font-medium text-slate-600 dark:text-slate-300">
               Organiza suscripciones y perfiles
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-white/60 dark:bg-[#141419]/60 backdrop-blur-md border border-slate-200/80 dark:border-[#23232A]">
+        <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-white/80 dark:bg-[#141419]/80 backdrop-blur-md border border-slate-200/90 dark:border-[#23232A]">
           <div className="w-9 h-9 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
             <Users className="w-4 h-4" />
           </div>
@@ -700,13 +710,13 @@ export const AuthScreen: React.FC = () => {
             <h4 className="text-xs font-bold text-slate-800 dark:text-white">
               Clientes & Proveedores
             </h4>
-            <p className="text-[11px] text-slate-500 dark:text-[#8E8E9A]">
+            <p className="text-xs font-medium text-slate-600 dark:text-slate-300">
               Gestión de perfiles asignados y libres
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-white/60 dark:bg-[#141419]/60 backdrop-blur-md border border-slate-200/80 dark:border-[#23232A]">
+        <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-white/80 dark:bg-[#141419]/80 backdrop-blur-md border border-slate-200/90 dark:border-[#23232A]">
           <div className="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
             <Bell className="w-4 h-4" />
           </div>
@@ -714,7 +724,7 @@ export const AuthScreen: React.FC = () => {
             <h4 className="text-xs font-bold text-slate-800 dark:text-white">
               Alertas de Vencimiento
             </h4>
-            <p className="text-[11px] text-slate-500 dark:text-[#8E8E9A]">
+            <p className="text-xs font-medium text-slate-600 dark:text-slate-300">
               Control de corte y recordatorios
             </p>
           </div>

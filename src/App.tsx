@@ -1,33 +1,94 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, lazy, Suspense } from 'react';
 import { useAuthStore } from './store/authStore';
 import { useDataStore } from './store/dataStore';
 
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { Sidebar } from './components/Sidebar';
-import { SettingsModal } from './components/Settings/SettingsModal';
-
 import { FloatingSidebarDrawer } from './components/FloatingSidebarDrawer';
-import { OverviewCards } from './components/Dashboard/OverviewCards';
-import { PlatformDistributionChart } from './components/Dashboard/PlatformDistributionChart';
-import { ExpirationAlerts } from './components/Dashboard/ExpirationAlerts';
-import { FinancialAndActivitySummary } from './components/Dashboard/FinancialAndActivitySummary';
-import { ClientList } from './components/Clients/ClientList';
-import { SupplierList } from './components/Suppliers/SupplierList';
-import { FreeProfilesList } from './components/Profiles/FreeProfilesList';
-import { QuickLinksView } from './components/Links/QuickLinksView';
-import { MessageTemplatesView } from './components/Templates/MessageTemplatesView';
-import { ClientModal } from './components/Clients/ClientModal';
-import { AuthModal } from './components/Auth/AuthModal';
 import { AuthScreen } from './components/Auth/AuthScreen';
-import { FullScreenAppLoader } from './components/common/LoadingSpinners';
-import { UserProfile } from './components/Profiles/UserProfile';
+import { FullScreenAppLoader, CircularSpinner } from './components/common/LoadingSpinners';
 import gsap from 'gsap';
 import { ThemeController } from './components/ThemeController';
 import { useVaultStore } from './store/vaultStore';
-import { VaultUnlockModal } from './components/Vault/VaultUnlockModal';
-import { SetAccountPasswordModal } from './components/Auth/SetAccountPasswordModal';
 import { Menu } from 'lucide-react';
+
+// Lazy-loaded components for optimal initial bundle size and Lighthouse performance
+const OverviewCards = lazy(() =>
+  import('./components/Dashboard/OverviewCards').then((m) => ({
+    default: m.OverviewCards,
+  })),
+);
+const PlatformDistributionChart = lazy(() =>
+  import('./components/Dashboard/PlatformDistributionChart').then((m) => ({
+    default: m.PlatformDistributionChart,
+  })),
+);
+const ExpirationAlerts = lazy(() =>
+  import('./components/Dashboard/ExpirationAlerts').then((m) => ({
+    default: m.ExpirationAlerts,
+  })),
+);
+const FinancialAndActivitySummary = lazy(() =>
+  import('./components/Dashboard/FinancialAndActivitySummary').then((m) => ({
+    default: m.FinancialAndActivitySummary,
+  })),
+);
+const ClientList = lazy(() =>
+  import('./components/Clients/ClientList').then((m) => ({
+    default: m.ClientList,
+  })),
+);
+const SupplierList = lazy(() =>
+  import('./components/Suppliers/SupplierList').then((m) => ({
+    default: m.SupplierList,
+  })),
+);
+const FreeProfilesList = lazy(() =>
+  import('./components/Profiles/FreeProfilesList').then((m) => ({
+    default: m.FreeProfilesList,
+  })),
+);
+const QuickLinksView = lazy(() =>
+  import('./components/Links/QuickLinksView').then((m) => ({
+    default: m.QuickLinksView,
+  })),
+);
+const MessageTemplatesView = lazy(() =>
+  import('./components/Templates/MessageTemplatesView').then((m) => ({
+    default: m.MessageTemplatesView,
+  })),
+);
+const UserProfile = lazy(() =>
+  import('./components/Profiles/UserProfile').then((m) => ({
+    default: m.UserProfile,
+  })),
+);
+const ClientModal = lazy(() =>
+  import('./components/Clients/ClientModal').then((m) => ({
+    default: m.ClientModal,
+  })),
+);
+const AuthModal = lazy(() =>
+  import('./components/Auth/AuthModal').then((m) => ({
+    default: m.AuthModal,
+  })),
+);
+const VaultUnlockModal = lazy(() =>
+  import('./components/Vault/VaultUnlockModal').then((m) => ({
+    default: m.VaultUnlockModal,
+  })),
+);
+const SettingsModal = lazy(() =>
+  import('./components/Settings/SettingsModal').then((m) => ({
+    default: m.SettingsModal,
+  })),
+);
+const SetAccountPasswordModal = lazy(() =>
+  import('./components/Auth/SetAccountPasswordModal').then((m) => ({
+    default: m.SetAccountPasswordModal,
+  })),
+);
 
 function useDelayedLoading(isLoading: boolean, delay = 400): boolean {
   const [showLoader, setShowLoader] = useState(false);
@@ -191,45 +252,53 @@ function MainApp() {
             ref={mainContentRef}
             className="flex-1 min-w-0 w-full flex flex-col"
           >
-            {activeTab === 'dashboard' && (
-              <div className="space-y-8">
-                <OverviewCards onNavigateTab={(tab) => setActiveTab(tab)} />
-                <FinancialAndActivitySummary
-                  onNavigateTab={(tab) => setActiveTab(tab)}
-                  onOpenAddClientModal={() => setIsClientModalOpen(true)}
+            <Suspense
+              fallback={
+                <div className="flex items-center justify-center p-12 min-h-[300px]">
+                  <CircularSpinner size={32} className="text-indigo-600 dark:text-indigo-400" />
+                </div>
+              }
+            >
+              {activeTab === 'dashboard' && (
+                <div className="space-y-8">
+                  <OverviewCards onNavigateTab={(tab) => setActiveTab(tab)} />
+                  <FinancialAndActivitySummary
+                    onNavigateTab={(tab) => setActiveTab(tab)}
+                    onOpenAddClientModal={() => setIsClientModalOpen(true)}
+                  />
+                  <ExpirationAlerts />
+                  <PlatformDistributionChart />
+                </div>
+              )}
+
+              {activeTab === 'profile' && <UserProfile />}
+
+              {activeTab === 'clients_active' && (
+                <ClientList
+                  statusFilter="active"
+                  globalSearchQuery={searchQuery}
+                  onSwitchTab={setActiveTab}
                 />
-                <ExpirationAlerts />
-                <PlatformDistributionChart />
-              </div>
-            )}
+              )}
 
-            {activeTab === 'profile' && <UserProfile />}
+              {activeTab === 'clients_inactive' && (
+                <ClientList
+                  statusFilter="inactive"
+                  globalSearchQuery={searchQuery}
+                  onSwitchTab={setActiveTab}
+                />
+              )}
 
-            {activeTab === 'clients_active' && (
-              <ClientList
-                statusFilter="active"
-                globalSearchQuery={searchQuery}
-                onSwitchTab={setActiveTab}
-              />
-            )}
+              {activeTab === 'suppliers' && <SupplierList />}
 
-            {activeTab === 'clients_inactive' && (
-              <ClientList
-                statusFilter="inactive"
-                globalSearchQuery={searchQuery}
-                onSwitchTab={setActiveTab}
-              />
-            )}
+              {activeTab === 'free_profiles' && <FreeProfilesList />}
 
-            {activeTab === 'suppliers' && <SupplierList />}
+              {activeTab === 'alerts' && <ExpirationAlerts />}
 
-            {activeTab === 'free_profiles' && <FreeProfilesList />}
+              {activeTab === 'templates' && <MessageTemplatesView />}
 
-            {activeTab === 'alerts' && <ExpirationAlerts />}
-
-            {activeTab === 'templates' && <MessageTemplatesView />}
-
-            {activeTab === 'links' && <QuickLinksView />}
+              {activeTab === 'links' && <QuickLinksView />}
+            </Suspense>
           </div>
         </div>
       </main>
@@ -237,50 +306,52 @@ function MainApp() {
       {/* Footer */}
       <Footer onNavigateTab={(tab) => setActiveTab(tab)} />
 
-      {/* Modals */}
-      {isClientModalOpen && (
-        <ClientModal
-          isOpen={isClientModalOpen}
-          onClose={() => setIsClientModalOpen(false)}
-        />
-      )}
+      {/* Modals with Suspense */}
+      <Suspense fallback={null}>
+        {isClientModalOpen && (
+          <ClientModal
+            isOpen={isClientModalOpen}
+            onClose={() => setIsClientModalOpen(false)}
+          />
+        )}
 
-      {isAuthModalOpen && (
-        <AuthModal
-          isOpen={isAuthModalOpen}
-          onClose={() => setIsAuthModalOpen(false)}
-        />
-      )}
+        {isAuthModalOpen && (
+          <AuthModal
+            isOpen={isAuthModalOpen}
+            onClose={() => setIsAuthModalOpen(false)}
+          />
+        )}
 
-      {isVaultModalOpen && (
-        <VaultUnlockModal
-          isOpen={isVaultModalOpen}
-          onClose={() => setIsVaultModalOpen(false)}
-          allowSkip={true}
-        />
-      )}
+        {isVaultModalOpen && (
+          <VaultUnlockModal
+            isOpen={isVaultModalOpen}
+            onClose={() => setIsVaultModalOpen(false)}
+            allowSkip={true}
+          />
+        )}
 
-      {isSettingsModalOpen && (
-        <SettingsModal
-          isOpen={isSettingsModalOpen}
-          onClose={() => setIsSettingsModalOpen(false)}
-          onOpenVaultModal={() => {
-            setIsSettingsModalOpen(false);
-            setIsVaultModalOpen(true);
-          }}
-          onOpenSetPasswordModal={() => {
-            setIsSettingsModalOpen(false);
-            setIsSetPasswordModalOpen(true);
-          }}
-        />
-      )}
+        {isSettingsModalOpen && (
+          <SettingsModal
+            isOpen={isSettingsModalOpen}
+            onClose={() => setIsSettingsModalOpen(false)}
+            onOpenVaultModal={() => {
+              setIsSettingsModalOpen(false);
+              setIsVaultModalOpen(true);
+            }}
+            onOpenSetPasswordModal={() => {
+              setIsSettingsModalOpen(false);
+              setIsSetPasswordModalOpen(true);
+            }}
+          />
+        )}
 
-      {isSetPasswordModalOpen && (
-        <SetAccountPasswordModal
-          isOpen={isSetPasswordModalOpen}
-          onClose={() => setIsSetPasswordModalOpen(false)}
-        />
-      )}
+        {isSetPasswordModalOpen && (
+          <SetAccountPasswordModal
+            isOpen={isSetPasswordModalOpen}
+            onClose={() => setIsSetPasswordModalOpen(false)}
+          />
+        )}
+      </Suspense>
     </div>
   );
 }
