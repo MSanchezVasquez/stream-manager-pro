@@ -106,7 +106,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <aside className="hidden lg:block shrink-0 w-64 xl:w-70">
-      <div className="sticky top-20 flex flex-col space-y-4">
+      <div className="sticky top-[108px] z-30 flex flex-col space-y-3.5 max-h-[calc(100vh-124px)] overflow-y-auto pr-1 scrollbar-thin">
         {/* Header & Primary Action Button */}
         <div>
           <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-[#94949E] px-1 block mb-2 font-space">

@@ -7,6 +7,7 @@ import { Navbar } from './Navbar';
 import { Footer } from './Footer';
 import { Sidebar } from './Sidebar';
 import { FloatingSidebarDrawer } from './FloatingSidebarDrawer';
+import { MobileBottomNav } from './MobileBottomNav';
 import { FullScreenAppLoader, CircularSpinner } from './common/LoadingSpinners';
 import { Menu } from 'lucide-react';
 
@@ -151,7 +152,7 @@ export const AuthenticatedApp: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0A0A0C] text-slate-900 dark:text-[#E4E4E7] font-sans transition-colors duration-300 overflow-x-hidden flex flex-col">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0A0A0C] text-slate-900 dark:text-[#E4E4E7] font-sans transition-colors duration-300 overflow-x-clip flex flex-col">
       {/* Top Navbar */}
       <Navbar
         searchQuery={searchQuery}
@@ -173,22 +174,30 @@ export const AuthenticatedApp: React.FC = () => {
       />
 
       {/* Main Container */}
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-7 flex flex-col relative">
-        {/* Mobile / Tablet Sidebar Toggle Button - stuck to the left, below navbar */}
+      <main className="flex-1 w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 pb-24 lg:pb-8 flex flex-col relative">
+        {/* Mobile / Tablet Quick Sticky Action Bar - stays fixed under navbar while scrolling */}
         {activeTab !== 'profile' && (
-          <div className="lg:hidden mb-3.5 flex items-center gap-2">
+          <div className="lg:hidden sticky top-[92px] sm:top-[100px] z-20 py-1.5 px-0.5 mb-2.5 -mt-1 bg-slate-50/95 dark:bg-[#0A0A0C]/95 backdrop-blur-md flex items-center justify-between gap-2 border-b border-slate-200/70 dark:border-[#1F1F24]/70">
             <button
               type="button"
               onClick={() => setIsMobileDrawerOpen(true)}
-              className="p-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white shadow-sm transition-all cursor-pointer flex items-center justify-center shrink-0 active:scale-95"
+              className="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white shadow-xs transition-all cursor-pointer flex items-center gap-2 shrink-0 active:scale-95"
               title="Abrir menú de navegación"
               aria-label="Abrir menú de navegación"
             >
-              <Menu className="w-5 h-5 text-white" />
+              <Menu className="w-4 h-4 text-white" />
+              <span className="text-xs font-bold font-space uppercase tracking-wider">
+                Menú
+              </span>
             </button>
-            <span className="text-xs font-bold text-slate-700 dark:text-slate-300 font-space uppercase tracking-wider">
-              Menú
-            </span>
+
+            <button
+              type="button"
+              onClick={() => setIsClientModalOpen(true)}
+              className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800/40 cursor-pointer active:scale-95 transition-all shadow-xs"
+            >
+              + Nuevo Cliente
+            </button>
           </div>
         )}
 
@@ -257,6 +266,14 @@ export const AuthenticatedApp: React.FC = () => {
           </div>
         </div>
       </main>
+
+      {/* Mobile Bottom Navigation Bar (Fixed at bottom on Mobile & Tablet) */}
+      <MobileBottomNav
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        onOpenMobileDrawer={() => setIsMobileDrawerOpen(true)}
+        onOpenAddClientModal={() => setIsClientModalOpen(true)}
+      />
 
       {/* Footer */}
       <Footer onNavigateTab={(tab) => setActiveTab(tab)} />

@@ -134,23 +134,23 @@ export const FloatingSidebarDrawer: React.FC<FloatingSidebarDrawerProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 lg:hidden flex">
+    <div className="fixed inset-0 z-50 lg:hidden">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/50 transition-opacity duration-300"
+        className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity duration-300 z-40"
         onClick={onClose}
         aria-hidden="true"
       />
 
-      {/* Floating Drawer */}
+      {/* Floating Drawer - Fixed full height panel */}
       <aside
-        className="relative w-76 max-w-[85vw] bg-white dark:bg-[#141418] text-slate-900 dark:text-[#E4E4E7] h-full shadow-2xl border-r border-slate-200 dark:border-[#1F1F23] p-5 flex flex-col gap-4 overflow-y-auto z-10 animate-in slide-in-from-left duration-200 select-none"
+        className="fixed inset-y-0 left-0 z-50 w-80 max-w-[85vw] bg-white dark:bg-[#141418] text-slate-900 dark:text-[#E4E4E7] h-full shadow-2xl border-r border-slate-200 dark:border-[#1F1F23] flex flex-col select-none animate-in slide-in-from-left duration-200"
         role="dialog"
         aria-modal="true"
         aria-label="Menú de navegación principal"
       >
-        {/* Header with Logo and Close Button */}
-        <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-[#22222A]">
+        {/* Fixed Header with Logo and Close Button */}
+        <div className="shrink-0 p-4 sm:p-5 pb-3.5 border-b border-slate-100 dark:border-[#22222A] flex items-center justify-between bg-white dark:bg-[#141418] z-10">
           <div className="flex items-center gap-2.5">
             <AppLogo className="w-6 h-6 text-indigo-600 dark:text-indigo-400 shrink-0" />
             <div className="flex items-center gap-1.5">
@@ -173,67 +173,70 @@ export const FloatingSidebarDrawer: React.FC<FloatingSidebarDrawerProps> = ({
           </button>
         </div>
 
-        {/* Primary Action Button */}
-        <div>
-          <button
-            type="button"
-            onClick={handleAddNewClick}
-            className="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-semibold text-xs shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer select-none"
-          >
-            <PlusCircle className="w-4 h-4 shrink-0" />
-            <span>{t("nav.newClientService")}</span>
-          </button>
+        {/* Scrollable Navigation Area */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-5 pt-3 flex flex-col gap-3.5">
+          {/* Primary Action Button */}
+          <div>
+            <button
+              type="button"
+              onClick={handleAddNewClick}
+              className="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-semibold text-xs shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer select-none active:scale-98"
+            >
+              <PlusCircle className="w-4 h-4 shrink-0" />
+              <span>{t("nav.newClientService")}</span>
+            </button>
+          </div>
+
+          {/* Section Title */}
+          <div className="px-1">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-[#94949E] font-space">
+              {resolvedLanguage === "en" ? "NAVIGATION MENU" : "MENÚ DE NAVEGACIÓN"}
+            </span>
+          </div>
+
+          {/* Navigation Items List */}
+          <nav className="flex flex-col space-y-1">
+            {menuItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = activeTab === item.id;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => handleItemClick(item.id)}
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs sm:text-sm transition-colors cursor-pointer select-none ${
+                    isActive
+                      ? "bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-bold border border-indigo-200/80 dark:border-indigo-500/20 shadow-xs"
+                      : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1A1A1E] hover:text-slate-900 dark:hover:text-white font-medium"
+                  }`}
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <Icon
+                      className={`w-4 h-4 shrink-0 transition-colors ${
+                        isActive
+                          ? "text-indigo-600 dark:text-indigo-400"
+                          : "text-slate-400 dark:text-slate-500"
+                      }`}
+                    />
+                    <span className="truncate">{item.label}</span>
+                  </div>
+
+                  {item.badge !== null && item.badge > 0 && (
+                    <span
+                      className={`px-2 py-0.5 text-[11px] font-bold rounded-full shrink-0 transition-colors ${
+                        isActive
+                          ? "bg-indigo-600 text-white"
+                          : item.badgeColor
+                      }`}
+                    >
+                      {item.badge}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </nav>
         </div>
-
-        {/* Section Title */}
-        <div className="px-1 -mb-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-[#94949E] font-space">
-            {resolvedLanguage === "en" ? "NAVIGATION MENU" : "MENÚ DE NAVEGACIÓN"}
-          </span>
-        </div>
-
-        {/* Navigation Items List */}
-        <nav className="flex-1 flex flex-col space-y-1">
-          {menuItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = activeTab === item.id;
-            return (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => handleItemClick(item.id)}
-                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs sm:text-sm transition-colors cursor-pointer select-none ${
-                  isActive
-                    ? "bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-bold border border-indigo-200/80 dark:border-indigo-500/20 shadow-xs"
-                    : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1A1A1E] hover:text-slate-900 dark:hover:text-white font-medium"
-                }`}
-              >
-                <div className="flex items-center gap-3 min-w-0">
-                  <Icon
-                    className={`w-4 h-4 shrink-0 transition-colors ${
-                      isActive
-                        ? "text-indigo-600 dark:text-indigo-400"
-                        : "text-slate-400 dark:text-slate-500"
-                    }`}
-                  />
-                  <span className="truncate">{item.label}</span>
-                </div>
-
-                {item.badge !== null && item.badge > 0 && (
-                  <span
-                    className={`px-2 py-0.5 text-[11px] font-bold rounded-full shrink-0 transition-colors ${
-                      isActive
-                        ? "bg-indigo-600 text-white"
-                        : item.badgeColor
-                    }`}
-                  >
-                    {item.badge}
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </nav>
       </aside>
     </div>
   );

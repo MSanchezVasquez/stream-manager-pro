@@ -17,7 +17,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigateTab }) => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="w-full bg-[#2242cc] text-white transition-colors duration-300 shadow-inner mt-auto">
+    <footer className="w-full bg-[#2242cc] text-white transition-colors duration-300 shadow-inner mt-auto mb-14 lg:mb-0">
       {/* Top Tier: Brand, Store Badges, Navigation Links & Social Media */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-7">
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">

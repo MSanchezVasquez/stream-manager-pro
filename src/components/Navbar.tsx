@@ -132,17 +132,17 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-30 w-full bg-[#2242cc] text-white shadow-md transition-colors duration-300 select-none">
+    <header className="sticky top-0 z-40 w-full bg-[#2242cc] text-white shadow-md transition-colors duration-300 select-none">
       {/* Level 1: Main Header Tier (Brand, Nav Buttons, Search & Profile) */}
       <div>
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-1.5 sm:gap-6">
           <div className="flex items-center gap-1.5 sm:gap-3 min-w-0">
-            {/* Sidebar Floating Toggle Button - ONLY on Tablet & Mobile (Hidden on iPhone SE / small screens <= 414px) */}
+            {/* Sidebar Floating Toggle Button - ALWAYS visible on Mobile & Tablet in fixed header */}
             {onToggleSidebar && activeTab !== 'profile' && (
               <button
                 type="button"
                 onClick={onToggleSidebar}
-                className="navbar-mobile-menu-btn hidden min-[415px]:flex lg:hidden p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-white/10 hover:bg-white/20 active:bg-white/30 text-white transition-all cursor-pointer items-center justify-center shrink-0 border border-white/15"
+                className="navbar-mobile-menu-btn flex lg:hidden p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-white/15 hover:bg-white/25 active:bg-white/35 text-white transition-all cursor-pointer items-center justify-center shrink-0 border border-white/20 active:scale-95"
                 title="Abrir menú de navegación"
                 aria-label="Abrir menú de navegación"
               >
@@ -153,13 +153,13 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Brand Logo */}
             <div
               ref={logoRef}
-              className="flex items-center gap-2 sm:gap-2.5 cursor-pointer group min-w-0 shrink"
+              className="flex items-center gap-1.5 sm:gap-2.5 cursor-pointer group min-w-0 shrink"
               onClick={() => setActiveTab('dashboard')}
             >
               <AppLogo className="w-7 h-7 sm:w-8 sm:h-8 text-white group-hover:scale-105 transition-transform shrink-0" />
               <div className="flex items-center gap-1 sm:gap-1.5 min-w-0">
                 <span className="font-extrabold text-base sm:text-2xl tracking-tight text-white leading-none whitespace-nowrap">
-                  Stream<span className="hidden sm:inline">Manager</span>
+                  Stream<span className="hidden min-[380px]:inline">Manager</span>
                 </span>
                 <span className="text-[8px] sm:text-[9px] uppercase tracking-wider bg-white text-[#2242cc] px-1 sm:px-1.5 py-0.5 rounded font-black shadow-sm shrink-0">
                   PRO
