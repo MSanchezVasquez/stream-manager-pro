@@ -245,7 +245,7 @@ export const AuthScreen: React.FC = () => {
             <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white mb-1.5 text-center">
               Registration
             </h2>
-            <p className="text-xs text-center text-slate-500 dark:text-[#94949E] mb-6">
+            <p className="text-xs text-center text-slate-700 dark:text-slate-200 mb-6 font-medium">
               Crea tu cuenta para comenzar a gestionar
             </p>
 
@@ -301,7 +301,7 @@ export const AuthScreen: React.FC = () => {
             <form onSubmit={handleRegisterSubmit} className="space-y-3.5">
               <div>
                 <div className="relative">
-                  <UserIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-[#71717A]" />
+                  <UserIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-600 dark:text-slate-300" />
                   <input
                     type="text"
                     required
@@ -311,14 +311,14 @@ export const AuthScreen: React.FC = () => {
                       setRegName(e.target.value);
                       if (errorMsg) setErrorMsg("");
                     }}
-                    className="w-full pl-10 pr-4 py-3 rounded-2xl border border-slate-200 dark:border-[#272730] bg-slate-100/70 dark:bg-[#1C1C24] text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-[#71717A] focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
+                    className="w-full pl-10 pr-4 py-3 rounded-2xl border border-slate-300 dark:border-[#272730] bg-slate-100/90 dark:bg-[#1C1C24] text-slate-900 dark:text-white text-xs placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
                   />
                 </div>
               </div>
 
               <div>
                 <div className="relative">
-                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-[#71717A]" />
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-600 dark:text-slate-300" />
                   <input
                     type="email"
                     required
@@ -328,14 +328,14 @@ export const AuthScreen: React.FC = () => {
                       setRegEmail(e.target.value);
                       if (errorMsg) setErrorMsg("");
                     }}
-                    className="w-full pl-10 pr-4 py-3 rounded-2xl border border-slate-200 dark:border-[#272730] bg-slate-100/70 dark:bg-[#1C1C24] text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-[#71717A] focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
+                    className="w-full pl-10 pr-4 py-3 rounded-2xl border border-slate-300 dark:border-[#272730] bg-slate-100/90 dark:bg-[#1C1C24] text-slate-900 dark:text-white text-xs placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
                   />
                 </div>
               </div>
 
               <div>
                 <div className="relative">
-                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-[#71717A]" />
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-600 dark:text-slate-300" />
                   <input
                     type={showPassword ? "text" : "password"}
                     required
@@ -441,7 +441,7 @@ export const AuthScreen: React.FC = () => {
             <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white mb-1.5 text-center">
               Login
             </h2>
-            <p className="text-xs text-center text-slate-500 dark:text-[#94949E] mb-6">
+            <p className="text-xs text-center text-slate-700 dark:text-slate-200 mb-6 font-medium">
               Ingresa tus credenciales para acceder al gestor
             </p>
 
@@ -497,7 +497,7 @@ export const AuthScreen: React.FC = () => {
             <form onSubmit={handleLoginSubmit} className="space-y-3.5">
               <div>
                 <div className="relative">
-                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-[#71717A]" />
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-600 dark:text-slate-300" />
                   <input
                     type="email"
                     required
@@ -514,7 +514,7 @@ export const AuthScreen: React.FC = () => {
 
               <div>
                 <div className="relative">
-                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 dark:text-slate-400" />
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-600 dark:text-slate-300" />
                   <input
                     type={showPassword ? "text" : "password"}
                     required
@@ -549,7 +549,7 @@ export const AuthScreen: React.FC = () => {
                       "Por favor contacta al administrador o ingresa con Google.",
                     )
                   }
-                  className="min-h-[44px] inline-flex items-center text-xs font-semibold text-slate-700 hover:text-indigo-600 dark:text-slate-300 dark:hover:text-indigo-400 transition-colors cursor-pointer"
+                  className="min-h-[44px] inline-flex items-center text-xs font-bold text-slate-800 hover:text-indigo-600 dark:text-slate-200 dark:hover:text-indigo-400 transition-colors cursor-pointer"
                 >
                   Forgot Password?
                 </button>
@@ -569,7 +569,7 @@ export const AuthScreen: React.FC = () => {
             </form>
 
             <div className="my-5 flex items-center justify-center">
-              <span className="text-xs font-medium text-slate-600 dark:text-slate-300">
+              <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">
                 o ingresa con otras opciones
               </span>
             </div>
@@ -641,7 +641,7 @@ export const AuthScreen: React.FC = () => {
             <h3 className="text-3xl font-extrabold mb-3 tracking-tight">
               Hello, Welcome!
             </h3>
-            <p className="text-xs text-indigo-100/90 mb-8 font-medium leading-relaxed">
+            <p className="text-xs text-white mb-8 font-semibold leading-relaxed">
               Don't have an account?
             </p>
             <button
@@ -668,7 +668,7 @@ export const AuthScreen: React.FC = () => {
             <h3 className="text-3xl font-extrabold mb-3 tracking-tight">
               Welcome Back!
             </h3>
-            <p className="text-xs text-indigo-100/90 mb-8 font-medium leading-relaxed">
+            <p className="text-xs text-white mb-8 font-semibold leading-relaxed">
               Already have an account?
             </p>
             <button
@@ -693,10 +693,10 @@ export const AuthScreen: React.FC = () => {
             <Tv className="w-4 h-4" />
           </div>
           <div>
-            <h4 className="text-xs font-bold text-slate-800 dark:text-white">
+            <h4 className="text-xs font-bold text-slate-900 dark:text-white">
               Cuentas & Servicios
             </h4>
-            <p className="text-xs font-medium text-slate-600 dark:text-slate-300">
+            <p className="text-xs font-medium text-slate-700 dark:text-slate-200">
               Organiza suscripciones y perfiles
             </p>
           </div>
@@ -707,10 +707,10 @@ export const AuthScreen: React.FC = () => {
             <Users className="w-4 h-4" />
           </div>
           <div>
-            <h4 className="text-xs font-bold text-slate-800 dark:text-white">
+            <h4 className="text-xs font-bold text-slate-900 dark:text-white">
               Clientes & Proveedores
             </h4>
-            <p className="text-xs font-medium text-slate-600 dark:text-slate-300">
+            <p className="text-xs font-medium text-slate-700 dark:text-slate-200">
               Gestión de perfiles asignados y libres
             </p>
           </div>
@@ -721,10 +721,10 @@ export const AuthScreen: React.FC = () => {
             <Bell className="w-4 h-4" />
           </div>
           <div>
-            <h4 className="text-xs font-bold text-slate-800 dark:text-white">
+            <h4 className="text-xs font-bold text-slate-900 dark:text-white">
               Alertas de Vencimiento
             </h4>
-            <p className="text-xs font-medium text-slate-600 dark:text-slate-300">
+            <p className="text-xs font-medium text-slate-700 dark:text-slate-200">
               Control de corte y recordatorios
             </p>
           </div>

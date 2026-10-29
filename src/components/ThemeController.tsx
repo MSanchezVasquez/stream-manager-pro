@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { useThemeStore } from "../store/themeStore";
-import gsap from "gsap";
 
 export const ThemeController: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -27,18 +26,11 @@ export const ThemeController: React.FC<{ children: React.ReactNode }> = ({
       } else {
         root.classList.remove("dark");
       }
-
-      // 2. Animación suave con GSAP
-      gsap.to("body", {
-        backgroundColor: activeTheme === "dark" ? "#0A0A0C" : "#f8fafc",
-        duration: 0.4,
-        ease: "power2.out",
-      });
     };
 
     applyTheme();
 
-    // 3. Si está en 'system', escuchar cambios del sistema operativo
+    // 2. Si está en 'system', escuchar cambios del sistema operativo
     if (themeMode === "system") {
       const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
       const handleChange = () => applyTheme();

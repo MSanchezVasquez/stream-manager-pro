@@ -15,7 +15,6 @@ import {
   reauthenticateWithPopup,
   User,
 } from "../lib/firebase";
-import { useVaultStore } from "./vaultStore";
 
 export interface AuthResponse {
   success: boolean;
@@ -307,7 +306,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   logout: async () => {
     try {
       await signOut(auth);
-      useVaultStore.getState().resetVaultState();
+      import("./vaultStore")
+        .then((m) => m.useVaultStore.getState().resetVaultState())
+        .catch(() => {});
       set({ user: null });
     } catch (err) {
       console.warn("Sign out error:", err);
