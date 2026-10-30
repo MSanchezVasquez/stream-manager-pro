@@ -445,7 +445,7 @@ export const FinancialAndActivitySummary: React.FC<
                       onNavigateTab("clients_active");
                     }
                   }}
-                  className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white shadow-xs transition-colors cursor-pointer"
+                  className="px-3.5 py-1.5 text-xs font-bold rounded-lg bg-[#1A1A1A] hover:bg-black active:bg-black text-white dark:bg-white dark:hover:bg-slate-200 dark:active:bg-slate-300 dark:text-slate-950 shadow-xs transition-all cursor-pointer"
                 >
                   {isEn ? "+ New Client" : "+ Nueva Venta"}
                 </button>

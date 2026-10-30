@@ -284,12 +284,8 @@ export const Navbar: React.FC<NavbarProps> = ({
       </div>
 
       {/* Level 2: Platform Showcase Ticker (Aligned with main page content width) */}
-      <div className="bg-black/15 dark:bg-black/35 py-1.5 overflow-hidden select-none pointer-events-none relative border-t border-white/5 dark:border-white/5">
+      <div className="bg-black/15 dark:bg-black/35 py-1.5 overflow-hidden select-none pointer-events-none relative border-t border-black/20 dark:border-black/40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full relative">
-          {/* Sombras / difuminado en los extremos para entrada y salida suave de los logos */}
-          <div className="pointer-events-none absolute left-4 sm:left-6 lg:left-8 top-0 bottom-0 w-8 sm:w-16 bg-gradient-to-r from-[#1A1A1A] dark:from-[#101013] to-transparent z-10" />
-          <div className="pointer-events-none absolute right-4 sm:right-6 lg:right-8 top-0 bottom-0 w-8 sm:w-16 bg-gradient-to-l from-[#1A1A1A] dark:from-[#101013] to-transparent z-10" />
-
           <div
             className="w-full flex items-center overflow-hidden marquee-mask"
             style={{

@@ -152,12 +152,12 @@ export const FloatingSidebarDrawer: React.FC<FloatingSidebarDrawerProps> = ({
         {/* Fixed Header with Logo and Close Button */}
         <div className="shrink-0 p-4 sm:p-5 pb-3.5 border-b border-slate-100 dark:border-[#22222A] flex items-center justify-between bg-white dark:bg-[#141418] z-10">
           <div className="flex items-center gap-2.5">
-            <AppLogo className="w-6 h-6 text-indigo-600 dark:text-indigo-400 shrink-0" />
+            <AppLogo className="w-6 h-6 text-slate-900 dark:text-white shrink-0" />
             <div className="flex items-center gap-1.5">
               <span className="font-extrabold text-base tracking-tight text-slate-900 dark:text-white font-space">
                 StreamManager
               </span>
-              <span className="text-[9px] uppercase tracking-wider bg-indigo-600 text-white px-1.5 py-0.5 rounded font-black shadow-xs">
+              <span className="text-[9px] uppercase tracking-wider bg-[#1A1A1A] dark:bg-white text-white dark:text-slate-950 px-1.5 py-0.5 rounded font-black shadow-xs">
                 PRO
               </span>
             </div>
@@ -180,9 +180,9 @@ export const FloatingSidebarDrawer: React.FC<FloatingSidebarDrawerProps> = ({
             <button
               type="button"
               onClick={handleAddNewClick}
-              className="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-semibold text-xs shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer select-none active:scale-98"
+              className="w-full py-2.5 px-4 rounded-xl bg-[#1A1A1A] hover:bg-black active:bg-black text-white dark:bg-white dark:hover:bg-slate-200 dark:active:bg-slate-300 dark:text-slate-950 font-bold text-xs shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer select-none active:scale-98"
             >
-              <PlusCircle className="w-4 h-4 shrink-0" />
+              <PlusCircle className="w-4 h-4 shrink-0 text-white dark:text-slate-950" />
               <span>{t("nav.newClientService")}</span>
             </button>
           </div>
@@ -206,7 +206,7 @@ export const FloatingSidebarDrawer: React.FC<FloatingSidebarDrawerProps> = ({
                   onClick={() => handleItemClick(item.id)}
                   className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs sm:text-sm transition-colors cursor-pointer select-none ${
                     isActive
-                      ? "bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-bold border border-indigo-200/80 dark:border-indigo-500/20 shadow-xs"
+                      ? "bg-slate-900/5 dark:bg-white/10 text-slate-900 dark:text-white font-bold border border-slate-300/80 dark:border-white/15 shadow-xs"
                       : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1A1A1E] hover:text-slate-900 dark:hover:text-white font-medium"
                   }`}
                 >
@@ -214,7 +214,7 @@ export const FloatingSidebarDrawer: React.FC<FloatingSidebarDrawerProps> = ({
                     <Icon
                       className={`w-4 h-4 shrink-0 transition-colors ${
                         isActive
-                          ? "text-indigo-600 dark:text-indigo-400"
+                          ? "text-slate-900 dark:text-white"
                           : "text-slate-400 dark:text-slate-500"
                       }`}
                     />
@@ -225,7 +225,7 @@ export const FloatingSidebarDrawer: React.FC<FloatingSidebarDrawerProps> = ({
                     <span
                       className={`px-2 py-0.5 text-[11px] font-bold rounded-full shrink-0 transition-colors ${
                         isActive
-                          ? "bg-indigo-600 text-white"
+                          ? "bg-[#1A1A1A] dark:bg-white text-white dark:text-slate-950"
                           : item.badgeColor
                       }`}
                     >

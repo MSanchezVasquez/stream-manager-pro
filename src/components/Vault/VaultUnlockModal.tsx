@@ -296,10 +296,10 @@ export const VaultUnlockModal: React.FC<VaultUnlockModalProps> = ({
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-1 py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md shadow-indigo-500/25 transition-all flex items-center justify-center gap-2 disabled:opacity-60"
+                  className="flex-1 py-2.5 px-4 rounded-xl bg-[#1A1A1A] hover:bg-black active:bg-black text-white dark:bg-white dark:hover:bg-slate-200 dark:active:bg-slate-300 dark:text-slate-950 font-bold text-xs shadow-md shadow-black/20 dark:shadow-white/10 transition-all flex items-center justify-center gap-2 disabled:opacity-60 cursor-pointer"
                 >
                   {isSubmitting ? (
-                    <CircularSpinner size={16} className="text-white" />
+                    <CircularSpinner size={16} className="text-white dark:text-slate-950" />
                   ) : (
                     <>
                       <span>

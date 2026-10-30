@@ -295,7 +295,7 @@ export const ClientInlineEditor: React.FC<ClientInlineEditorProps> = ({
         </button>
         <button
           onClick={onSave}
-          className="px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-md shadow-indigo-600/20 transition-all flex items-center gap-1.5 cursor-pointer"
+          className="px-4 py-1.5 rounded-xl bg-[#1A1A1A] hover:bg-black active:bg-black text-white dark:bg-white dark:hover:bg-slate-200 dark:active:bg-slate-300 dark:text-slate-950 text-xs font-bold shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
         >
           <Save className="w-3.5 h-3.5" />
           <span>{t("inline.save")}</span>

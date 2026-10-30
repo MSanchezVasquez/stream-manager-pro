@@ -172,7 +172,7 @@ export const ClientListHeader: React.FC<ClientListHeaderProps> = ({
 
           <button
             onClick={onAddClient}
-            className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-md shadow-indigo-600/20 transition-all shrink-0 cursor-pointer"
+            className="px-4 py-2 rounded-xl bg-[#1A1A1A] hover:bg-black active:bg-black text-white dark:bg-white dark:hover:bg-slate-200 dark:active:bg-slate-300 dark:text-slate-950 text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition-all shrink-0 cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>{t("clients.addClient")}</span>
@@ -183,7 +183,7 @@ export const ClientListHeader: React.FC<ClientListHeaderProps> = ({
       {/* Platform Filter Buttons - With marquee-like fade masks and smooth horizontal navigation */}
       <div className="pt-3 border-t border-slate-100 dark:border-[#1F1F23] flex items-center gap-2 min-w-0 relative">
         <span className="text-xs font-semibold text-slate-500 dark:text-[#94949E] mr-1 flex items-center gap-1.5 shrink-0 select-none">
-          <Filter className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
+          <Filter className="w-3.5 h-3.5 text-slate-700 dark:text-slate-300 shrink-0" />
           {t("clients.platform")}
         </span>
 
@@ -212,7 +212,7 @@ export const ClientListHeader: React.FC<ClientListHeaderProps> = ({
               onClick={() => onSelectPlatform(plat)}
               className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all shrink-0 flex items-center gap-1.5 cursor-pointer ${
                 platformFilter === plat
-                  ? "bg-indigo-600 text-white shadow-sm font-bold"
+                  ? "bg-[#1A1A1A] text-white dark:bg-white dark:text-slate-950 shadow-sm font-bold"
                   : "bg-slate-100 dark:bg-[#1A1A1E] text-slate-600 dark:text-[#94949E] hover:bg-slate-200 dark:hover:bg-[#25252E] hover:text-slate-900 dark:hover:text-white border border-transparent dark:border-[#2D2D33]"
               }`}
             >

@@ -253,7 +253,7 @@ export const ExpirationAlerts: React.FC = () => {
             onClick={() => setScope("all")}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
               scope === "all"
-                ? "bg-indigo-600 text-white shadow-xs"
+                ? "bg-[#1A1A1A] text-white dark:bg-white dark:text-slate-950 shadow-xs font-bold"
                 : "text-slate-600 dark:text-[#94949E] hover:text-slate-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-[#25252D]"
             }`}
           >
@@ -262,7 +262,7 @@ export const ExpirationAlerts: React.FC = () => {
             <span
               className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
                 scope === "all"
-                  ? "bg-white/20 text-white"
+                  ? "bg-white/20 dark:bg-slate-900/15 text-white dark:text-slate-950"
                   : "bg-slate-200 dark:bg-[#2D2D35] text-slate-600 dark:text-slate-300"
               }`}
             >
@@ -275,7 +275,7 @@ export const ExpirationAlerts: React.FC = () => {
             onClick={() => setScope("clients")}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
               scope === "clients"
-                ? "bg-blue-600 text-white shadow-xs"
+                ? "bg-[#1A1A1A] text-white dark:bg-white dark:text-slate-950 shadow-xs font-bold"
                 : "text-slate-600 dark:text-[#94949E] hover:text-slate-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-[#25252D]"
             }`}
           >
@@ -284,7 +284,7 @@ export const ExpirationAlerts: React.FC = () => {
             <span
               className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
                 scope === "clients"
-                  ? "bg-white/20 text-white"
+                  ? "bg-white/20 dark:bg-slate-900/15 text-white dark:text-slate-950"
                   : "bg-slate-200 dark:bg-[#2D2D35] text-slate-600 dark:text-slate-300"
               }`}
             >
@@ -297,7 +297,7 @@ export const ExpirationAlerts: React.FC = () => {
             onClick={() => setScope("suppliers")}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
               scope === "suppliers"
-                ? "bg-purple-600 text-white shadow-xs"
+                ? "bg-[#1A1A1A] text-white dark:bg-white dark:text-slate-950 shadow-xs font-bold"
                 : "text-slate-600 dark:text-[#94949E] hover:text-slate-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-[#25252D]"
             }`}
           >
@@ -306,7 +306,7 @@ export const ExpirationAlerts: React.FC = () => {
             <span
               className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
                 scope === "suppliers"
-                  ? "bg-white/20 text-white"
+                  ? "bg-white/20 dark:bg-slate-900/15 text-white dark:text-slate-950"
                   : "bg-slate-200 dark:bg-[#2D2D35] text-slate-600 dark:text-slate-300"
               }`}
             >

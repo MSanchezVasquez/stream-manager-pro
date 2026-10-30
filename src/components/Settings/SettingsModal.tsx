@@ -287,9 +287,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     onClose();
                     onOpenSetPasswordModal();
                   }}
-                  className="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md shadow-indigo-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full py-2.5 px-4 rounded-xl bg-[#1A1A1A] hover:bg-black active:bg-black text-white dark:bg-white dark:hover:bg-slate-200 dark:active:bg-slate-300 dark:text-slate-950 font-bold text-xs shadow-md shadow-black/20 dark:shadow-white/10 transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  <KeyRound className="w-3.5 h-3.5" />
+                  <KeyRound className="w-3.5 h-3.5 text-white dark:text-slate-950" />
                   <span>
                     {hasGoogleProvider() && !hasPasswordProvider()
                       ? t("settings.createPasswordBtn")

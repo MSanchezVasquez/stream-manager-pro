@@ -60,8 +60,8 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
           onClick={() => setActiveTab('dashboard')}
           className={`flex flex-col items-center justify-center py-1.5 px-1 rounded-xl transition-all cursor-pointer ${
             activeTab === 'dashboard'
-              ? 'text-indigo-600 dark:text-indigo-400 font-bold scale-105'
-              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              ? 'text-slate-900 dark:text-white font-bold scale-105'
+              : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
           }`}
         >
           <LayoutDashboard className="w-5 h-5 mb-0.5" />
@@ -74,8 +74,8 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
           onClick={() => setActiveTab('clients_active')}
           className={`relative flex flex-col items-center justify-center py-1.5 px-1 rounded-xl transition-all cursor-pointer ${
             isClientTabActive
-              ? 'text-indigo-600 dark:text-indigo-400 font-bold scale-105'
-              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              ? 'text-slate-900 dark:text-white font-bold scale-105'
+              : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
           }`}
         >
           <div className="relative">
@@ -94,7 +94,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
           <button
             type="button"
             onClick={onOpenAddClientModal}
-            className="w-11 h-11 rounded-full bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white shadow-lg shadow-indigo-600/30 flex items-center justify-center cursor-pointer transition-transform active:scale-95 border-2 border-white dark:border-[#141418]"
+            className="w-11 h-11 rounded-full bg-[#1A1A1A] hover:bg-black active:bg-black text-white dark:bg-white dark:hover:bg-slate-200 dark:text-slate-950 shadow-lg shadow-black/20 dark:shadow-white/10 flex items-center justify-center cursor-pointer transition-transform active:scale-95 border-2 border-white dark:border-[#141418]"
             title="Nuevo Cliente o Servicio"
             aria-label="Nuevo Cliente o Servicio"
           >
@@ -108,14 +108,14 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
           onClick={() => setActiveTab('suppliers')}
           className={`relative flex flex-col items-center justify-center py-1.5 px-1 rounded-xl transition-all cursor-pointer ${
             activeTab === 'suppliers'
-              ? 'text-indigo-600 dark:text-indigo-400 font-bold scale-105'
-              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              ? 'text-slate-900 dark:text-white font-bold scale-105'
+              : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
           }`}
         >
           <div className="relative">
             <Truck className="w-5 h-5 mb-0.5" />
             {suppliersCount > 0 && (
-              <span className="absolute -top-1 -right-2 px-1 py-0.2 rounded-full text-[9px] font-black bg-indigo-500 text-white min-w-3.5 text-center leading-tight">
+              <span className="absolute -top-1 -right-2 px-1 py-0.2 rounded-full text-[9px] font-black bg-[#1A1A1A] dark:bg-white text-white dark:text-slate-950 min-w-3.5 text-center leading-tight">
                 {suppliersCount}
               </span>
             )}
@@ -129,8 +129,8 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
           onClick={onOpenMobileDrawer}
           className={`relative flex flex-col items-center justify-center py-1.5 px-1 rounded-xl transition-all cursor-pointer ${
             activeTab !== 'dashboard' && !isClientTabActive && activeTab !== 'suppliers'
-              ? 'text-indigo-600 dark:text-indigo-400 font-bold scale-105'
-              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              ? 'text-slate-900 dark:text-white font-bold scale-105'
+              : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
           }`}
         >
           <div className="relative">

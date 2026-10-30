@@ -580,7 +580,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                   <button
                     type="button"
                     onClick={handleAddSubscription}
-                    className="px-3 py-1.5 rounded-xl bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                    className="px-3 py-1.5 rounded-xl bg-slate-900/5 hover:bg-slate-900/10 dark:bg-white/10 dark:hover:bg-white/15 text-slate-900 dark:text-white border border-slate-300/80 dark:border-white/15 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>{t("clientModal.addService")}</span>
@@ -595,7 +595,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">
+                          <span className="text-xs font-bold text-slate-900 dark:text-white">
                             {t("clientModal.serviceNumber")}{index + 1}
                           </span>
                           {isSubscriptionFromFreeProfile(sub, freeProfiles) && (
@@ -700,7 +700,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                                     }}
                                     className={`px-3 py-1 rounded-md text-[11px] font-semibold transition-all cursor-pointer ${
                                       isActive
-                                        ? "bg-indigo-600 text-white shadow-xs font-bold"
+                                        ? "bg-[#1A1A1A] text-white dark:bg-white dark:text-slate-950 shadow-xs font-bold"
                                         : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                                     }`}
                                   >
@@ -813,8 +813,8 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                                     }
                                     className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-all shrink-0 cursor-pointer ${
                                       isSelected
-                                        ? "bg-indigo-600 text-white shadow-xs"
-                                        : "bg-white dark:bg-[#0F0F12] border border-slate-200 dark:border-[#2D2D33] text-slate-600 dark:text-slate-300 hover:border-indigo-400"
+                                        ? "bg-[#1A1A1A] text-white dark:bg-white dark:text-slate-950 shadow-xs font-bold"
+                                        : "bg-white dark:bg-[#0F0F12] border border-slate-200 dark:border-[#2D2D33] text-slate-600 dark:text-slate-300 hover:border-slate-400 dark:hover:border-slate-500"
                                     }`}
                                   >
                                     {label}
@@ -823,7 +823,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                               })}
                             </div>
 
-                            <span className="text-[11px] font-bold font-cascadia text-indigo-600 dark:text-indigo-400 whitespace-nowrap hidden sm:inline ml-auto">
+                            <span className="text-[11px] font-bold font-cascadia text-slate-900 dark:text-white whitespace-nowrap hidden sm:inline ml-auto">
                               {formatSubscriptionPeriod(
                                 sub.periodUnit || "months",
                                 sub.periodValue ||
@@ -872,7 +872,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                                       }}
                                       className={`px-2.5 py-0.5 rounded text-[10px] font-semibold transition-all cursor-pointer ${
                                         currentBase === "cutDate"
-                                          ? "bg-indigo-600 text-white font-bold shadow-xs"
+                                          ? "bg-[#1A1A1A] text-white dark:bg-white dark:text-slate-950 font-bold shadow-xs"
                                           : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                                       }`}
                                     >
@@ -897,7 +897,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                                       }}
                                       className={`px-2.5 py-0.5 rounded text-[10px] font-semibold transition-all cursor-pointer ${
                                         currentBase === "today"
-                                          ? "bg-indigo-600 text-white font-bold shadow-xs"
+                                          ? "bg-[#1A1A1A] text-white dark:bg-white dark:text-slate-950 font-bold shadow-xs"
                                           : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                                       }`}
                                     >
@@ -1066,10 +1066,10 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                       : "Resuelve el aviso de cliente duplicado para continuar"
                     : undefined
                 }
-                className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-lg shadow-indigo-600/20 transition-all flex items-center gap-2 disabled:opacity-60"
+                className="px-5 py-2 rounded-xl bg-[#1A1A1A] hover:bg-black active:bg-black text-white dark:bg-white dark:hover:bg-slate-200 dark:active:bg-slate-300 dark:text-slate-950 text-xs font-bold shadow-md shadow-black/20 dark:shadow-white/10 transition-all flex items-center gap-2 disabled:opacity-60 cursor-pointer"
               >
                 {isSaving && (
-                  <CircularSpinner size={16} className="text-white" />
+                  <CircularSpinner size={16} className="text-white dark:text-slate-950" />
                 )}
                 {activeClient
                   ? t("clientModal.saveChanges")

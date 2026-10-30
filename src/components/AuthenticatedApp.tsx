@@ -181,11 +181,11 @@ export const AuthenticatedApp: React.FC = () => {
             <button
               type="button"
               onClick={() => setIsMobileDrawerOpen(true)}
-              className="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white shadow-xs transition-all cursor-pointer flex items-center gap-2 shrink-0 active:scale-95"
+              className="px-3 py-1.5 rounded-xl bg-[#1A1A1A] hover:bg-black active:bg-black text-white dark:bg-white dark:hover:bg-slate-200 dark:active:bg-slate-300 dark:text-slate-950 shadow-xs transition-all cursor-pointer flex items-center gap-2 shrink-0 active:scale-95 font-bold"
               title="Abrir menú de navegación"
               aria-label="Abrir menú de navegación"
             >
-              <Menu className="w-4 h-4 text-white" />
+              <Menu className="w-4 h-4 text-white dark:text-slate-950" />
               <span className="text-xs font-bold font-space uppercase tracking-wider">
                 Menú
               </span>
@@ -194,7 +194,7 @@ export const AuthenticatedApp: React.FC = () => {
             <button
               type="button"
               onClick={() => setIsClientModalOpen(true)}
-              className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800/40 cursor-pointer active:scale-95 transition-all shadow-xs"
+              className="text-xs font-bold text-slate-900 dark:text-white hover:text-black dark:hover:text-white px-3 py-1.5 rounded-xl bg-slate-900/5 dark:bg-white/10 border border-slate-300 dark:border-white/15 cursor-pointer active:scale-95 transition-all shadow-xs"
             >
               + Nuevo Cliente
             </button>

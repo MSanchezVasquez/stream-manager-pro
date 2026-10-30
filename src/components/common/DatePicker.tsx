@@ -360,9 +360,9 @@ export const DatePicker: React.FC<DatePickerProps> = ({
                     onClick={() => handleSelectDay(day)}
                     className={`aspect-square rounded-lg text-[11px] font-medium transition-colors flex items-center justify-center cursor-pointer ${
                       isSelected
-                        ? "bg-indigo-600 text-white font-bold shadow-xs"
+                        ? "bg-[#1A1A1A] text-white dark:bg-white dark:text-slate-950 font-bold shadow-xs"
                         : isToday
-                          ? "border border-indigo-400 text-indigo-600 dark:text-indigo-400 font-semibold"
+                          ? "border border-slate-400 dark:border-slate-500 text-slate-900 dark:text-white font-bold"
                           : inCurrentMonth
                             ? "text-slate-700 dark:text-[#E4E4E7] hover:bg-slate-100 dark:hover:bg-[#1F1F26]"
                             : "text-slate-300 dark:text-[#3A3A44] hover:bg-slate-50 dark:hover:bg-[#1A1A1E]"
@@ -390,7 +390,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
               <button
                 type="button"
                 onClick={handleToday}
-                className="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer"
+                className="text-[11px] font-semibold text-slate-900 dark:text-white hover:underline cursor-pointer"
               >
                 Hoy
               </button>

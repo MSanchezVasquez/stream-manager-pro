@@ -277,7 +277,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                   <button
                     type="button"
                     onClick={() => setShowPasswordModal(true)}
-                    className="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-xs transition-all shrink-0 cursor-pointer"
+                    className="px-3 py-1.5 rounded-xl bg-[#1A1A1A] hover:bg-black active:bg-black text-white dark:bg-white dark:hover:bg-slate-200 dark:text-slate-950 font-bold text-xs shadow-xs transition-all shrink-0 cursor-pointer"
                   >
                     Crear clave
                   </button>
@@ -388,10 +388,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-60"
+                  className="w-full py-2.5 px-4 rounded-xl bg-[#1A1A1A] hover:bg-black active:bg-black text-white dark:bg-white dark:hover:bg-slate-200 dark:active:bg-slate-300 dark:text-slate-950 font-bold text-xs shadow-md shadow-black/20 dark:shadow-white/10 transition-all flex items-center justify-center gap-2 disabled:opacity-60 cursor-pointer"
                 >
                   {isSubmitting && (
-                    <CircularSpinner size={16} className="text-white" />
+                    <CircularSpinner size={16} className="text-white dark:text-slate-950" />
                   )}
                   <span>Ingresar a mi Cuenta</span>
                 </button>
