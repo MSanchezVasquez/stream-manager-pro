@@ -14,6 +14,44 @@ input[type="number"] {
   appearance: textfield;
 }
 
+/* ==========================================================================
+   RESET GLOBAL DE ENFOQUE (FOCUS) PARA INPUTS, TEXTAREAS Y SELECTS:
+   Elimina el doble resaltado (outline nativo del navegador + rings / box-shadows).
+   Al hacer clic o foco, SOLO se resalta el borde exterior nítido y limpio.
+   ========================================================================== */
+input,
+textarea,
+select {
+  outline: none !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: none !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-width: 0px !important;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):focus,
+textarea:focus,
+select:focus {
+  border-color: #6366f1; /* Indigo-500 */
+}
+
+.dark input:not([type="checkbox"]):not([type="radio"]):focus,
+.dark textarea:focus,
+.dark select:focus {
+  border-color: #818cf8; /* Indigo-400 */
+}
+
 /* @theme {
   --font-sans: "Inter", sans-serif;
   --font-space: "Space Grotesk", sans-serif;

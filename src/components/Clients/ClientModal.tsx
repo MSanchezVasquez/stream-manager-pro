@@ -480,7 +480,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder={t("clientModal.namePlaceholder")}
-                      className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-[#2D2D35] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-xs focus:ring-2 focus:ring-indigo-500"
+                      className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-[#2D2D35] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-xs outline-none focus:outline-none focus:border-indigo-500 focus:ring-0 transition-colors"
                     />
                   </div>
 
@@ -495,7 +495,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                         placeholder={t("clientModal.phonePlaceholder")}
-                        className="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-200 dark:border-[#2D2D35] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-xs focus:ring-2 focus:ring-indigo-500"
+                        className="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-200 dark:border-[#2D2D35] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-xs outline-none focus:outline-none focus:border-indigo-500 focus:ring-0 transition-colors"
                       />
                     </div>
                   </div>
@@ -974,7 +974,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                               )
                             }
                             placeholder={t("clientModal.emailPlaceholder")}
-                            className="w-full p-2 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-xs font-mono"
+                            className="w-full p-2 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-xs font-mono outline-none focus:outline-none focus:border-indigo-500 focus:ring-0 transition-colors"
                           />
                         </div>
 
@@ -994,7 +994,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                               )
                             }
                             placeholder={t("clientModal.passPlaceholder")}
-                            className="w-full p-2 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-xs font-mono"
+                            className="w-full p-2 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-xs font-mono outline-none focus:outline-none focus:border-indigo-500 focus:ring-0 transition-colors"
                           />
                         </div>
                       </div>
@@ -1015,7 +1015,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                               )
                             }
                             placeholder={t("clientModal.profilePlaceholder")}
-                            className="w-full p-2 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-xs"
+                            className="w-full p-2 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-xs outline-none focus:outline-none focus:border-indigo-500 focus:ring-0 transition-colors"
                           />
                         </div>
 
@@ -1035,7 +1035,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                               )
                             }
                             placeholder={t("clientModal.pinPlaceholder")}
-                            className="w-full p-2 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-xs font-mono"
+                            className="w-full p-2 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-xs font-mono outline-none focus:outline-none focus:border-indigo-500 focus:ring-0 transition-colors"
                           />
                         </div>
                       </div>

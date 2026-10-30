@@ -175,7 +175,7 @@ export const SupplierList: React.FC = () => {
               placeholder={t("suppliers.search")}
               value={newSupplierName}
               onChange={(e) => setNewSupplierName(e.target.value)}
-              className="w-full px-3 py-2 rounded-xl border border-purple-500/30 bg-white dark:bg-[#1A1A1E] text-slate-900 dark:text-[#E4E4E7] text-xs font-medium focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full px-3 py-2 rounded-xl border border-purple-500/30 bg-white dark:bg-[#1A1A1E] text-slate-900 dark:text-[#E4E4E7] text-xs font-medium focus:outline-none focus:border-purple-500 focus:ring-0 transition-colors"
             />
           </div>
 

@@ -74,7 +74,7 @@ export const ClientInlineEditor: React.FC<ClientInlineEditorProps> = ({
                 name: e.target.value,
               })
             }
-            className="w-full px-3 py-1.5 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-xs font-semibold focus:ring-2 focus:ring-indigo-500 font-space"
+            className="w-full px-3 py-1.5 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-xs font-semibold outline-none focus:outline-none focus:border-indigo-500 focus:ring-0 font-space transition-colors"
           />
         </div>
 
@@ -92,7 +92,7 @@ export const ClientInlineEditor: React.FC<ClientInlineEditorProps> = ({
               })
             }
             placeholder="+51 987654321"
-            className="w-full px-3 py-1.5 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-xs font-cascadia font-light focus:ring-2 focus:ring-indigo-500"
+            className="w-full px-3 py-1.5 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-xs font-cascadia font-light outline-none focus:outline-none focus:border-indigo-500 focus:ring-0 transition-colors"
           />
         </div>
       </div>

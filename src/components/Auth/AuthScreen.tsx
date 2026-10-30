@@ -325,7 +325,7 @@ export const AuthScreen: React.FC = () => {
                       setRegName(e.target.value);
                       if (errorMsg) setErrorMsg("");
                     }}
-                    className="w-full pl-10 pr-4 py-3 rounded-xl sm:rounded-2xl border border-slate-300 dark:border-[#272730] bg-slate-50 dark:bg-[#1C1C24] text-slate-900 dark:text-white text-xs placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
+                    className="w-full pl-10 pr-4 py-3 rounded-xl sm:rounded-2xl border border-slate-300 dark:border-[#272730] bg-slate-50 dark:bg-[#1C1C24] text-slate-900 dark:text-white text-xs placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-0 transition-colors"
                   />
                 </div>
               </div>
@@ -345,7 +345,7 @@ export const AuthScreen: React.FC = () => {
                       setRegEmail(e.target.value);
                       if (errorMsg) setErrorMsg("");
                     }}
-                    className="w-full pl-10 pr-4 py-3 rounded-xl sm:rounded-2xl border border-slate-300 dark:border-[#272730] bg-slate-50 dark:bg-[#1C1C24] text-slate-900 dark:text-white text-xs placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
+                    className="w-full pl-10 pr-4 py-3 rounded-xl sm:rounded-2xl border border-slate-300 dark:border-[#272730] bg-slate-50 dark:bg-[#1C1C24] text-slate-900 dark:text-white text-xs placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-0 transition-colors"
                   />
                 </div>
               </div>
@@ -365,7 +365,7 @@ export const AuthScreen: React.FC = () => {
                       setRegPassword(e.target.value);
                       if (errorMsg) setErrorMsg("");
                     }}
-                    className="w-full pl-10 pr-12 py-3 rounded-xl sm:rounded-2xl border border-slate-300 dark:border-[#272730] bg-slate-50 dark:bg-[#1C1C24] text-slate-900 dark:text-white text-xs placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
+                    className="w-full pl-10 pr-12 py-3 rounded-xl sm:rounded-2xl border border-slate-300 dark:border-[#272730] bg-slate-50 dark:bg-[#1C1C24] text-slate-900 dark:text-white text-xs placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-0 transition-colors"
                   />
                   <button
                     type="button"
@@ -540,7 +540,7 @@ export const AuthScreen: React.FC = () => {
                       setLoginEmail(e.target.value);
                       if (errorMsg) setErrorMsg("");
                     }}
-                    className="w-full pl-10 pr-4 py-3 rounded-xl sm:rounded-2xl border border-slate-300 dark:border-[#272730] bg-slate-50 dark:bg-[#1C1C24] text-slate-900 dark:text-white text-xs placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
+                    className="w-full pl-10 pr-4 py-3 rounded-xl sm:rounded-2xl border border-slate-300 dark:border-[#272730] bg-slate-50 dark:bg-[#1C1C24] text-slate-900 dark:text-white text-xs placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-0 transition-colors"
                   />
                 </div>
               </div>
@@ -573,7 +573,7 @@ export const AuthScreen: React.FC = () => {
                       setLoginPassword(e.target.value);
                       if (errorMsg) setErrorMsg("");
                     }}
-                    className="w-full pl-10 pr-12 py-3 rounded-xl sm:rounded-2xl border border-slate-300 dark:border-[#272730] bg-slate-50 dark:bg-[#1C1C24] text-slate-900 dark:text-white text-xs placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
+                    className="w-full pl-10 pr-12 py-3 rounded-xl sm:rounded-2xl border border-slate-300 dark:border-[#272730] bg-slate-50 dark:bg-[#1C1C24] text-slate-900 dark:text-white text-xs placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-0 transition-colors"
                   />
                   <button
                     type="button"
