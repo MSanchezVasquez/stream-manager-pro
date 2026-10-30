@@ -26,6 +26,7 @@ import {
 } from "../../store/dataStore";
 import { CircularSpinner } from "../common/LoadingSpinners";
 import { PlatformSelect } from "../common/PlatformSelect";
+import { CustomSelect } from "../common/CustomSelect";
 import {
   getClientAccountHealth,
   addDaysToDateString,
@@ -544,16 +545,28 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                   <label className="block text-xs font-semibold text-slate-700 dark:text-[#C4C4CE] mb-1">
                     {t("clientModal.status")}
                   </label>
-                  <select
+                  <CustomSelect<"active" | "inactive">
                     value={status}
-                    onChange={(e) =>
-                      setStatus(e.target.value as "active" | "inactive")
-                    }
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-[#2D2D35] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-xs focus:ring-2 focus:ring-indigo-500 font-medium"
-                  >
-                    <option value="active">{t("clientModal.active")}</option>
-                    <option value="inactive">{t("clientModal.inactive")}</option>
-                  </select>
+                    onChange={(val) => setStatus(val)}
+                    options={[
+                      {
+                        value: "active",
+                        label: t("clientModal.active"),
+                        dotColor: "bg-emerald-500",
+                        icon: (
+                          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                        ),
+                      },
+                      {
+                        value: "inactive",
+                        label: t("clientModal.inactive"),
+                        dotColor: "bg-rose-500",
+                        icon: (
+                          <span className="w-2.5 h-2.5 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]" />
+                        ),
+                      },
+                    ]}
+                  />
                 </div>
               </div>
 

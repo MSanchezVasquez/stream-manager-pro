@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { DatePicker } from "../common/DatePicker";
 import { PlatformSelect } from "../common/PlatformSelect";
+import { CustomSelect } from "../common/CustomSelect";
 import {
   X,
   Truck,
@@ -210,18 +211,19 @@ export const SupplierModal: React.FC<SupplierModalProps> = ({
                 <Compass className="w-3.5 h-3.5 text-[#94949E]" />
                 {t("suppliers.recommendedBrowser")}
               </label>
-              <select
+              <CustomSelect
                 value={browser}
-                onChange={(e) => setBrowser(e.target.value)}
-                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-slate-50 dark:bg-[#1A1A1E] text-slate-900 dark:text-[#E4E4E7] text-xs"
-              >
-                <option value="Google Chrome">Google Chrome</option>
-                <option value="Opera">Opera</option>
-                <option value="Opera GX">Opera GX</option>
-                <option value="Brave">Brave</option>
-                <option value="Firefox">Firefox</option>
-                <option value="Navegador Edge">Navegador Edge</option>
-              </select>
+                onChange={setBrowser}
+                options={[
+                  { value: "Google Chrome", label: "Google Chrome" },
+                  { value: "Opera", label: "Opera" },
+                  { value: "Opera GX", label: "Opera GX" },
+                  { value: "Brave", label: "Brave" },
+                  { value: "Firefox", label: "Firefox" },
+                  { value: "Navegador Edge", label: "Navegador Edge" },
+                ]}
+                icon={<Compass className="w-3.5 h-3.5 text-slate-400" />}
+              />
             </div>
           </div>
 

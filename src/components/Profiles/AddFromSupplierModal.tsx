@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { PlatformIcon } from "../common/PlatformIcon";
 import { CircularSpinner } from "../common/LoadingSpinners";
+import { CustomSelect } from "../common/CustomSelect";
 import { useDataStore } from "../../store/dataStore";
 import {
   getPlatformConfig,
@@ -355,32 +356,49 @@ export const AddFromSupplierModal: React.FC<AddFromSupplierModalProps> = ({
           </div>
 
           {/* Supplier Filter */}
-          <select
+          <CustomSelect
             value={selectedSupplierId}
-            onChange={(e) => setSelectedSupplierId(e.target.value)}
-            className="px-3 py-1.5 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-slate-50 dark:bg-[#1A1A1E] text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-purple-500"
-          >
-            <option value="all">{t("profiles.allSuppliers")}</option>
-            {suppliers.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.name} ({s.accounts.length})
-              </option>
-            ))}
-          </select>
+            onChange={setSelectedSupplierId}
+            size="sm"
+            className="min-w-[140px]"
+            options={[
+              {
+                value: "all",
+                label: t("profiles.allSuppliers"),
+                icon: <Truck className="w-3.5 h-3.5 text-slate-400" />,
+              },
+              ...suppliers.map((s) => ({
+                value: s.id,
+                label: `${s.name} (${s.accounts.length})`,
+                icon: <Truck className="w-3.5 h-3.5 text-purple-400" />,
+              })),
+            ]}
+          />
 
           {/* Platform Filter */}
-          <select
+          <CustomSelect
             value={selectedPlatform}
-            onChange={(e) => setSelectedPlatform(e.target.value)}
-            className="px-3 py-1.5 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-slate-50 dark:bg-[#1A1A1E] text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-purple-500"
-          >
-            <option value="all">{t("profiles.allPlatforms")}</option>
-            {availablePlatforms.map((plat) => (
-              <option key={plat} value={plat}>
-                {getPlatformDisplayName(plat as StreamingPlatform)}
-              </option>
-            ))}
-          </select>
+            onChange={setSelectedPlatform}
+            size="sm"
+            className="min-w-[140px]"
+            options={[
+              {
+                value: "all",
+                label: t("profiles.allPlatforms"),
+                icon: <Filter className="w-3.5 h-3.5 text-slate-400" />,
+              },
+              ...availablePlatforms.map((plat) => ({
+                value: plat,
+                label: getPlatformDisplayName(plat as StreamingPlatform),
+                icon: (
+                  <PlatformIcon
+                    platform={plat as StreamingPlatform}
+                    className="w-3.5 h-3.5"
+                  />
+                ),
+              })),
+            ]}
+          />
         </div>
 
         {/* Bulk Action Header & Feedback */}

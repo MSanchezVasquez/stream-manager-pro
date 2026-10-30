@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { PlatformSelect } from "../common/PlatformSelect";
+import { CustomSelect } from "../common/CustomSelect";
 import { useDataStore } from "../../store/dataStore";
 import {
   getPlatformConfig,
@@ -468,9 +469,9 @@ export const FreeProfilesList: React.FC = () => {
                     <Truck className="w-3.5 h-3.5" />
                     <span>{t("profiles.importFromSupplierAccount")}</span>
                   </label>
-                  <select
-                    onChange={(e) => {
-                      const accId = e.target.value;
+                  <CustomSelect
+                    value={selectedSupplierMeta?.supplierAccountId || ""}
+                    onChange={(accId) => {
                       if (!accId) {
                         setSelectedSupplierMeta(null);
                         return;
@@ -489,16 +490,25 @@ export const FreeProfilesList: React.FC = () => {
                         });
                       }
                     }}
-                    defaultValue=""
-                    className="w-full p-2 text-xs rounded-lg border border-purple-200 dark:border-purple-900/50 bg-white dark:bg-[#1A1A1E] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  >
-                    <option value="">{t("profiles.selectSupplierAccount")}</option>
-                    {allSupplierAccounts.map((a) => (
-                      <option key={a.id} value={a.id}>
-                        {getPlatformDisplayName(a.serviceName)} - {a.email} ({a.supplierName})
-                      </option>
-                    ))}
-                  </select>
+                    placeholder={t("profiles.selectSupplierAccount")}
+                    searchable
+                    searchPlaceholder="Buscar cuenta..."
+                    icon={<Truck className="w-3.5 h-3.5 text-slate-400" />}
+                    options={[
+                      { value: "", label: t("profiles.selectSupplierAccount") },
+                      ...allSupplierAccounts.map((a) => ({
+                        value: a.id,
+                        label: `${getPlatformDisplayName(a.serviceName)} - ${a.email}`,
+                        description: `Proveedor: ${a.supplierName}`,
+                        icon: (
+                          <PlatformIcon
+                            platform={a.serviceName}
+                            className="w-3.5 h-3.5 shrink-0"
+                          />
+                        ),
+                      })),
+                    ]}
+                  />
                 </div>
               )}
 

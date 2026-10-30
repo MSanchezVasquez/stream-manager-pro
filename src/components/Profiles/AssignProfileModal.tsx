@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { X, UserCheck, Sparkles } from "lucide-react";
+import { X, UserCheck, Sparkles, User } from "lucide-react";
 import { PlatformIcon } from "../common/PlatformIcon";
 import { FreeProfile } from "../../types";
 import { useDataStore } from "../../store/dataStore";
 import { CircularSpinner } from "../common/LoadingSpinners";
+import { CustomSelect } from "../common/CustomSelect";
 import { useTranslation } from "../../utils/translations";
 import { useBodyScrollLock } from "../../utils/useBodyScrollLock";
 
@@ -93,18 +94,20 @@ export const AssignProfileModal: React.FC<AssignProfileModalProps> = ({
             <label className="block text-xs font-semibold text-slate-700 dark:text-[#94949E] mb-1.5">
               {t("profiles.selectClient")}
             </label>
-            <select
+            <CustomSelect
               value={selectedClientId}
-              onChange={(e) => setSelectedClientId(e.target.value)}
-              className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-slate-50 dark:bg-[#1A1A1E] text-slate-900 dark:text-[#E4E4E7] text-xs font-medium focus:ring-2 focus:ring-amber-500"
-            >
-              <option value="">{t("profiles.chooseClientPlaceholder")}</option>
-              {activeClients.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name} ({c.subscriptions.length} {t("inline.services")})
-                </option>
-              ))}
-            </select>
+              onChange={setSelectedClientId}
+              placeholder={t("profiles.chooseClientPlaceholder")}
+              searchable
+              searchPlaceholder="Buscar cliente..."
+              icon={<User className="w-3.5 h-3.5 text-slate-400" />}
+              options={activeClients.map((c) => ({
+                value: c.id,
+                label: c.name,
+                description: `${c.subscriptions.length} ${t("inline.services")}`,
+                icon: <User className="w-3.5 h-3.5 text-amber-500" />,
+              }))}
+            />
           </div>
 
           <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-700 dark:text-amber-300">
