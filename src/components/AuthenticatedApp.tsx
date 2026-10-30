@@ -152,7 +152,7 @@ export const AuthenticatedApp: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0A0A0C] text-slate-900 dark:text-[#E4E4E7] font-sans transition-colors duration-300 overflow-x-clip flex flex-col">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0A0A0C] text-slate-900 dark:text-[#E4E4E7] font-sans transition-colors duration-300 flex flex-col">
       {/* Top Navbar */}
       <Navbar
         searchQuery={searchQuery}
