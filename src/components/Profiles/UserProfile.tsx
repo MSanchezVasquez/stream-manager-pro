@@ -64,7 +64,7 @@ export const UserProfile: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* COLUMNA IZQUIERDA: Información del Usuario */}
         <div className="lg:col-span-3 space-y-6">
-          <div className="relative overflow-hidden rounded-3xl p-6 shadow-sm bg-gradient-to-br from-[#374df5] to-indigo-700 text-white">
+          <div className="relative overflow-hidden rounded-3xl p-6 shadow-sm bg-gradient-to-br from-[#1A1A1A] to-[#2D2D32] dark:from-[#141416] dark:to-[#1F1F24] border border-black/15 dark:border-[#2B2B33] text-white">
             <p className="text-xs font-medium text-white/70 text-right mb-6">
               Fecha en la que se unió: {creationDate}
             </p>
@@ -159,7 +159,7 @@ export const UserProfile: React.FC = () => {
 
               {/* Tarjeta Proveedores */}
               <div className="bg-slate-50 dark:bg-[#1A1A22] p-4 rounded-2xl flex flex-col items-center justify-center border border-slate-100 dark:border-[#25252D]">
-                <div className="w-10 h-10 rounded-full bg-[#374df5]/10 text-[#374df5] flex items-center justify-center mb-2">
+                <div className="w-10 h-10 rounded-full bg-slate-900/10 dark:bg-white/10 text-slate-800 dark:text-white flex items-center justify-center mb-2">
                   <Truck className="w-5 h-5" />
                 </div>
                 <span className="text-2xl font-black text-slate-900 dark:text-white">
@@ -196,7 +196,7 @@ export const UserProfile: React.FC = () => {
               </h4>
               <Zap className="w-4 h-4 text-amber-500" />
             </div>
-            <div className="p-3 bg-gradient-to-br from-[#374df5] to-indigo-700 rounded-xl text-white">
+            <div className="p-3 bg-gradient-to-br from-[#1A1A1A] to-[#2D2D32] dark:from-[#141416] dark:to-[#1F1F24] border border-black/15 dark:border-[#2B2B33] rounded-xl text-white">
               <p className="text-xs font-medium opacity-90 mb-1">Licencia</p>
               <p className="text-lg font-black tracking-tight">Pro Lifetime</p>
               <div className="mt-3 flex items-center gap-1.5 text-[10px] bg-white/20 w-max px-2 py-1 rounded-md">
@@ -218,7 +218,7 @@ export const UserProfile: React.FC = () => {
             <div className="space-y-2">
               <button
                 onClick={exportDataJSON}
-                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#1A1A22] dark:hover:bg-[#25252D] text-xs font-bold text-[#374df5] transition-colors"
+                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#1A1A22] dark:hover:bg-[#25252D] text-xs font-bold text-slate-800 dark:text-white transition-colors"
               >
                 <Download className="w-4 h-4" /> Exportar Datos
               </button>

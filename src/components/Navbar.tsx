@@ -132,7 +132,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-[#2242cc] text-white shadow-md transition-colors duration-300 select-none">
+    <header className="sticky top-0 z-40 w-full bg-[#1A1A1A] dark:bg-[#101013] text-white border-b border-black/25 dark:border-[#222228] shadow-md transition-colors duration-300 select-none">
       {/* Level 1: Main Header Tier (Brand, Nav Buttons, Search & Profile) */}
       <div>
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-1.5 sm:gap-6">
@@ -142,7 +142,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 type="button"
                 onClick={onToggleSidebar}
-                className="navbar-mobile-menu-btn flex lg:hidden p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-white/15 hover:bg-white/25 active:bg-white/35 text-white transition-all cursor-pointer items-center justify-center shrink-0 border border-white/20 active:scale-95"
+                className="navbar-mobile-menu-btn flex lg:hidden p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-white/10 dark:bg-white/5 hover:bg-white/20 dark:hover:bg-white/10 active:bg-white/25 text-white transition-all cursor-pointer items-center justify-center shrink-0 border border-white/15 dark:border-white/10 active:scale-95"
                 title="Abrir menú de navegación"
                 aria-label="Abrir menú de navegación"
               >
@@ -161,7 +161,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <span className="font-extrabold text-base sm:text-2xl tracking-tight text-white leading-none whitespace-nowrap">
                   Stream<span className="hidden min-[380px]:inline">Manager</span>
                 </span>
-                <span className="text-[8px] sm:text-[9px] uppercase tracking-wider bg-white text-[#2242cc] px-1 sm:px-1.5 py-0.5 rounded font-black shadow-sm shrink-0">
+                <span className="text-[8px] sm:text-[9px] uppercase tracking-wider bg-white dark:bg-white/15 text-[#1A1A1A] dark:text-white px-1 sm:px-1.5 py-0.5 rounded font-black shadow-sm shrink-0 border border-transparent dark:border-white/20">
                   PRO
                 </span>
               </div>
@@ -180,7 +180,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 value={searchQuery}
                 onChange={(e) => handleSearchChange(e.target.value)}
                 onKeyDown={handleSearchKeyDown}
-                className="w-full pl-9 pr-8 py-2 text-xs rounded-xl bg-white/10 text-white placeholder:text-white/60 border-none outline-none focus:outline-none focus:ring-0 focus:border-none transition-none"
+                className="w-full pl-9 pr-8 py-2 text-xs rounded-xl bg-white/10 dark:bg-white/5 text-white placeholder:text-white/60 dark:placeholder:text-white/40 border border-white/10 dark:border-white/10 outline-none focus:outline-none focus:ring-0 focus:border-white/30 dark:focus:border-white/20 transition-colors"
               />
               {searchQuery && (
                 <button
@@ -199,14 +199,14 @@ export const Navbar: React.FC<NavbarProps> = ({
               onClick={() => setActiveTab('alerts')}
               className={`relative w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-lg sm:rounded-xl transition-colors border shrink-0 ${
                 activeTab === 'alerts'
-                  ? 'bg-white text-[#2242cc] border-white shadow-sm'
-                  : 'bg-white/10 hover:bg-white/20 border-white/15 text-white'
+                  ? 'bg-white dark:bg-white/15 text-[#1A1A1A] dark:text-white border-white dark:border-white/25 shadow-sm'
+                  : 'bg-white/10 dark:bg-white/5 hover:bg-white/20 dark:hover:bg-white/10 border-white/15 dark:border-white/10 text-white'
               }`}
               title="Alertas de Vencimiento"
             >
               <Bell className="w-4 h-4" />
               {alertCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 min-w-4.25 h-4.25 px-1 rounded-full bg-amber-400 text-[#2242cc] text-[9px] font-black flex items-center justify-center animate-bounce-slow shadow pointer-events-none">
+                <span className="absolute -top-1.5 -right-1.5 min-w-4.25 h-4.25 px-1 rounded-full bg-amber-400 text-[#1A1A1A] text-[9px] font-black flex items-center justify-center animate-bounce-slow shadow pointer-events-none">
                   {alertCount}
                 </span>
               )}
@@ -268,7 +268,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               value={searchQuery}
               onChange={(e) => handleSearchChange(e.target.value)}
               onKeyDown={handleSearchKeyDown}
-              className="w-full pl-9 pr-8 py-2 text-xs rounded-xl bg-white/10 text-white placeholder:text-white/60 border-none outline-none focus:outline-none focus:ring-0 focus:border-none transition-none"
+              className="w-full pl-9 pr-8 py-2 text-xs rounded-xl bg-white/10 dark:bg-white/5 text-white placeholder:text-white/60 dark:placeholder:text-white/40 border border-white/10 dark:border-white/10 outline-none focus:outline-none focus:ring-0 focus:border-white/30 dark:focus:border-white/20 transition-colors"
             />
             {searchQuery && (
               <button
@@ -284,11 +284,11 @@ export const Navbar: React.FC<NavbarProps> = ({
       </div>
 
       {/* Level 2: Platform Showcase Ticker (Aligned with main page content width) */}
-      <div className="bg-black/15 py-1.5 overflow-hidden select-none pointer-events-none relative">
+      <div className="bg-black/15 dark:bg-black/35 py-1.5 overflow-hidden select-none pointer-events-none relative border-t border-white/5 dark:border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full relative">
           {/* Sombras / difuminado en los extremos para entrada y salida suave de los logos */}
-          <div className="pointer-events-none absolute left-4 sm:left-6 lg:left-8 top-0 bottom-0 w-8 sm:w-16 bg-gradient-to-r from-[#1d38ad] to-transparent z-10" />
-          <div className="pointer-events-none absolute right-4 sm:right-6 lg:right-8 top-0 bottom-0 w-8 sm:w-16 bg-gradient-to-l from-[#1d38ad] to-transparent z-10" />
+          <div className="pointer-events-none absolute left-4 sm:left-6 lg:left-8 top-0 bottom-0 w-8 sm:w-16 bg-gradient-to-r from-[#1A1A1A] dark:from-[#101013] to-transparent z-10" />
+          <div className="pointer-events-none absolute right-4 sm:right-6 lg:right-8 top-0 bottom-0 w-8 sm:w-16 bg-gradient-to-l from-[#1A1A1A] dark:from-[#101013] to-transparent z-10" />
 
           <div
             className="w-full flex items-center overflow-hidden marquee-mask"

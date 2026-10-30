@@ -130,10 +130,7 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
             <h4 className="font-bold text-sm text-slate-900 dark:text-white truncate leading-tight">
               {getUserDisplayName()}
             </h4>
-            <p
-              className="text-xs font-medium mt-0.5 flex items-center gap-1 text-[#374df5]"
-              style={{ color: "#374df5" }}
-            >
+            <p className="text-xs font-semibold mt-0.5 flex items-center gap-1 text-slate-700 dark:text-slate-300">
               {t("profile.profile")}
             </p>
           </div>
@@ -214,7 +211,7 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
             onClick={() => setAutoDetectLanguage(!isAutoDetect)}
             className={`hover:cursor-pointer w-full py-1.5 px-3.5 rounded-full border text-xs font-medium text-center transition-all ${
               isAutoDetect
-                ? "border-[#374df5] text-[#374df5] dark:border-indigo-400 dark:text-[#374df5] bg-transparent"
+                ? "border-[#1A1A1A] text-[#1A1A1A] dark:border-white dark:text-white font-semibold bg-slate-100/60 dark:bg-white/10"
                 : "border-slate-300 dark:border-[#2D2D35] text-slate-600 dark:text-[#94949E] bg-transparent"
             }`}
           >
@@ -238,9 +235,15 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
             themeMode === "system" ? "font-medium" : "font-normal"
           }`}
         >
-          <div className="w-5 h-5 rounded-full border-2 border-[#374df5] flex items-center justify-center shrink-0">
+          <div
+            className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+              themeMode === "system"
+                ? "border-[#1A1A1A] dark:border-white"
+                : "border-slate-300 dark:border-slate-600"
+            }`}
+          >
             {themeMode === "system" && (
-              <div className="w-2.5 h-2.5 rounded-full bg-[#374df5]" />
+              <div className="w-2.5 h-2.5 rounded-full bg-[#1A1A1A] dark:bg-white" />
             )}
           </div>
           <span>{t("profile.themeSystem")}</span>
@@ -253,9 +256,15 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
             themeMode === "light" ? "font-medium" : "font-normal"
           }`}
         >
-          <div className="w-5 h-5 rounded-full border-2 border-[#374df5] flex items-center justify-center shrink-0">
+          <div
+            className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+              themeMode === "light"
+                ? "border-[#1A1A1A] dark:border-white"
+                : "border-slate-300 dark:border-slate-600"
+            }`}
+          >
             {themeMode === "light" && (
-              <div className="w-2.5 h-2.5 rounded-full bg-[#374df5]" />
+              <div className="w-2.5 h-2.5 rounded-full bg-[#1A1A1A] dark:bg-white" />
             )}
           </div>
           <span>{t("profile.themeLight")}</span>
@@ -268,9 +277,15 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
             themeMode === "dark" ? "font-medium" : "font-normal"
           }`}
         >
-          <div className="w-5 h-5 rounded-full border-2 border-[#374df5] flex items-center justify-center shrink-0">
+          <div
+            className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+              themeMode === "dark"
+                ? "border-[#1A1A1A] dark:border-white"
+                : "border-slate-300 dark:border-slate-600"
+            }`}
+          >
             {themeMode === "dark" && (
-              <div className="w-2.5 h-2.5 rounded-full bg-[#374df5]" />
+              <div className="w-2.5 h-2.5 rounded-full bg-[#1A1A1A] dark:bg-white" />
             )}
           </div>
           <span>{t("profile.themeDark")}</span>

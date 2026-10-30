@@ -27,7 +27,7 @@ interface SettingsModalProps {
   onOpenSetPasswordModal?: () => void;
 }
 
-const ACCENT = "#374df5";
+const ACCENT = "#1A1A1A";
 
 function RadioRow({
   label,
@@ -45,14 +45,14 @@ function RadioRow({
       className="w-full flex items-center gap-3 py-2 text-left text-sm text-slate-800 dark:text-white hover:bg-slate-100 dark:hover:bg-[#1F1F26] rounded-xl px-2 -mx-2 transition-colors cursor-pointer"
     >
       <div
-        className="w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0"
-        style={{ borderColor: ACCENT }}
+        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+          selected
+            ? "border-[#1A1A1A] dark:border-white"
+            : "border-slate-300 dark:border-slate-600"
+        }`}
       >
         {selected && (
-          <div
-            className="w-2.5 h-2.5 rounded-full"
-            style={{ backgroundColor: ACCENT }}
-          />
+          <div className="w-2.5 h-2.5 rounded-full bg-[#1A1A1A] dark:bg-white" />
         )}
       </div>
       <span className={selected ? "font-semibold" : "font-normal"}>
@@ -218,10 +218,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               onClick={() => setAutoDetectLanguage(!isAutoDetect)}
               className={`mt-3 w-full py-1.5 px-3.5 rounded-full border text-xs font-medium text-center transition-all cursor-pointer ${
                 isAutoDetect
-                  ? "text-[#374df5] dark:text-[#6d84ff]"
+                  ? "border-[#1A1A1A] text-[#1A1A1A] dark:border-white dark:text-white font-semibold bg-slate-100/60 dark:bg-white/10"
                   : "border-slate-300 dark:border-[#2D2D35] text-slate-600 dark:text-[#94949E]"
               }`}
-              style={isAutoDetect ? { borderColor: ACCENT } : undefined}
             >
               {isAutoDetect
                 ? `${t("profile.autoDetect")} (${t("profile.detected")}: ${detectedBrowserLanguage === "es" ? "Español" : "English (US)"})`

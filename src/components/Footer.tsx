@@ -17,7 +17,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigateTab }) => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="w-full bg-[#2242cc] text-white transition-colors duration-300 shadow-inner mt-auto mb-14 lg:mb-0">
+    <footer className="w-full bg-[#1A1A1A] dark:bg-[#101013] text-white border-t border-black/25 dark:border-[#222228] transition-colors duration-300 shadow-inner mt-auto mb-14 lg:mb-0">
       {/* Top Tier: Brand, Store Badges, Navigation Links & Social Media */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-7">
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
@@ -31,7 +31,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigateTab }) => {
               <div>
                 <span className="font-extrabold text-2xl tracking-tight text-white flex items-center gap-2">
                   StreamManager
-                  <span className="text-[10px] uppercase tracking-wider bg-white text-[#2242cc] px-1.5 py-0.5 rounded font-black">
+                  <span className="text-[10px] uppercase tracking-wider bg-white dark:bg-white/15 text-[#1A1A1A] dark:text-white px-1.5 py-0.5 rounded font-black border border-transparent dark:border-white/20">
                     PRO
                   </span>
                 </span>
