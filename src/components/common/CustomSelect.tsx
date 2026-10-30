@@ -147,11 +147,11 @@ export function CustomSelect<T extends string = string>({
         type="button"
         disabled={disabled}
         onClick={() => setIsOpen((o) => !o)}
-        className={`w-full rounded-xl border transition-all shadow-xs flex items-center justify-between gap-2 cursor-pointer select-none ${
+        className={`w-full rounded-xl border transition-colors flex items-center justify-between gap-2 cursor-pointer select-none outline-none focus:outline-none focus:ring-0 ${
           isSmall ? "px-3 py-1.5 text-xs" : "p-2.5 text-xs"
         } ${
           isOpen
-            ? "border-indigo-500 ring-2 ring-indigo-500/20 bg-white dark:bg-[#0F0F12]"
+            ? "border-indigo-500 dark:border-indigo-500 bg-white dark:bg-[#0F0F12]"
             : "border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] hover:border-indigo-400 dark:hover:border-indigo-500"
         } ${
           disabled

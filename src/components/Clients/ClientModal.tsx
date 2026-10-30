@@ -554,7 +554,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                         label: t("clientModal.active"),
                         dotColor: "bg-emerald-500",
                         icon: (
-                          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
                         ),
                       },
                       {
@@ -562,7 +562,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                         label: t("clientModal.inactive"),
                         dotColor: "bg-rose-500",
                         icon: (
-                          <span className="w-2.5 h-2.5 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]" />
+                          <span className="w-2.5 h-2.5 rounded-full bg-rose-500" />
                         ),
                       },
                     ]}
