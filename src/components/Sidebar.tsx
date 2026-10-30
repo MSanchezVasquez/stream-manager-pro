@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef, useLayoutEffect, useState } from 'react';
 import {
   LayoutDashboard,
   Users,
@@ -29,6 +29,30 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const { clients, suppliers, freeProfiles } = useDataStore();
   const { t, resolvedLanguage } = useTranslation();
+
+  const asideRef = useRef<HTMLElement>(null);
+  const [stickyTop, setStickyTop] = useState<number | null>(null);
+
+  useLayoutEffect(() => {
+    const measure = () => {
+      if (!asideRef.current) return;
+      const rect = asideRef.current.getBoundingClientRect();
+      const currentScroll = window.scrollY || window.pageYOffset || 0;
+      const initialTop = Math.round(rect.top + currentScroll);
+      if (initialTop > 0) {
+        setStickyTop(initialTop);
+      }
+    };
+
+    measure();
+    window.addEventListener('resize', measure);
+    const timeout = setTimeout(measure, 50);
+
+    return () => {
+      window.removeEventListener('resize', measure);
+      clearTimeout(timeout);
+    };
+  }, []);
 
   const { activeClientsCount, inactiveClientsCount } = useMemo(() => {
     return {
@@ -105,8 +129,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
   ];
 
   return (
-    <aside className="hidden lg:block shrink-0 w-64 xl:w-70 sticky top-[128px] z-30 self-start">
-      <div className="flex flex-col space-y-3.5 max-h-[calc(100vh-144px)] overflow-y-auto pr-1 scrollbar-thin">
+    <aside
+      ref={asideRef}
+      style={{
+        top: stickyTop !== null ? `${stickyTop}px` : '132px',
+      }}
+      className="hidden lg:block shrink-0 w-64 xl:w-70 sticky z-30 self-start transition-none"
+    >
+      <div
+        style={{
+          maxHeight:
+            stickyTop !== null
+              ? `calc(100vh - ${stickyTop + 16}px)`
+              : 'calc(100vh - 148px)',
+        }}
+        className="flex flex-col space-y-3.5 overflow-y-auto pr-1 scrollbar-thin"
+      >
         {/* Header & Primary Action Button */}
         <div>
           <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-[#94949E] px-1 block mb-2 font-space">
