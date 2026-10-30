@@ -462,7 +462,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
             onSubmit={handleSubmit}
             className="flex-1 flex flex-col min-h-0"
           >
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-6 scrollbar-none [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 pb-12 sm:pb-16 space-y-4 sm:space-y-6 scrollbar-none [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
               {/* General info */}
               <div className="space-y-4 p-4 rounded-2xl bg-slate-50 dark:bg-[#181820] border border-slate-200 dark:border-[#25252D]">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-[#94949E]">

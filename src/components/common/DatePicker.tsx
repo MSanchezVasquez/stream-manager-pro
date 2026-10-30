@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Calendar, ChevronLeft, ChevronRight, X } from "lucide-react";
 import gsap from "gsap";
 import { useSettingsStore } from "../../store/settingsStore";
 
-interface DatePickerProps {
+export interface DatePickerProps {
   /** Fecha en formato "DD/MM/YYYY" (o "DD/MM/YY"), igual que el resto de la app. */
   value: string;
   onChange: (value: string) => void;
@@ -12,6 +13,8 @@ interface DatePickerProps {
   /** Clases adicionales para el texto del valor mostrado (ej. resaltar
    * en ámbar una fecha de corte), sin afectar el color del placeholder. */
   valueClassName?: string;
+  /** Posición preferida: 'auto' (por defecto) calcula dinámicamente si abrir arriba o abajo según el espacio disponible */
+  placement?: "auto" | "top" | "bottom";
 }
 
 const MONTH_NAMES = [
@@ -80,10 +83,9 @@ function buildCalendarGrid(
 }
 
 /**
- * Selector de fecha con panel de calendario visual, animado con GSAP
- * (mismo estilo que PlatformSelect). Reemplaza a los <input type="text">
- * de fecha en formato libre, para no depender de que el usuario escriba
- * el formato correcto a mano.
+ * Selector de fecha con panel de calendario visual rendered vía createPortal
+ * con posicionamiento inteligente (se abre hacia arriba si no cabe abajo)
+ * y clamping para nunca salirse de la pantalla ni quedar tapado por footers.
  */
 export const DatePicker: React.FC<DatePickerProps> = ({
   value,
@@ -91,45 +93,153 @@ export const DatePicker: React.FC<DatePickerProps> = ({
   placeholder = "DD/MM/YYYY",
   className = "",
   valueClassName = "",
+  placement = "auto",
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const selectedDate = parseDate(value);
   const [viewDate, setViewDate] = useState<Date>(selectedDate || new Date());
   const weekStartsOn = useSettingsStore((s) => s.weekStartsOn);
 
-  const containerRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+
+  const [coords, setCoords] = useState<{
+    top: number;
+    left: number;
+    placement: "top" | "bottom";
+  }>({
+    top: 0,
+    left: 0,
+    placement: "bottom",
+  });
+
+  const calculatePosition = () => {
+    if (!buttonRef.current) return null;
+    const rect = buttonRef.current.getBoundingClientRect();
+    const CALENDAR_HEIGHT = 325;
+    const CALENDAR_WIDTH = 288;
+    const PADDING = 8;
+
+    // Si el botón quedó completamente fuera de la vista al scrollear
+    if (rect.bottom < 0 || rect.top > window.innerHeight) {
+      return null;
+    }
+
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const spaceAbove = rect.top;
+
+    let computedPlacement: "top" | "bottom" = "bottom";
+    if (placement === "top") {
+      computedPlacement = "top";
+    } else if (placement === "bottom") {
+      computedPlacement = "bottom";
+    } else {
+      // Auto: si no cabe abajo (< 330px) y hay más espacio arriba, abrir arriba
+      if (spaceBelow < CALENDAR_HEIGHT && spaceAbove > spaceBelow) {
+        computedPlacement = "top";
+      } else {
+        computedPlacement = "bottom";
+      }
+    }
+
+    let top =
+      computedPlacement === "top"
+        ? rect.top - CALENDAR_HEIGHT - 6
+        : rect.bottom + 6;
+
+    // Asegurar que siempre se mantenga dentro de los límites verticales visibles
+    if (top < PADDING) {
+      top = PADDING;
+    } else if (top + CALENDAR_HEIGHT > window.innerHeight - PADDING) {
+      top = Math.max(PADDING, window.innerHeight - CALENDAR_HEIGHT - PADDING);
+    }
+
+    // Asegurar que se mantenga dentro de los límites horizontales visibles
+    let left = rect.left;
+    if (left + CALENDAR_WIDTH > window.innerWidth - PADDING) {
+      left = Math.max(PADDING, rect.right - CALENDAR_WIDTH);
+    }
+    if (left < PADDING) {
+      left = PADDING;
+    }
+
+    return { top, left, placement: computedPlacement };
+  };
+
+  const handleToggle = () => {
+    if (!isOpen) {
+      const pos = calculatePosition();
+      if (pos) setCoords(pos);
+      setViewDate(parseDate(value) || new Date());
+      setIsOpen(true);
+    } else {
+      setIsOpen(false);
+    }
+  };
 
   useEffect(() => {
     if (!isOpen) return;
 
-    setViewDate(selectedDate || new Date());
+    const handleUpdate = () => {
+      const pos = calculatePosition();
+      if (pos) {
+        setCoords(pos);
+      } else {
+        setIsOpen(false);
+      }
+    };
+
+    handleUpdate();
 
     if (panelRef.current) {
       gsap.fromTo(
         panelRef.current,
-        { opacity: 0, scale: 0.95, y: -8 },
-        { opacity: 1, scale: 1, y: 0, duration: 0.22, ease: "back.out(1.6)" },
+        {
+          opacity: 0,
+          scale: 0.95,
+          y: coords.placement === "top" ? 8 : -8,
+        },
+        {
+          opacity: 1,
+          scale: 1,
+          y: 0,
+          duration: 0.22,
+          ease: "back.out(1.6)",
+        },
       );
     }
 
     const handleClickOutside = (e: MouseEvent) => {
-      if (!containerRef.current?.contains(e.target as Node)) {
-        setIsOpen(false);
+      const target = e.target as Node;
+      if (
+        buttonRef.current?.contains(target) ||
+        panelRef.current?.contains(target)
+      ) {
+        return;
       }
+      setIsOpen(false);
     };
+
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape") setIsOpen(false);
     };
 
+    window.addEventListener("scroll", handleUpdate, {
+      capture: true,
+      passive: true,
+    });
+    window.addEventListener("resize", handleUpdate, { passive: true });
     document.addEventListener("mousedown", handleClickOutside);
     document.addEventListener("keydown", handleEscape);
+
     return () => {
+      window.removeEventListener("scroll", handleUpdate, { capture: true });
+      window.removeEventListener("resize", handleUpdate);
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("keydown", handleEscape);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen]);
+  }, [isOpen, placement]);
 
   const grid = buildCalendarGrid(
     viewDate.getFullYear(),
@@ -161,11 +271,12 @@ export const DatePicker: React.FC<DatePickerProps> = ({
   };
 
   return (
-    <div ref={containerRef} className={`relative ${className}`}>
+    <div className={`relative ${className}`}>
       <button
+        ref={buttonRef}
         type="button"
-        onClick={() => setIsOpen((o) => !o)}
-        className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-xs font-medium flex items-center justify-between gap-2.5 hover:border-indigo-400 dark:hover:border-indigo-500 transition-colors shadow-sm"
+        onClick={handleToggle}
+        className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-white dark:bg-[#0F0F12] text-slate-900 dark:text-[#E4E4E7] text-xs font-medium flex items-center justify-between gap-2.5 hover:border-indigo-400 dark:hover:border-indigo-500 transition-colors shadow-sm cursor-pointer"
       >
         <div className="flex items-center gap-2 min-w-0 flex-1 text-left">
           <Calendar className="w-3.5 h-3.5 text-[#94949E] shrink-0" />
@@ -189,96 +300,104 @@ export const DatePicker: React.FC<DatePickerProps> = ({
         )}
       </button>
 
-      {isOpen && (
-        <div
-          ref={panelRef}
-          style={{ transformOrigin: "top" }}
-          className="absolute z-30 mt-1.5 w-72 rounded-2xl border border-slate-200 dark:border-[#2D2D33] bg-white/95 dark:bg-[#17171C]/95 backdrop-blur-md shadow-2xl overflow-hidden p-3"
-        >
-          {/* Header: navegación de mes */}
-          <div className="flex items-center justify-between mb-2 px-1">
-            <button
-              type="button"
-              onClick={goToPrevMonth}
-              className="p-1.5 rounded-lg text-slate-500 dark:text-[#94949E] hover:bg-slate-100 dark:hover:bg-[#1F1F26] transition-colors"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <span className="text-xs font-bold text-slate-800 dark:text-[#E4E4E7]">
-              {MONTH_NAMES[viewDate.getMonth()]} {viewDate.getFullYear()}
-            </span>
-            <button
-              type="button"
-              onClick={goToNextMonth}
-              className="p-1.5 rounded-lg text-slate-500 dark:text-[#94949E] hover:bg-slate-100 dark:hover:bg-[#1F1F26] transition-colors"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
-
-          {/* Días de la semana */}
-          <div className="grid grid-cols-7 gap-0.5 mb-1 px-1">
-            {weekdayLabels.map((wd) => (
-              <span
-                key={wd}
-                className="text-center text-[10px] font-bold text-slate-400 dark:text-[#6C6C78] py-1"
+      {isOpen &&
+        createPortal(
+          <div
+            ref={panelRef}
+            style={{
+              position: "fixed",
+              top: `${coords.top}px`,
+              left: `${coords.left}px`,
+              transformOrigin:
+                coords.placement === "top" ? "bottom center" : "top center",
+            }}
+            className="z-[9999] w-72 rounded-2xl border border-slate-200 dark:border-[#2D2D33] bg-white/98 dark:bg-[#17171C]/98 backdrop-blur-md shadow-2xl overflow-hidden p-3 select-none"
+          >
+            {/* Header: navegación de mes */}
+            <div className="flex items-center justify-between mb-2 px-1">
+              <button
+                type="button"
+                onClick={goToPrevMonth}
+                className="p-1.5 rounded-lg text-slate-500 dark:text-[#94949E] hover:bg-slate-100 dark:hover:bg-[#1F1F26] transition-colors cursor-pointer"
               >
-                {wd}
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <span className="text-xs font-bold text-slate-800 dark:text-[#E4E4E7]">
+                {MONTH_NAMES[viewDate.getMonth()]} {viewDate.getFullYear()}
               </span>
-            ))}
-          </div>
+              <button
+                type="button"
+                onClick={goToNextMonth}
+                className="p-1.5 rounded-lg text-slate-500 dark:text-[#94949E] hover:bg-slate-100 dark:hover:bg-[#1F1F26] transition-colors cursor-pointer"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
 
-          {/* Grilla de días */}
-          <div className="grid grid-cols-7 gap-0.5 px-1">
-            {grid.map((day, i) => {
-              const inCurrentMonth = day.getMonth() === viewDate.getMonth();
-              const isSelected = selectedDate && isSameDay(day, selectedDate);
-              const isToday = isSameDay(day, today);
-
-              return (
-                <button
-                  key={i}
-                  type="button"
-                  onClick={() => handleSelectDay(day)}
-                  className={`aspect-square rounded-lg text-[11px] font-medium transition-colors flex items-center justify-center ${
-                    isSelected
-                      ? "bg-indigo-600 text-white font-bold"
-                      : isToday
-                        ? "border border-indigo-400 text-indigo-600 dark:text-indigo-400"
-                        : inCurrentMonth
-                          ? "text-slate-700 dark:text-[#E4E4E7] hover:bg-slate-100 dark:hover:bg-[#1F1F26]"
-                          : "text-slate-300 dark:text-[#3A3A44] hover:bg-slate-50 dark:hover:bg-[#1A1A1E]"
-                  }`}
+            {/* Días de la semana */}
+            <div className="grid grid-cols-7 gap-0.5 mb-1 px-1">
+              {weekdayLabels.map((wd) => (
+                <span
+                  key={wd}
+                  className="text-center text-[10px] font-bold text-slate-400 dark:text-[#6C6C78] py-1"
                 >
-                  {day.getDate()}
-                </button>
-              );
-            })}
-          </div>
+                  {wd}
+                </span>
+              ))}
+            </div>
 
-          {/* Footer: accesos rápidos */}
-          <div className="flex items-center justify-between mt-2 pt-2 px-1 border-t border-slate-100 dark:border-[#25252D]">
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onChange("");
-                setIsOpen(false);
-              }}
-              className="text-[11px] font-semibold text-slate-500 dark:text-[#94949E] hover:text-red-500 transition-colors"
-            >
-              Limpiar
-            </button>
-            <button
-              type="button"
-              onClick={handleToday}
-              className="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
-            >
-              Hoy
-            </button>
-          </div>
-        </div>
-      )}
+            {/* Grilla de días */}
+            <div className="grid grid-cols-7 gap-0.5 px-1">
+              {grid.map((day, i) => {
+                const inCurrentMonth = day.getMonth() === viewDate.getMonth();
+                const isSelected = selectedDate && isSameDay(day, selectedDate);
+                const isToday = isSameDay(day, today);
+
+                return (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => handleSelectDay(day)}
+                    className={`aspect-square rounded-lg text-[11px] font-medium transition-colors flex items-center justify-center cursor-pointer ${
+                      isSelected
+                        ? "bg-indigo-600 text-white font-bold shadow-xs"
+                        : isToday
+                          ? "border border-indigo-400 text-indigo-600 dark:text-indigo-400 font-semibold"
+                          : inCurrentMonth
+                            ? "text-slate-700 dark:text-[#E4E4E7] hover:bg-slate-100 dark:hover:bg-[#1F1F26]"
+                            : "text-slate-300 dark:text-[#3A3A44] hover:bg-slate-50 dark:hover:bg-[#1A1A1E]"
+                    }`}
+                  >
+                    {day.getDate()}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Footer: accesos rápidos */}
+            <div className="flex items-center justify-between mt-2 pt-2 px-1 border-t border-slate-100 dark:border-[#25252D]">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onChange("");
+                  setIsOpen(false);
+                }}
+                className="text-[11px] font-semibold text-slate-500 dark:text-[#94949E] hover:text-red-500 transition-colors cursor-pointer"
+              >
+                Limpiar
+              </button>
+              <button
+                type="button"
+                onClick={handleToday}
+                className="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer"
+              >
+                Hoy
+              </button>
+            </div>
+          </div>,
+          document.body,
+        )}
     </div>
   );
 };
