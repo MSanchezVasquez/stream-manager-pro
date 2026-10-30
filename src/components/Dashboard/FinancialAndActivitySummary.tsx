@@ -499,11 +499,11 @@ export const FinancialAndActivitySummary: React.FC<
                         </div>
                       </div>
 
-                      <div className="text-right shrink-0">
-                        <span className="text-xs font-bold text-slate-900 dark:text-slate-100 font-cascadia block">
+                      <div className="text-right shrink-0 flex items-baseline justify-end gap-1">
+                        <span className="text-xs font-bold text-slate-900 dark:text-slate-100 font-cascadia whitespace-nowrap">
                           S/ {info.revenue.toFixed(2)}
                         </span>
-                        <span className="text-[10px] text-slate-400 dark:text-slate-500">
+                        <span className="text-[10px] text-slate-400 dark:text-slate-500 whitespace-nowrap">
                           {isEn ? "/month" : "/mes"}
                         </span>
                       </div>
