@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useMemo } from 'react';
+import React, { useRef, useEffect, useMemo } from 'react';
 import {
   Bell,
   X,
@@ -7,7 +7,6 @@ import {
   Truck,
   CheckCircle2,
   Calendar,
-  AlertTriangle,
 } from 'lucide-react';
 import gsap from 'gsap';
 import { useDataStore } from '../../store/dataStore';
@@ -46,7 +45,6 @@ export const NotificationsPopover: React.FC<NotificationsPopoverProps> = ({
   const { t, resolvedLanguage } = useTranslation();
   const isEn = resolvedLanguage === 'en';
 
-  const [activeFilter, setActiveFilter] = useState<'all' | 'expired' | 'warning'>('all');
   const popoverRef = useRef<HTMLDivElement>(null);
 
   // GSAP Entrance animation
@@ -133,25 +131,6 @@ export const NotificationsPopover: React.FC<NotificationsPopoverProps> = ({
     return items.sort((a, b) => a.daysRemaining - b.daysRemaining);
   }, [clients, suppliers, isEn]);
 
-  const expiredCount = useMemo(() => {
-    return allAlerts.filter((item) => item.daysRemaining < 0).length;
-  }, [allAlerts]);
-
-  const warningCount = useMemo(() => {
-    return allAlerts.filter((item) => item.daysRemaining >= 0).length;
-  }, [allAlerts]);
-
-  // Filtered items
-  const filteredAlerts = useMemo(() => {
-    if (activeFilter === 'expired') {
-      return allAlerts.filter((item) => item.daysRemaining < 0);
-    }
-    if (activeFilter === 'warning') {
-      return allAlerts.filter((item) => item.daysRemaining >= 0);
-    }
-    return allAlerts;
-  }, [allAlerts, activeFilter]);
-
   if (!isOpen) return null;
 
   const handleOpenAllAlerts = () => {
@@ -216,78 +195,24 @@ export const NotificationsPopover: React.FC<NotificationsPopoverProps> = ({
         </button>
       </div>
 
-      {/* Filter Tabs */}
-      {allAlerts.length > 0 && (
-        <div className="px-3.5 pt-2.5 pb-2 border-b border-slate-100 dark:border-[#22222A] flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-          <button
-            type="button"
-            onClick={() => setActiveFilter('all')}
-            className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all cursor-pointer whitespace-nowrap ${
-              activeFilter === 'all'
-                ? 'bg-[#1A1A1A] text-white dark:bg-white dark:text-slate-950 font-bold shadow-xs'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#1F1F26]'
-            }`}
-          >
-            {isEn ? 'All' : 'Todas'} ({allAlerts.length})
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveFilter('expired')}
-            className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all cursor-pointer whitespace-nowrap ${
-              activeFilter === 'expired'
-                ? 'bg-red-600 text-white shadow-xs font-bold'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#1F1F26]'
-            }`}
-          >
-            {isEn ? 'Expired' : 'Vencidas'} ({expiredCount})
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveFilter('warning')}
-            className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all cursor-pointer whitespace-nowrap ${
-              activeFilter === 'warning'
-                ? 'bg-amber-500 text-white shadow-xs font-bold'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#1F1F26]'
-            }`}
-          >
-            {isEn ? 'Upcoming' : 'Por Vencer'} ({warningCount})
-          </button>
-        </div>
-      )}
-
       {/* Notifications Vertical List */}
-      <div className="max-h-[340px] overflow-y-auto divide-y divide-slate-100 dark:divide-[#22222A] scrollbar-thin">
-        {filteredAlerts.length === 0 ? (
+      <div className="max-h-[360px] overflow-y-auto divide-y divide-slate-100 dark:divide-[#22222A] scrollbar-thin">
+        {allAlerts.length === 0 ? (
           <div className="py-10 px-4 text-center flex flex-col items-center justify-center">
-            {allAlerts.length === 0 ? (
-              <>
-                <div className="w-11 h-11 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center mb-2.5">
-                  <CheckCircle2 className="w-6 h-6" />
-                </div>
-                <h5 className="font-bold text-xs text-slate-800 dark:text-[#E4E4E7]">
-                  {isEn ? 'All caught up!' : '¡Todo al día!'}
-                </h5>
-                <p className="text-[11px] text-slate-500 dark:text-[#94949E] mt-0.5 max-w-[200px]">
-                  {isEn
-                    ? 'No pending expiration alerts.'
-                    : 'No tienes alertas de vencimiento pendientes.'}
-                </p>
-              </>
-            ) : (
-              <>
-                <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-[#1F1F26] text-slate-400 flex items-center justify-center mb-2">
-                  <AlertTriangle className="w-5 h-5" />
-                </div>
-                <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                  {isEn
-                    ? 'No notifications in this filter'
-                    : 'No hay notificaciones en este filtro'}
-                </p>
-              </>
-            )}
+            <div className="w-11 h-11 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center mb-2.5">
+              <CheckCircle2 className="w-6 h-6" />
+            </div>
+            <h5 className="font-bold text-xs text-slate-800 dark:text-[#E4E4E7]">
+              {isEn ? 'All caught up!' : '¡Todo al día!'}
+            </h5>
+            <p className="text-[11px] text-slate-500 dark:text-[#94949E] mt-0.5 max-w-[200px]">
+              {isEn
+                ? 'No pending expiration alerts.'
+                : 'No tienes alertas de vencimiento pendientes.'}
+            </p>
           </div>
         ) : (
-          filteredAlerts.map((item) => {
+          allAlerts.map((item) => {
             const badge = getUrgencyBadge(item.daysRemaining);
 
             return (
