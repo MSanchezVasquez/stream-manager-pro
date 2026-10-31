@@ -7,6 +7,7 @@ import {
 import { AppLogo } from './AppLogo';
 import { PlatformIcon } from './common/PlatformIcon';
 import { ProfilePopover } from './Auth/ProfilePopover';
+import { NotificationsPopover } from './Notifications/NotificationsPopover';
 import { LogoutConfirmModal } from './Auth/LogoutConfirmModal';
 import { useAuthStore } from '../store/authStore';
 import { useDataStore } from '../store/dataStore';
@@ -59,11 +60,13 @@ export const Navbar: React.FC<NavbarProps> = ({
   const { t } = useTranslation();
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
   const avatarBtnRef = useRef<HTMLButtonElement>(null);
+  const notificationsBtnRef = useRef<HTMLButtonElement>(null);
 
   const handleConfirmLogout = async () => {
     setIsLogoutModalOpen(false);
@@ -193,31 +196,48 @@ export const Navbar: React.FC<NavbarProps> = ({
               )}
             </div>
 
-            {/* Expiration Alerts Button with Slow Bounce Badge */}
-            <button
-              type="button"
-              onClick={() => setActiveTab('alerts')}
-              className={`relative w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-lg sm:rounded-xl transition-colors border shrink-0 ${
-                activeTab === 'alerts'
-                  ? 'bg-white dark:bg-white/15 text-[#1A1A1A] dark:text-white border-white dark:border-white/25 shadow-sm'
-                  : 'bg-white/10 dark:bg-white/5 hover:bg-white/20 dark:hover:bg-white/10 border-white/15 dark:border-white/10 text-white'
-              }`}
-              title="Alertas de Vencimiento"
-            >
-              <Bell className="w-4 h-4" />
-              {alertCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 min-w-4.25 h-4.25 px-1 rounded-full bg-amber-400 text-[#1A1A1A] text-[9px] font-black flex items-center justify-center animate-bounce-slow shadow pointer-events-none">
-                  {alertCount}
-                </span>
-              )}
-            </button>
+            {/* Expiration Alerts Button with Popover */}
+            <div className="relative shrink-0 flex items-center justify-center">
+              <button
+                ref={notificationsBtnRef}
+                type="button"
+                onClick={() => {
+                  setIsNotificationsOpen(!isNotificationsOpen);
+                  setIsPopoverOpen(false);
+                }}
+                className={`relative w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-lg sm:rounded-xl transition-colors border shrink-0 cursor-pointer ${
+                  isNotificationsOpen || activeTab === 'alerts'
+                    ? 'bg-white dark:bg-white/15 text-[#1A1A1A] dark:text-white border-white dark:border-white/25 shadow-sm'
+                    : 'bg-white/10 dark:bg-white/5 hover:bg-white/20 dark:hover:bg-white/10 border-white/15 dark:border-white/10 text-white'
+                }`}
+                title="Alertas de Vencimiento"
+                aria-label="Alertas de Vencimiento"
+              >
+                <Bell className="w-4 h-4" />
+                {alertCount > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 min-w-4.25 h-4.25 px-1 rounded-full bg-amber-400 text-[#1A1A1A] text-[9px] font-black flex items-center justify-center animate-bounce-slow shadow pointer-events-none">
+                    {alertCount}
+                  </span>
+                )}
+              </button>
+
+              <NotificationsPopover
+                isOpen={isNotificationsOpen}
+                onClose={() => setIsNotificationsOpen(false)}
+                triggerRef={notificationsBtnRef}
+                onNavigateAlerts={() => setActiveTab('alerts')}
+              />
+            </div>
 
             {/* User Profile Avatar with Popover */}
             <div className="relative shrink-0 flex items-center justify-center">
               <button
                 ref={avatarBtnRef}
                 type="button"
-                onClick={() => setIsPopoverOpen(!isPopoverOpen)}
+                onClick={() => {
+                  setIsPopoverOpen(!isPopoverOpen);
+                  setIsNotificationsOpen(false);
+                }}
                 className="relative w-8 h-8 sm:w-9 sm:h-9 shrink-0 rounded-full border-0 border-none outline-none flex items-center justify-center focus:outline-none cursor-pointer overflow-hidden select-none"
                 title="Mi Perfil"
                 aria-label="Mi Perfil"
