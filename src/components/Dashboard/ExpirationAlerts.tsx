@@ -379,9 +379,9 @@ export const ExpirationAlerts: React.FC = () => {
                 >
                   <div>
                     {/* Top Row: Platform Badge + Status Badge (Responsive & Overflow-safe) */}
-                    <div className="flex items-center justify-between gap-2 mb-3 min-h-7 flex-wrap sm:flex-nowrap">
+                    <div className="flex items-center justify-between gap-2 mb-3 min-h-7 flex-wrap">
                       <span
-                        className={`${badgeProps.className.replace(/\bshrink-0\b/g, "")} min-w-0 flex-1 flex items-center gap-1.5`}
+                        className={`${badgeProps.className.replace(/\bshrink-0\b/g, "")} flex items-center gap-1.5`}
                         style={badgeProps.style}
                         title={getPlatformDisplayName(item.sub.serviceName)}
                       >
@@ -389,7 +389,7 @@ export const ExpirationAlerts: React.FC = () => {
                           platform={item.sub.serviceName}
                           className="w-3.5 h-3.5 shrink-0"
                         />
-                        <span className="font-semibold text-xs truncate min-w-0">
+                        <span className="font-semibold text-xs">
                           {getPlatformDisplayName(item.sub.serviceName)}
                         </span>
                       </span>
@@ -537,9 +537,9 @@ export const ExpirationAlerts: React.FC = () => {
               >
                 <div>
                   {/* Top Row: Platform Badge + Status Badge (Responsive & Overflow-safe) */}
-                  <div className="flex items-center justify-between gap-2 mb-3 min-h-7 flex-wrap sm:flex-nowrap">
+                  <div className="flex items-center justify-between gap-2 mb-3 min-h-7 flex-wrap">
                     <span
-                      className={`${badgeProps.className.replace(/\bshrink-0\b/g, "")} min-w-0 flex-1 flex items-center gap-1.5`}
+                      className={`${badgeProps.className.replace(/\bshrink-0\b/g, "")} flex items-center gap-1.5`}
                       style={badgeProps.style}
                       title={getPlatformDisplayName(item.account.serviceName)}
                     >
@@ -547,7 +547,7 @@ export const ExpirationAlerts: React.FC = () => {
                         platform={item.account.serviceName}
                         className="w-3.5 h-3.5 shrink-0"
                       />
-                      <span className="font-semibold text-xs truncate min-w-0">
+                      <span className="font-semibold text-xs">
                         {getPlatformDisplayName(item.account.serviceName)}
                       </span>
                     </span>

@@ -138,7 +138,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     <header className="sticky top-0 z-40 w-full bg-[#1A1A1A] dark:bg-[#101013] text-white border-b border-black/25 dark:border-[#222228] shadow-md transition-colors duration-300 select-none">
       {/* Level 1: Main Header Tier (Brand, Nav Buttons, Search & Profile) */}
       <div>
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-1.5 sm:gap-6">
+        <div className="max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-1.5 sm:gap-6">
           <div className="flex items-center gap-1.5 sm:gap-3 min-w-0">
             {/* Sidebar Floating Toggle Button - ALWAYS visible on Mobile & Tablet in fixed header */}
             {onToggleSidebar && activeTab !== 'profile' && (
@@ -279,7 +279,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
 
         {/* Level 1.5: Dedicated Mobile Search Bar (Only visible on screens < md, full width, clear & visible) */}
-        <div className="md:hidden px-3 sm:px-4 pb-2.5 pt-0 max-w-7xl mx-auto">
+        <div className="md:hidden px-3 sm:px-4 pb-2.5 pt-0 max-w-[1600px] mx-auto">
           <div className="relative w-full">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50 pointer-events-none" />
             <input
@@ -305,7 +305,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
       {/* Level 2: Platform Showcase Ticker (Aligned with main page content width) */}
       <div className="bg-black/15 dark:bg-black/35 py-1.5 overflow-hidden select-none pointer-events-none relative border-t border-black/20 dark:border-black/40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full relative">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 w-full relative">
           <div
             className="w-full flex items-center overflow-hidden marquee-mask"
             style={{

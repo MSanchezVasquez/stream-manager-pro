@@ -19,7 +19,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigateTab }) => {
   return (
     <footer className="w-full bg-[#1A1A1A] dark:bg-[#101013] text-white border-t border-black/25 dark:border-[#222228] transition-colors duration-300 shadow-inner mt-auto mb-14 lg:mb-0">
       {/* Top Tier: Brand, Store Badges, Navigation Links & Social Media */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-7">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-7">
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
           {/* Brand & App Download Buttons */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
@@ -125,7 +125,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigateTab }) => {
 
       {/* Middle Banner: Slogan / Responsabilidad */}
       <div className="border-t border-white/15 bg-black/10 py-3">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center gap-3 text-xs text-white/90">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center gap-3 text-xs text-white/90">
           <span className="w-5 h-5 rounded-full border border-white/80 flex items-center justify-center text-[10px] font-bold shrink-0">
             18+
           </span>
@@ -141,7 +141,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigateTab }) => {
 
       {/* Bottom Tier: Copyright & Legal Links */}
       <div className="border-t border-white/15 py-4">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-white/80">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-white/80">
           <p className="font-normal">
             &copy; {currentYear} StreamManager Pro &ndash; Todos los derechos reservados.
           </p>

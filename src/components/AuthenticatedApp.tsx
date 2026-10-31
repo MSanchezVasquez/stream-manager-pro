@@ -174,7 +174,7 @@ export const AuthenticatedApp: React.FC = () => {
       />
 
       {/* Main Container */}
-      <main className="flex-1 w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 pb-24 lg:pb-8 flex flex-col relative">
+      <main className="flex-1 w-full max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 pb-24 lg:pb-8 flex flex-col relative">
         {/* Mobile / Tablet Quick Sticky Action Bar - stays fixed under navbar while scrolling */}
         {activeTab !== 'profile' && (
           <div className="lg:hidden sticky top-[92px] sm:top-[100px] z-20 py-1.5 px-0.5 mb-2.5 -mt-1 bg-slate-50/95 dark:bg-[#0A0A0C]/95 backdrop-blur-md flex items-center justify-between gap-2 border-b border-slate-200/70 dark:border-[#1F1F24]/70">

@@ -188,20 +188,20 @@ export const FinancialAndActivitySummary: React.FC<
       <div className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#1F1F23] shadow-sm flex flex-col justify-between h-full hover:border-slate-300 dark:hover:border-[#2A2A32] transition-colors">
         <div>
           {/* Header */}
-          <div className="flex items-center justify-between gap-2.5 mb-4 pb-3 border-b border-slate-100 dark:border-[#1F1F25]">
-            <div className="flex items-center gap-2.5 min-w-0 flex-1">
-              <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 shrink-0">
+          <div className="flex items-start justify-between gap-2.5 mb-4 pb-3 border-b border-slate-100 dark:border-[#1F1F25]">
+            <div className="flex items-start gap-2.5 min-w-0 flex-1">
+              <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5">
                 <TrendingUp className="w-5 h-5" />
               </div>
               <div className="min-w-0 flex-1">
                 <h3
-                  className="font-bold text-sm text-slate-900 dark:text-white truncate"
+                  className="font-bold text-sm text-slate-900 dark:text-white leading-snug break-words"
                   title={isEn ? "Financial Performance" : "Balance y Rentabilidad"}
                 >
                   {isEn ? "Financial Performance" : "Balance y Rentabilidad"}
                 </h3>
                 <p
-                  className="text-[11px] text-slate-500 dark:text-slate-400 truncate"
+                  className="text-[11px] text-slate-500 dark:text-slate-400 leading-normal mt-0.5"
                   title={
                     isEn
                       ? "Monthly revenue & operational margin"
@@ -215,7 +215,7 @@ export const FinancialAndActivitySummary: React.FC<
               </div>
             </div>
             <span
-              className={`shrink-0 whitespace-nowrap px-2.5 py-0.5 rounded-full text-[10px] font-bold font-cascadia ${
+              className={`shrink-0 whitespace-nowrap px-2.5 py-0.5 rounded-full text-[10px] font-bold font-cascadia mt-0.5 ${
                 profitMargin >= 40
                   ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
                   : profitMargin >= 15
@@ -385,20 +385,20 @@ export const FinancialAndActivitySummary: React.FC<
       <div className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#1F1F23] shadow-sm flex flex-col justify-between h-full hover:border-slate-300 dark:hover:border-[#2A2A32] transition-colors">
         <div>
           {/* Header */}
-          <div className="flex items-center justify-between gap-2.5 mb-4 pb-3 border-b border-slate-100 dark:border-[#1F1F25]">
-            <div className="flex items-center gap-2.5 min-w-0 flex-1">
-              <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 shrink-0">
+          <div className="flex items-start justify-between gap-2.5 mb-4 pb-3 border-b border-slate-100 dark:border-[#1F1F25]">
+            <div className="flex items-start gap-2.5 min-w-0 flex-1">
+              <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 shrink-0 mt-0.5">
                 <BarChart3 className="w-5 h-5" />
               </div>
               <div className="min-w-0 flex-1">
                 <h3
-                  className="font-bold text-sm text-slate-900 dark:text-white truncate"
+                  className="font-bold text-sm text-slate-900 dark:text-white leading-snug break-words"
                   title={isEn ? "Platform Demand & Sales" : "Top Plataformas"}
                 >
                   {isEn ? "Platform Demand & Sales" : "Top Plataformas"}
                 </h3>
                 <p
-                  className="text-[11px] text-slate-500 dark:text-slate-400 truncate"
+                  className="text-[11px] text-slate-500 dark:text-slate-400 leading-normal mt-0.5"
                   title={
                     isEn
                       ? "Demand and billed revenue by service"
@@ -411,7 +411,7 @@ export const FinancialAndActivitySummary: React.FC<
                 </p>
               </div>
             </div>
-            <span className="shrink-0 whitespace-nowrap px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 font-cascadia">
+            <span className="shrink-0 whitespace-nowrap px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 font-cascadia mt-0.5">
               {sortedPlatforms.length}{" "}
               {sortedPlatforms.length === 1
                 ? isEn
@@ -472,9 +472,9 @@ export const FinancialAndActivitySummary: React.FC<
                           />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <div className="flex items-center gap-1.5">
+                          <div className="flex items-center gap-1.5 flex-wrap">
                             <span
-                              className="font-bold text-xs text-slate-900 dark:text-slate-100 truncate block"
+                              className="font-bold text-xs text-slate-900 dark:text-slate-100 break-words"
                               title={platName}
                             >
                               {platName}
@@ -485,7 +485,7 @@ export const FinancialAndActivitySummary: React.FC<
                               </span>
                             )}
                           </div>
-                          <span className="text-[11px] text-slate-500 dark:text-slate-400 truncate block">
+                          <span className="text-[11px] text-slate-500 dark:text-slate-400 block mt-0.5">
                             {info.count}{" "}
                             {info.count === 1
                               ? isEn
@@ -527,19 +527,19 @@ export const FinancialAndActivitySummary: React.FC<
         </div>
 
         {/* Footer Card 2 */}
-        <div className="pt-3.5 mt-4 border-t border-slate-200/70 dark:border-[#25252D] flex items-center justify-between text-xs">
-          <span className="text-slate-500 dark:text-slate-400 text-[11px] truncate">
+        <div className="pt-3.5 mt-4 border-t border-slate-200/70 dark:border-[#25252D] flex items-center justify-between gap-2 text-xs">
+          <div className="text-slate-500 dark:text-slate-400 text-[11px] min-w-0 flex-1">
             {topPlatform ? (
-              <>
+              <span className="break-words">
                 {isEn ? "Star service:" : "Servicio estrella:"}{" "}
                 <strong className="text-indigo-600 dark:text-indigo-400 font-semibold">
                   {topPlatform}
                 </strong>
-              </>
+              </span>
             ) : (
-              isEn ? "No sales registered" : "Sin ventas registradas"
+              <span>{isEn ? "No sales registered" : "Sin ventas registradas"}</span>
             )}
-          </span>
+          </div>
           <button
             type="button"
             onClick={() => onNavigateTab("free_profiles")}
@@ -557,20 +557,20 @@ export const FinancialAndActivitySummary: React.FC<
       <div className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#1F1F23] shadow-sm flex flex-col justify-between h-full hover:border-slate-300 dark:hover:border-[#2A2A32] transition-colors">
         <div>
           {/* Header */}
-          <div className="flex items-center justify-between gap-2.5 mb-4 pb-3 border-b border-slate-100 dark:border-[#1F1F25]">
-            <div className="flex items-center gap-2.5 min-w-0 flex-1">
-              <div className="p-2 rounded-xl bg-sky-500/10 text-sky-600 dark:text-sky-400 shrink-0">
+          <div className="flex items-start justify-between gap-2.5 mb-4 pb-3 border-b border-slate-100 dark:border-[#1F1F25]">
+            <div className="flex items-start gap-2.5 min-w-0 flex-1">
+              <div className="p-2 rounded-xl bg-sky-500/10 text-sky-600 dark:text-sky-400 shrink-0 mt-0.5">
                 <Activity className="w-5 h-5" />
               </div>
               <div className="min-w-0 flex-1">
                 <h3
-                  className="font-bold text-sm text-slate-900 dark:text-white truncate"
+                  className="font-bold text-sm text-slate-900 dark:text-white leading-snug break-words"
                   title={isEn ? "Business Health & Cashflow" : "Salud del Negocio y Flujo"}
                 >
                   {isEn ? "Business Health & Cashflow" : "Salud del Negocio y Flujo"}
                 </h3>
                 <p
-                  className="text-[11px] text-slate-500 dark:text-slate-400 truncate"
+                  className="text-[11px] text-slate-500 dark:text-slate-400 leading-normal mt-0.5"
                   title={
                     isEn
                       ? "Retention and 7-day upcoming cashflow"
@@ -584,7 +584,7 @@ export const FinancialAndActivitySummary: React.FC<
               </div>
             </div>
             <span
-              className={`shrink-0 whitespace-nowrap px-2.5 py-0.5 rounded-full text-[10px] font-bold font-cascadia ${
+              className={`shrink-0 whitespace-nowrap px-2.5 py-0.5 rounded-full text-[10px] font-bold font-cascadia mt-0.5 ${
                 retentionRate >= 80
                   ? "bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20"
                   : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
@@ -656,10 +656,10 @@ export const FinancialAndActivitySummary: React.FC<
 
               <div className="space-y-1.5 text-[11px]">
                 {/* Cobros a clientes */}
-                <div className="flex items-center justify-between p-2 rounded-lg bg-emerald-500/5 border border-emerald-500/15">
-                  <div className="flex items-center gap-1.5 min-w-0">
+                <div className="flex items-center justify-between p-2 rounded-lg bg-emerald-500/5 border border-emerald-500/15 gap-2">
+                  <div className="flex items-center gap-1.5 min-w-0 flex-1 flex-wrap">
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                    <span className="text-slate-700 dark:text-slate-300 truncate">
+                    <span className="text-slate-700 dark:text-slate-300 font-medium">
                       {isEn ? "Client collections" : "Cobros a clientes"}
                     </span>
                     <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold shrink-0">
@@ -674,16 +674,16 @@ export const FinancialAndActivitySummary: React.FC<
                       )
                     </span>
                   </div>
-                  <span className="font-bold text-emerald-600 dark:text-emerald-400 font-cascadia shrink-0 ml-1">
+                  <span className="font-bold text-emerald-600 dark:text-emerald-400 font-cascadia shrink-0 ml-1 whitespace-nowrap">
                     +S/ {upcomingRevenue7d.toFixed(2)}
                   </span>
                 </div>
 
                 {/* Pagos a proveedores */}
-                <div className="flex items-center justify-between p-2 rounded-lg bg-purple-500/5 border border-purple-500/15">
-                  <div className="flex items-center gap-1.5 min-w-0">
+                <div className="flex items-center justify-between p-2 rounded-lg bg-purple-500/5 border border-purple-500/15 gap-2">
+                  <div className="flex items-center gap-1.5 min-w-0 flex-1 flex-wrap">
                     <AlertCircle className="w-3.5 h-3.5 text-purple-500 shrink-0" />
-                    <span className="text-slate-700 dark:text-slate-300 truncate">
+                    <span className="text-slate-700 dark:text-slate-300 font-medium">
                       {isEn ? "Supplier payments" : "Pagos a proveedores"}
                     </span>
                     <span className="text-[10px] text-purple-600 dark:text-purple-400 font-semibold shrink-0">
@@ -698,7 +698,7 @@ export const FinancialAndActivitySummary: React.FC<
                       )
                     </span>
                   </div>
-                  <span className="font-bold text-purple-600 dark:text-purple-400 font-cascadia shrink-0 ml-1">
+                  <span className="font-bold text-purple-600 dark:text-purple-400 font-cascadia shrink-0 ml-1 whitespace-nowrap">
                     -S/ {upcomingCost7d.toFixed(2)}
                   </span>
                 </div>
@@ -708,19 +708,19 @@ export const FinancialAndActivitySummary: React.FC<
         </div>
 
         {/* Footer Card 3 */}
-        <div className="pt-3.5 mt-4 border-t border-slate-200/70 dark:border-[#25252D] flex items-center justify-between text-xs">
-          <span className="text-slate-500 dark:text-slate-400 text-[11px] truncate">
+        <div className="pt-3.5 mt-4 border-t border-slate-200/70 dark:border-[#25252D] flex items-center justify-between gap-2 text-xs">
+          <div className="text-slate-500 dark:text-slate-400 text-[11px] min-w-0 flex-1">
             {upcomingSubsCount7d > 0 ? (
-              <>
+              <span className="break-words">
                 <strong className="text-amber-600 dark:text-amber-400 font-semibold font-cascadia">
                   {upcomingSubsCount7d}
                 </strong>{" "}
                 {isEn ? "renewals due this week" : "renovaciones por vencer (≤7d)"}
-              </>
+              </span>
             ) : (
-              isEn ? "No immediate renewals due" : "Sin cobros urgentes esta semana"
+              <span>{isEn ? "No immediate renewals due" : "Sin cobros urgentes esta semana"}</span>
             )}
-          </span>
+          </div>
           <button
             type="button"
             onClick={() => onNavigateTab("alerts")}
