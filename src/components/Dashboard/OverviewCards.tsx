@@ -77,9 +77,9 @@ export const OverviewCards: React.FC<{
       title: t('dash.upcomingExpirationsTitle'),
       value: upcomingExpirations,
       icon: AlertTriangle,
-      color: 'from-amber-500/20 to-orange-500/5 text-amber-500',
-      borderColor: 'border-amber-500/30',
-      iconBg: 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
+      color: 'from-slate-500/15 to-slate-500/5 text-slate-800 dark:text-slate-200',
+      borderColor: 'border-slate-200 dark:border-[#2D2D33]',
+      iconBg: 'bg-slate-100 dark:bg-[#202026] text-slate-900 dark:text-white border border-slate-200/80 dark:border-[#2D2D35]',
       tab: 'alerts',
     },
     {

@@ -207,7 +207,7 @@ export const ExpirationAlerts: React.FC = () => {
       {/* Top Header: Title & Spacious Search Bar */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-[#22222A]">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/20">
+          <div className="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-[#202026] text-slate-900 dark:text-white flex items-center justify-center shrink-0 border border-slate-200/80 dark:border-[#2D2D35]">
             <ShieldAlert className="w-5 h-5" />
           </div>
           <div>

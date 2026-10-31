@@ -136,7 +136,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
           <div className="relative">
             <Menu className="w-5 h-5 mb-0.5" />
             {hasPendingAlerts && (
-              <span className="absolute -top-0.5 -right-1 w-2 h-2 rounded-full bg-amber-400 ring-2 ring-white dark:ring-[#141418]" />
+              <span className="absolute -top-0.5 -right-1 w-2 h-2 rounded-full bg-[#1A1A1A] dark:bg-white ring-2 ring-white dark:ring-[#141418]" />
             )}
           </div>
           <span className="text-[10px] tracking-tight">Menú</span>

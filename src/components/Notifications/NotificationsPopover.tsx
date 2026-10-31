@@ -169,7 +169,7 @@ export const NotificationsPopover: React.FC<NotificationsPopoverProps> = ({
       {/* Header */}
       <div className="px-4.5 py-3.5 border-b border-slate-100 dark:border-[#22222A] flex items-center justify-between bg-slate-50/50 dark:bg-[#141418]/60">
         <div className="flex items-center gap-2 min-w-0">
-          <div className="w-7 h-7 rounded-lg bg-amber-400/15 text-amber-500 flex items-center justify-center shrink-0">
+          <div className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-[#202026] text-slate-900 dark:text-white border border-slate-200/80 dark:border-[#2D2D35] flex items-center justify-center shrink-0">
             <Bell className="w-3.5 h-3.5" />
           </div>
           <div className="flex items-center gap-1.5 truncate">
@@ -177,7 +177,7 @@ export const NotificationsPopover: React.FC<NotificationsPopoverProps> = ({
               {isEn ? 'Notifications' : 'Notificaciones'}
             </h4>
             {allAlerts.length > 0 && (
-              <span className="px-1.5 py-0.5 rounded-full text-[9px] font-black bg-amber-400 text-slate-950 shrink-0">
+              <span className="px-1.5 py-0.5 rounded-full text-[9px] font-black bg-[#1A1A1A] text-white dark:bg-white dark:text-[#1A1A1A] border border-black/10 dark:border-white/20 shrink-0">
                 {allAlerts.length}
               </span>
             )}
