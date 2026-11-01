@@ -283,12 +283,8 @@ body {
   }
 }
 
-/* Bloqueo infalible de scroll en el fondo cuando cualquier modal está abierto */
-html.modal-scroll-locked,
-body.modal-scroll-locked,
-body.modal-scroll-locked #root {
-  overflow: hidden !important;
-  overscroll-behavior: none !important;
-  touch-action: none;
+/* Bloqueo de scroll y overscroll en modales sin alterar el contexto de posición sticky */
+body.modal-scroll-locked {
+  overscroll-behavior: none;
 }
 

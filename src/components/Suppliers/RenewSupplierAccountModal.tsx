@@ -185,6 +185,7 @@ export const RenewSupplierAccountModal: React.FC<
       <div
         className="fixed inset-0 bg-black/15 dark:bg-black/35 backdrop-brightness-[0.75] transition-all duration-300 animate-fade-in"
         onClick={onClose}
+        onTouchMove={(e) => e.preventDefault()}
       />
       <div className="w-full max-w-lg rounded-2xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#25252D] shadow-2xl p-6 relative z-10 flex flex-col max-h-[92vh] overflow-hidden animate-scale-in">
         {/* Close Button */}

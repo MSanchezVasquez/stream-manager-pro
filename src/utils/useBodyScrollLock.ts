@@ -2,28 +2,60 @@ import { useEffect } from 'react';
 
 let lockCount = 0;
 
+function isInsideScrollableContainer(target: HTMLElement | null): boolean {
+  while (target && target !== document.body && target !== document.documentElement) {
+    if (target.scrollHeight > target.clientHeight) {
+      const overflowY = window.getComputedStyle(target).overflowY;
+      if (overflowY === 'auto' || overflowY === 'scroll') {
+        return true;
+      }
+    }
+    target = target.parentElement;
+  }
+  return false;
+}
+
+const preventWheel = (e: WheelEvent) => {
+  if (!isInsideScrollableContainer(e.target as HTMLElement | null)) {
+    e.preventDefault();
+  }
+};
+
+const preventTouchMove = (e: TouchEvent) => {
+  if (!isInsideScrollableContainer(e.target as HTMLElement | null)) {
+    e.preventDefault();
+  }
+};
+
+const preventKeyScroll = (e: KeyboardEvent) => {
+  const scrollKeys = ['Space', 'PageUp', 'PageDown', 'Home', 'End'];
+  if (scrollKeys.includes(e.code)) {
+    const target = e.target as HTMLElement | null;
+    const isInput =
+      target &&
+      (target.tagName === 'INPUT' ||
+        target.tagName === 'TEXTAREA' ||
+        target.isContentEditable);
+    if (!isInput && !isInsideScrollableContainer(target)) {
+      e.preventDefault();
+    }
+  }
+};
+
 /**
- * Hook universal para bloquear completamente el scroll de fondo (desktop, tablet y móvil)
- * cuando cualquier modal está abierto, con contador de referencias para modales anidados.
+ * Hook universal para bloquear el scroll de fondo cuando cualquier modal está abierto,
+ * sin alterar el overflow de #root ni el documento, preservando intactos todos los elementos
+ * con position: sticky (como la barra superior Navbar y el menú lateral Sidebar).
  */
 export function useBodyScrollLock(isOpen: boolean) {
   useEffect(() => {
     if (!isOpen) return;
 
-    const rootEl = document.getElementById('root');
-
     if (lockCount === 0) {
-      document.documentElement.style.setProperty('overflow', 'hidden', 'important');
-      document.body.style.setProperty('overflow', 'hidden', 'important');
-      document.documentElement.style.setProperty('overscroll-behavior', 'none', 'important');
-      document.body.style.setProperty('overscroll-behavior', 'none', 'important');
-      document.documentElement.classList.add('modal-scroll-locked');
       document.body.classList.add('modal-scroll-locked');
-
-      if (rootEl) {
-        rootEl.style.setProperty('overflow', 'hidden', 'important');
-        rootEl.style.setProperty('overscroll-behavior', 'none', 'important');
-      }
+      window.addEventListener('wheel', preventWheel, { passive: false });
+      window.addEventListener('touchmove', preventTouchMove, { passive: false });
+      window.addEventListener('keydown', preventKeyScroll, { passive: false });
     }
     lockCount++;
 
@@ -31,17 +63,10 @@ export function useBodyScrollLock(isOpen: boolean) {
       lockCount--;
       if (lockCount <= 0) {
         lockCount = 0;
-        document.documentElement.style.removeProperty('overflow');
-        document.body.style.removeProperty('overflow');
-        document.documentElement.style.removeProperty('overscroll-behavior');
-        document.body.style.removeProperty('overscroll-behavior');
-        document.documentElement.classList.remove('modal-scroll-locked');
         document.body.classList.remove('modal-scroll-locked');
-
-        if (rootEl) {
-          rootEl.style.removeProperty('overflow');
-          rootEl.style.removeProperty('overscroll-behavior');
-        }
+        window.removeEventListener('wheel', preventWheel);
+        window.removeEventListener('touchmove', preventTouchMove);
+        window.removeEventListener('keydown', preventKeyScroll);
       }
     };
   }, [isOpen]);
