@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { MessageSquare, Copy, Check, ExternalLink, X, Settings2 } from "lucide-react";
 import { ClientSubscription } from "../types";
 import { useTranslation } from "../utils/translations";
@@ -132,11 +133,13 @@ export const WhatsAppModal: React.FC<WhatsAppModalProps> = ({
       : []),
   ];
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overscroll-contain select-none">
+  if (!isOpen) return null;
+
+  return createPortal(
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 overscroll-contain select-none">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/40 backdrop-blur-xs transition-all duration-300 animate-fade-in"
+        className="fixed inset-0 bg-black/45 dark:bg-black/65 backdrop-blur-[2px] transition-all duration-300 animate-fade-in"
         onClick={onClose}
         onTouchMove={(e) => e.preventDefault()}
       />
@@ -234,6 +237,7 @@ export const WhatsAppModal: React.FC<WhatsAppModalProps> = ({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

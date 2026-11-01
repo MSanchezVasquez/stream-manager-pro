@@ -206,7 +206,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   setIsPopoverOpen(false);
                 }}
                 className={`relative w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-lg sm:rounded-xl transition-colors border shrink-0 cursor-pointer ${
-                  isNotificationsOpen || activeTab === 'alerts'
+                  isNotificationsOpen
                     ? 'bg-white dark:bg-white/15 text-[#1A1A1A] dark:text-white border-white dark:border-white/25 shadow-sm'
                     : 'bg-white/10 dark:bg-white/5 hover:bg-white/20 dark:hover:bg-white/10 border-white/15 dark:border-white/10 text-white'
                 }`}

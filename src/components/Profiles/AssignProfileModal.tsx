@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { createPortal } from "react-dom";
 import { X, UserCheck, Sparkles, User } from "lucide-react";
 import { PlatformIcon } from "../common/PlatformIcon";
 import { FreeProfile } from "../../types";
@@ -51,9 +52,9 @@ export const AssignProfileModal: React.FC<AssignProfileModalProps> = ({
     }
   };
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/15 dark:bg-black/35 backdrop-brightness-[0.75] transition-all duration-300 animate-fade-in overscroll-contain"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/45 dark:bg-black/65 backdrop-blur-[2px] transition-all duration-300 animate-fade-in overscroll-contain"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
@@ -136,6 +137,7 @@ export const AssignProfileModal: React.FC<AssignProfileModalProps> = ({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

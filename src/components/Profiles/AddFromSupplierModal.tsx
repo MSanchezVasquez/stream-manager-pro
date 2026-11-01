@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
+import { createPortal } from "react-dom";
 import {
   X,
   Truck,
@@ -307,11 +308,13 @@ export const AddFromSupplierModal: React.FC<AddFromSupplierModalProps> = ({
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 overscroll-contain">
-      {/* Fondo suave, claro y con visibilidad (Estilo Sofascore) */}
+  if (!isOpen) return null;
+
+  return createPortal(
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-5 overscroll-contain">
+      {/* Fondo uniforme que cubre toda la pantalla incluyendo barra superior y menú lateral */}
       <div
-        className="fixed inset-0 bg-black/15 dark:bg-black/35 backdrop-brightness-[0.75] transition-all duration-300 animate-fade-in"
+        className="fixed inset-0 bg-black/45 dark:bg-black/65 backdrop-blur-[2px] transition-all duration-300 animate-fade-in"
         onClick={onClose}
         onTouchMove={(e) => e.preventDefault()}
       />
@@ -696,6 +699,7 @@ export const AddFromSupplierModal: React.FC<AddFromSupplierModalProps> = ({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
