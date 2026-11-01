@@ -645,12 +645,18 @@ export const FinancialAndActivitySummary: React.FC<
                 </span>
                 <span
                   className={`text-xs font-bold font-cascadia ${
-                    netCashflow7d >= 0
+                    netCashflow7d > 0
                       ? "text-emerald-600 dark:text-emerald-400"
-                      : "text-rose-600 dark:text-rose-400"
+                      : netCashflow7d < 0
+                        ? "text-rose-600 dark:text-rose-400"
+                        : "text-slate-500 dark:text-slate-400"
                   }`}
                 >
-                  {netCashflow7d >= 0 ? "+" : ""}S/ {netCashflow7d.toFixed(2)}
+                  {netCashflow7d > 0
+                    ? `+S/ ${netCashflow7d.toFixed(2)}`
+                    : netCashflow7d < 0
+                      ? `-S/ ${Math.abs(netCashflow7d).toFixed(2)}`
+                      : "S/ 0.00"}
                 </span>
               </div>
 
@@ -675,7 +681,7 @@ export const FinancialAndActivitySummary: React.FC<
                     </span>
                   </div>
                   <span className="font-bold text-emerald-600 dark:text-emerald-400 font-cascadia shrink-0 ml-1 whitespace-nowrap">
-                    +S/ {upcomingRevenue7d.toFixed(2)}
+                    {upcomingRevenue7d > 0 ? `+S/ ${upcomingRevenue7d.toFixed(2)}` : "S/ 0.00"}
                   </span>
                 </div>
 
@@ -699,7 +705,7 @@ export const FinancialAndActivitySummary: React.FC<
                     </span>
                   </div>
                   <span className="font-bold text-purple-600 dark:text-purple-400 font-cascadia shrink-0 ml-1 whitespace-nowrap">
-                    -S/ {upcomingCost7d.toFixed(2)}
+                    {upcomingCost7d > 0 ? `-S/ ${upcomingCost7d.toFixed(2)}` : "S/ 0.00"}
                   </span>
                 </div>
               </div>
