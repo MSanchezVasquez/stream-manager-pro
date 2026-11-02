@@ -215,7 +215,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               >
                 <Bell className="w-4 h-4" />
                 {alertCount > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 min-w-4.25 h-4.25 px-1 rounded-full bg-white text-[#1A1A1A] dark:bg-white dark:text-[#101013] text-[9px] font-black flex items-center justify-center animate-bounce-slow shadow-sm border border-black/10 dark:border-white/20 pointer-events-none">
+                  <span className="absolute -top-1.5 -right-1.5 min-w-4.25 h-4.25 px-1 rounded-full bg-white text-[#1A1A1A] dark:bg-white dark:text-[#101013] text-[9px] font-black flex items-center justify-center shadow-sm border border-black/10 dark:border-white/20 pointer-events-none">
                     {alertCount}
                   </span>
                 )}
