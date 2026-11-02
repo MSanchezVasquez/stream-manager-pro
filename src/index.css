@@ -268,7 +268,7 @@ body.modal-scroll-locked {
 }
 
 /* ==========================================================================
-   ANIMACIÓN RADIAL DESDE EL CENTRO AL CAMBIAR MODO OSCURO / CLARO
+   ANIMACIÓN RADIAL DESDE LA POSICIÓN DEL CLICK AL CAMBIAR MODO OSCURO / CLARO
    ========================================================================== */
 ::view-transition-old(root),
 ::view-transition-new(root) {
@@ -282,15 +282,15 @@ body.modal-scroll-locked {
 
 ::view-transition-new(root) {
   z-index: 999999;
-  animation: themeCenterReveal 0.52s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: themeRevealFromClick 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-@keyframes themeCenterReveal {
+@keyframes themeRevealFromClick {
   0% {
-    clip-path: circle(0px at 50% 50%);
+    clip-path: circle(0px at var(--theme-x, 50%) var(--theme-y, 50%));
   }
   100% {
-    clip-path: circle(120vmax at 50% 50%);
+    clip-path: circle(var(--theme-r, 150vmax) at var(--theme-x, 50%) var(--theme-y, 50%));
   }
 }
 

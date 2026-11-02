@@ -36,7 +36,7 @@ function RadioRow({
 }: {
   label: string;
   selected: boolean;
-  onClick: () => void;
+  onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }) {
   return (
     <button
@@ -233,17 +233,17 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             <RadioRow
               label={t("profile.themeSystem")}
               selected={themeMode === "system"}
-              onClick={() => setThemeMode("system")}
+              onClick={(e) => setThemeMode("system", e)}
             />
             <RadioRow
               label={t("profile.themeLight")}
               selected={themeMode === "light"}
-              onClick={() => setThemeMode("light")}
+              onClick={(e) => setThemeMode("light", e)}
             />
             <RadioRow
               label={t("profile.themeDark")}
               selected={themeMode === "dark"}
-              onClick={() => setThemeMode("dark")}
+              onClick={(e) => setThemeMode("dark", e)}
             />
           </SettingsCard>
 

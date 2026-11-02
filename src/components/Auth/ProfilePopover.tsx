@@ -230,7 +230,7 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
 
         {/* Sistema */}
         <button
-          onClick={() => setThemeMode("system")}
+          onClick={(e) => setThemeMode("system", e)}
           className={`w-full flex items-center gap-3.5 px-5 py-2 text-sm text-slate-900 dark:text-white transition-colors cursor-pointer hover:bg-slate-50 dark:hover:bg-[#1F1F26] ${
             themeMode === "system" ? "font-medium" : "font-normal"
           }`}
@@ -251,7 +251,7 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
 
         {/* Claro */}
         <button
-          onClick={() => setThemeMode("light")}
+          onClick={(e) => setThemeMode("light", e)}
           className={`w-full flex items-center gap-3.5 px-5 py-2 text-sm text-slate-900 dark:text-white transition-colors cursor-pointer hover:bg-slate-50 dark:hover:bg-[#1F1F26] ${
             themeMode === "light" ? "font-medium" : "font-normal"
           }`}
@@ -272,7 +272,7 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
 
         {/* Oscuro */}
         <button
-          onClick={() => setThemeMode("dark")}
+          onClick={(e) => setThemeMode("dark", e)}
           className={`w-full flex items-center gap-3.5 px-5 py-2 text-sm text-slate-900 dark:text-white transition-colors cursor-pointer hover:bg-slate-50 dark:hover:bg-[#1F1F26] ${
             themeMode === "dark" ? "font-medium" : "font-normal"
           }`}
