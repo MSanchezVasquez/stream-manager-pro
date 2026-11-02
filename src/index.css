@@ -267,3 +267,38 @@ body.modal-scroll-locked {
   overscroll-behavior: none;
 }
 
+/* ==========================================================================
+   ANIMACIÓN RADIAL DESDE EL CENTRO AL CAMBIAR MODO OSCURO / CLARO
+   ========================================================================== */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+::view-transition-new(root) {
+  z-index: 999999;
+  animation: themeCenterReveal 0.52s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes themeCenterReveal {
+  0% {
+    clip-path: circle(0px at 50% 50%);
+  }
+  100% {
+    clip-path: circle(120vmax at 50% 50%);
+  }
+}
+
+/* Evitar transiciones CSS parciales durante la captura de pantalla de la transición */
+html.theme-transitioning,
+html.theme-transitioning *,
+html.theme-transitioning *::before,
+html.theme-transitioning *::after {
+  transition: none !important;
+}
+
