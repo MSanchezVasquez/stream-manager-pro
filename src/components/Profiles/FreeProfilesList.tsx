@@ -392,7 +392,7 @@ export const FreeProfilesList: React.FC = () => {
                             ? "Linked and automatically synchronized with supplier account"
                             : "Vinculado y sincronizado automáticamente con cuenta del proveedor"
                         }
-                        className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/20 max-w-full min-w-0"
+                        className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-[#c9c918]/15 text-[#7a7a08] dark:text-[#dada28] border border-[#c9c918]/30 max-w-full min-w-0"
                       >
                         <Truck className="w-2.5 h-2.5 shrink-0" />
                         <span className="truncate max-w-[140px] sm:max-w-[180px]">{prof.supplierName}</span>
@@ -464,8 +464,8 @@ export const FreeProfilesList: React.FC = () => {
             <form onSubmit={handleAddProfile} className="space-y-4">
               {/* Optional Autofill from Supplier Account */}
               {allSupplierAccounts.length > 0 && (
-                <div className="p-3 rounded-xl bg-purple-500/5 dark:bg-purple-500/10 border border-purple-500/20 space-y-1.5">
-                  <label className="block text-[11px] font-semibold text-purple-700 dark:text-purple-300 flex items-center gap-1.5">
+                <div className="p-3 rounded-xl bg-[#c9c918]/10 dark:bg-[#c9c918]/10 border border-[#c9c918]/30 space-y-1.5">
+                  <label className="block text-[11px] font-semibold text-[#7a7a08] dark:text-[#dada28] flex items-center gap-1.5">
                     <Truck className="w-3.5 h-3.5" />
                     <span>{t("profiles.importFromSupplierAccount")}</span>
                   </label>

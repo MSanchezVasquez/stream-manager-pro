@@ -322,7 +322,7 @@ export const AddFromSupplierModal: React.FC<AddFromSupplierModalProps> = ({
         {/* Header */}
         <div className="p-5 border-b border-slate-200 dark:border-[#1F1F23] flex items-center justify-between shrink-0 bg-slate-50/60 dark:bg-[#101014]/60">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-purple-600/10 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold border border-purple-500/20 shrink-0">
+            <div className="w-10 h-10 rounded-2xl bg-[#c9c918]/15 text-[#7a7a08] dark:text-[#dada28] flex items-center justify-center font-bold border border-[#c9c918]/30 shrink-0">
               <Truck className="w-5 h-5" />
             </div>
             <div>
@@ -354,7 +354,7 @@ export const AddFromSupplierModal: React.FC<AddFromSupplierModalProps> = ({
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={t("suppliers.search")}
-              className="w-full pl-9 pr-3 py-1.5 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-slate-50 dark:bg-[#1A1A1E] text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full pl-9 pr-3 py-1.5 rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-slate-50 dark:bg-[#1A1A1E] text-slate-900 dark:text-white text-xs focus:outline-none focus:border-[#c9c918]"
             />
           </div>
 
@@ -373,7 +373,7 @@ export const AddFromSupplierModal: React.FC<AddFromSupplierModalProps> = ({
               ...suppliers.map((s) => ({
                 value: s.id,
                 label: `${s.name} (${s.accounts.length})`,
-                icon: <Truck className="w-3.5 h-3.5 text-purple-400" />,
+                icon: <Truck className="w-3.5 h-3.5 text-[#8a8a08] dark:text-[#dada28]" />,
               })),
             ]}
           />
@@ -423,7 +423,7 @@ export const AddFromSupplierModal: React.FC<AddFromSupplierModalProps> = ({
                   selectedAccountIds.length === filteredAccounts.length
                 }
                 onChange={handleSelectAll}
-                className="w-4 h-4 rounded text-purple-600 focus:ring-purple-500 cursor-pointer"
+                className="w-4 h-4 rounded text-slate-900 accent-[#c9c918] cursor-pointer"
               />
               <label
                 htmlFor="select-all-supplier-accounts"
@@ -439,10 +439,10 @@ export const AddFromSupplierModal: React.FC<AddFromSupplierModalProps> = ({
                 type="button"
                 onClick={handleBulkAdd}
                 disabled={isBulkAdding}
-                className="px-3.5 py-1 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-md shadow-purple-600/20 transition-all cursor-pointer disabled:opacity-50"
+                className="px-3.5 py-1 rounded-xl bg-[#c9c918] hover:bg-[#b5b514] active:bg-[#a1a110] text-slate-950 text-xs font-bold flex items-center gap-1.5 shadow-md shadow-[#c9c918]/20 transition-all cursor-pointer disabled:opacity-50"
               >
                 {isBulkAdding ? (
-                  <CircularSpinner size={14} className="text-white" />
+                  <CircularSpinner size={14} className="text-slate-950" />
                 ) : (
                   <Sparkles className="w-3.5 h-3.5" />
                 )}
@@ -494,7 +494,7 @@ export const AddFromSupplierModal: React.FC<AddFromSupplierModalProps> = ({
                   key={acc.id}
                   className={`p-3.5 rounded-xl border transition-all flex flex-col md:flex-row md:items-center justify-between gap-3.5 ${
                     isSelected
-                      ? "border-purple-500/80 bg-purple-500/5 dark:bg-purple-500/10 shadow-xs"
+                      ? "border-[#c9c918]/60 bg-[#c9c918]/5 dark:bg-[#181810] shadow-xs"
                       : "border-slate-200 dark:border-[#25252D] bg-white dark:bg-[#1A1A1E] hover:border-slate-300 dark:hover:border-[#353540]"
                   }`}
                 >
@@ -504,7 +504,7 @@ export const AddFromSupplierModal: React.FC<AddFromSupplierModalProps> = ({
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => toggleSelectAccount(acc.id)}
-                      className="w-4 h-4 mt-1 rounded text-purple-600 focus:ring-purple-500 cursor-pointer shrink-0"
+                      className="w-4 h-4 mt-1 rounded text-slate-900 accent-[#c9c918] cursor-pointer shrink-0"
                     />
 
                     <div className="space-y-1.5 min-w-0 flex-1">
@@ -521,7 +521,7 @@ export const AddFromSupplierModal: React.FC<AddFromSupplierModalProps> = ({
                           <span>{getPlatformDisplayName(acc.serviceName)}</span>
                         </span>
 
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/20">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#c9c918]/15 text-[#7a7a08] dark:text-[#dada28] border border-[#c9c918]/30">
                           <Truck className="w-2.5 h-2.5" />
                           <span>{acc.supplierName}</span>
                         </span>
@@ -546,7 +546,7 @@ export const AddFromSupplierModal: React.FC<AddFromSupplierModalProps> = ({
                         <button
                           type="button"
                           onClick={() => handleCopy(acc.email, acc.id)}
-                          className="p-1 rounded text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 cursor-pointer"
+                          className="p-1 rounded text-slate-400 hover:text-[#8a8a08] dark:hover:text-[#dada28] cursor-pointer"
                           title="Copiar correo"
                         >
                           {copiedId === acc.id ? (
@@ -656,7 +656,7 @@ export const AddFromSupplierModal: React.FC<AddFromSupplierModalProps> = ({
                       className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer ${
                         isAdded
                           ? "bg-emerald-600 text-white shadow-emerald-600/20"
-                          : "bg-purple-600 hover:bg-purple-500 text-white shadow-purple-600/20"
+                          : "bg-[#c9c918] hover:bg-[#b5b514] active:bg-[#a1a110] text-slate-950 font-bold shadow-[#c9c918]/20"
                       }`}
                     >
                       {isLoading ? (

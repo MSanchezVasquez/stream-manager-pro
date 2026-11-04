@@ -11,27 +11,13 @@ import { MobileBottomNav } from './MobileBottomNav';
 import { FullScreenAppLoader, CircularSpinner } from './common/LoadingSpinners';
 import { Menu } from 'lucide-react';
 
-// Lazy-loaded components for optimal bundle splitting
-const OverviewCards = lazy(() =>
-  import('./Dashboard/OverviewCards').then((m) => ({
-    default: m.OverviewCards,
-  })),
-);
-const PlatformDistributionChart = lazy(() =>
-  import('./Dashboard/PlatformDistributionChart').then((m) => ({
-    default: m.PlatformDistributionChart,
-  })),
-);
-const ExpirationAlerts = lazy(() =>
-  import('./Dashboard/ExpirationAlerts').then((m) => ({
-    default: m.ExpirationAlerts,
-  })),
-);
-const FinancialAndActivitySummary = lazy(() =>
-  import('./Dashboard/FinancialAndActivitySummary').then((m) => ({
-    default: m.FinancialAndActivitySummary,
-  })),
-);
+// Core Dashboard components (statically imported for instant render and zero chunk fetch failures)
+import { OverviewCards } from './Dashboard/OverviewCards';
+import { PlatformDistributionChart } from './Dashboard/PlatformDistributionChart';
+import { ExpirationAlerts } from './Dashboard/ExpirationAlerts';
+import { FinancialAndActivitySummary } from './Dashboard/FinancialAndActivitySummary';
+
+// Lazy-loaded secondary components for code splitting
 const ClientList = lazy(() =>
   import('./Clients/ClientList').then((m) => ({
     default: m.ClientList,

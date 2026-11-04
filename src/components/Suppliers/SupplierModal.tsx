@@ -132,7 +132,7 @@ export const SupplierModal: React.FC<SupplierModalProps> = ({
         </button>
 
         <div className="flex items-center gap-3 mb-6">
-          <div className="p-2.5 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400">
+          <div className="p-2.5 rounded-xl bg-[#c9c918]/15 text-[#7a7a08] dark:text-[#dada28] border border-[#c9c918]/30">
             <Truck className="w-6 h-6" />
           </div>
           <div>
@@ -143,12 +143,12 @@ export const SupplierModal: React.FC<SupplierModalProps> = ({
             </h3>
             <p className="text-xs text-slate-500 dark:text-[#94949E]">
               {t("suppliers.modalSupplier")}:{" "}
-              <strong className="text-purple-600 dark:text-purple-400">
+              <strong className="text-[#7a7a08] dark:text-[#dada28]">
                 {supplier.name}
               </strong>
             </p>
             {accountToEdit && (
-              <p className="text-[11px] text-purple-600 dark:text-purple-400 mt-1 flex items-center gap-1 font-medium">
+              <p className="text-[11px] text-[#7a7a08] dark:text-[#dada28] mt-1 flex items-center gap-1 font-medium">
                 <Sparkles className="w-3 h-3 shrink-0" />
                 <span>
                   {resolvedLanguage === "en"
@@ -254,7 +254,7 @@ export const SupplierModal: React.FC<SupplierModalProps> = ({
             </button>
             <button
               type="submit"
-              className="px-5 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold shadow-lg shadow-purple-600/20 transition-all cursor-pointer"
+              className="px-5 py-2 rounded-xl bg-[#c9c918] hover:bg-[#b5b514] active:bg-[#a1a110] text-slate-950 text-xs font-bold shadow-lg shadow-[#c9c918]/25 transition-all cursor-pointer"
             >
               {t("suppliers.saveAccount")}
             </button>

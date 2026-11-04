@@ -96,7 +96,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       label: t('nav.suppliers'),
       icon: Truck,
       badge: suppliersCount,
-      badgeColor: 'bg-indigo-50 text-indigo-600 dark:bg-indigo-500/15 dark:text-indigo-400',
+      badgeColor: 'bg-[#c9c918]/15 text-[#7a7a08] dark:bg-[#c9c918]/20 dark:text-[#dada28]',
     },
     {
       id: 'free_profiles',

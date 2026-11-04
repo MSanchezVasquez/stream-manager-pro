@@ -119,7 +119,7 @@ export const SupplierList: React.FC = () => {
       {/* Header Controls */}
       <div className="p-4 rounded-xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#1F1F23] shadow-sm flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400">
+          <div className="p-2.5 rounded-xl bg-[#c9c918]/15 text-[#7a7a08] dark:text-[#dada28] border border-[#c9c918]/30">
             <Truck className="w-5 h-5" />
           </div>
           <div>
@@ -146,7 +146,7 @@ export const SupplierList: React.FC = () => {
 
           <button
             onClick={() => setIsNewSupplierFormOpen(!isNewSupplierFormOpen)}
-            className="px-3.5 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-md shadow-purple-600/20 transition-all shrink-0 cursor-pointer"
+            className="px-3.5 py-1.5 rounded-xl bg-[#c9c918] hover:bg-[#b5b514] active:bg-[#a1a110] text-slate-950 text-xs font-bold flex items-center gap-1.5 shadow-md shadow-[#c9c918]/20 transition-all shrink-0 cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>
@@ -162,10 +162,10 @@ export const SupplierList: React.FC = () => {
       {isNewSupplierFormOpen && (
         <form
           onSubmit={handleAddNewSupplierSubmit}
-          className="p-4 rounded-xl bg-purple-500/5 dark:bg-purple-500/10 border border-purple-500/20 shadow-sm flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 animate-fade-in"
+          className="p-4 rounded-xl bg-[#c9c918]/5 dark:bg-[#181810] border border-[#c9c918]/30 shadow-sm flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 animate-fade-in"
         >
           <div className="flex items-center gap-3 flex-1">
-            <div className="p-2 rounded-xl bg-purple-500/20 text-purple-600 dark:text-purple-400 shrink-0">
+            <div className="p-2 rounded-xl bg-[#c9c918]/15 text-[#7a7a08] dark:text-[#dada28] shrink-0 border border-[#c9c918]/30">
               <Truck className="w-4 h-4" />
             </div>
             <input
@@ -175,7 +175,7 @@ export const SupplierList: React.FC = () => {
               placeholder={t("suppliers.search")}
               value={newSupplierName}
               onChange={(e) => setNewSupplierName(e.target.value)}
-              className="w-full px-3 py-2 rounded-xl border border-purple-500/30 bg-white dark:bg-[#1A1A1E] text-slate-900 dark:text-[#E4E4E7] text-xs font-medium focus:outline-none focus:border-purple-500 focus:ring-0 transition-colors"
+              className="w-full px-3 py-2 rounded-xl border border-[#c9c918]/30 bg-white dark:bg-[#1A1A1E] text-slate-900 dark:text-[#E4E4E7] text-xs font-medium focus:outline-none focus:border-[#c9c918] focus:ring-0 transition-colors"
             />
           </div>
 
@@ -192,7 +192,7 @@ export const SupplierList: React.FC = () => {
             </button>
             <button
               type="submit"
-              className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold shadow-md shadow-purple-600/20 transition-all flex items-center gap-1.5 cursor-pointer"
+              className="px-4 py-2 rounded-xl bg-[#c9c918] hover:bg-[#b5b514] active:bg-[#a1a110] text-slate-950 text-xs font-bold shadow-md shadow-[#c9c918]/20 transition-all flex items-center gap-1.5 cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>{t("suppliers.saveSupplier")}</span>
@@ -223,7 +223,7 @@ export const SupplierList: React.FC = () => {
               {/* Supplier Header */}
               <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-[#1F1F23]">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 font-bold flex items-center justify-center text-sm border border-purple-500/20">
+                  <div className="w-10 h-10 rounded-xl bg-[#c9c918]/15 text-[#7a7a08] dark:text-[#dada28] font-bold flex items-center justify-center text-sm border border-[#c9c918]/30">
                     <Truck className="w-5 h-5" />
                   </div>
                   <div>
@@ -243,7 +243,7 @@ export const SupplierList: React.FC = () => {
                       setAccountToEdit(null);
                       setIsModalOpen(true);
                     }}
-                    className="px-3 py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-600 dark:text-purple-400 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                    className="px-3 py-1.5 rounded-xl bg-[#c9c918]/15 hover:bg-[#c9c918]/25 text-slate-900 dark:text-[#dada28] text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer border border-[#c9c918]/30"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>{t("suppliers.addAccount")}</span>

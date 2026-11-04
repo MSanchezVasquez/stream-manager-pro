@@ -287,7 +287,7 @@ export const FinancialAndActivitySummary: React.FC<
               {/* Costos Operativos */}
               <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#181820] border border-slate-200/70 dark:border-[#25252D]">
                 <div className="flex items-center gap-1.5 mb-1">
-                  <ArrowDownRight className="w-3.5 h-3.5 text-purple-500" />
+                  <ArrowDownRight className="w-3.5 h-3.5 text-[#8a8a08] dark:text-[#dada28]" />
                   <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                     {isEn ? "Supplier Costs" : "Costos Proveedor"}
                   </span>
@@ -322,7 +322,7 @@ export const FinancialAndActivitySummary: React.FC<
                   </strong>
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />
+                  <span className="w-2 h-2 rounded-full bg-[#c9c918] shrink-0" />
                   {isEn ? "Cost" : "Costo"}:{" "}
                   <strong className="font-cascadia">
                     {monthlyRevenue > 0
@@ -345,7 +345,7 @@ export const FinancialAndActivitySummary: React.FC<
                   title={isEn ? "Profit margin" : "Margen de ganancia"}
                 />
                 <div
-                  className="h-full bg-purple-500 transition-all duration-500"
+                  className="h-full bg-[#c9c918] transition-all duration-500"
                   style={{
                     width: `${
                       monthlyRevenue > 0
@@ -686,13 +686,13 @@ export const FinancialAndActivitySummary: React.FC<
                 </div>
 
                 {/* Pagos a proveedores */}
-                <div className="flex items-center justify-between p-2 rounded-lg bg-purple-500/5 border border-purple-500/15 gap-2">
+                <div className="flex items-center justify-between p-2 rounded-lg bg-[#c9c918]/10 border border-[#c9c918]/25 gap-2">
                   <div className="flex items-center gap-1.5 min-w-0 flex-1 flex-wrap">
-                    <AlertCircle className="w-3.5 h-3.5 text-purple-500 shrink-0" />
+                    <AlertCircle className="w-3.5 h-3.5 text-[#8a8a08] dark:text-[#dada28] shrink-0" />
                     <span className="text-slate-700 dark:text-slate-300 font-medium">
                       {isEn ? "Supplier payments" : "Pagos a proveedores"}
                     </span>
-                    <span className="text-[10px] text-purple-600 dark:text-purple-400 font-semibold shrink-0">
+                    <span className="text-[10px] text-[#7a7a08] dark:text-[#dada28] font-bold shrink-0">
                       ({upcomingSupplierCount7d}{" "}
                       {upcomingSupplierCount7d === 1
                         ? isEn
@@ -704,7 +704,7 @@ export const FinancialAndActivitySummary: React.FC<
                       )
                     </span>
                   </div>
-                  <span className="font-bold text-purple-600 dark:text-purple-400 font-cascadia shrink-0 ml-1 whitespace-nowrap">
+                  <span className="font-bold text-[#7a7a08] dark:text-[#dada28] font-cascadia shrink-0 ml-1 whitespace-nowrap">
                     {upcomingCost7d > 0 ? `-S/ ${upcomingCost7d.toFixed(2)}` : "S/ 0.00"}
                   </span>
                 </div>

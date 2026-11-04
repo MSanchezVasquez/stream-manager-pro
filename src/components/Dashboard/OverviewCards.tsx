@@ -140,3 +140,5 @@ export const OverviewCards: React.FC<{
     </div>
   );
 };
+
+export default OverviewCards;

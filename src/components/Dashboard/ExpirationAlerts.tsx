@@ -533,7 +533,7 @@ export const ExpirationAlerts: React.FC = () => {
             return (
               <div
                 key={item.id}
-                className="p-4 sm:p-5 rounded-2xl border border-purple-200/70 dark:border-purple-900/30 bg-purple-50/20 dark:bg-[#181520] hover:border-purple-300 dark:hover:border-purple-800/50 shadow-xs hover:shadow-sm transition-all flex flex-col justify-between gap-3.5 overflow-hidden"
+                className="p-4 sm:p-5 rounded-2xl border border-[#c9c918]/30 dark:border-[#c9c918]/25 bg-[#c9c918]/5 dark:bg-[#181810] hover:border-[#c9c918]/50 dark:hover:border-[#c9c918]/45 shadow-xs hover:shadow-sm transition-all flex flex-col justify-between gap-3.5 overflow-hidden"
               >
                 <div>
                   {/* Top Row: Platform Badge + Status Badge (Responsive & Overflow-safe) */}
@@ -560,13 +560,13 @@ export const ExpirationAlerts: React.FC = () => {
                   </div>
 
                   {/* Clean Supplier Identity Box */}
-                  <div className="flex items-center justify-between gap-2 p-2 rounded-xl bg-white/70 dark:bg-[#121216] border border-purple-200/60 dark:border-purple-900/25 mb-3">
+                  <div className="flex items-center justify-between gap-2 p-2 rounded-xl bg-white/70 dark:bg-[#121216] border border-[#c9c918]/30 dark:border-[#c9c918]/20 mb-3">
                     <div className="flex items-center gap-2 min-w-0 flex-1">
-                      <div className="w-7 h-7 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0 border border-purple-500/20">
+                      <div className="w-7 h-7 rounded-lg bg-[#c9c918]/15 text-[#7a7a08] dark:text-[#dada28] flex items-center justify-center shrink-0 border border-[#c9c918]/30">
                         <Truck className="w-3.5 h-3.5" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <div className="text-[9px] font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 leading-none mb-0.5">
+                        <div className="text-[9px] font-bold uppercase tracking-wider text-[#7a7a08] dark:text-[#dada28] leading-none mb-0.5">
                           Proveedor
                         </div>
                         <div
@@ -671,7 +671,7 @@ export const ExpirationAlerts: React.FC = () => {
                 </div>
 
                 {/* Actions: Renovar Cuenta de Proveedor */}
-                <div className="pt-2.5 border-t border-purple-200/50 dark:border-[#282235] mt-auto">
+                <div className="pt-2.5 border-t border-[#c9c918]/25 dark:border-[#2a2a16] mt-auto">
                   <button
                     type="button"
                     onClick={() =>
@@ -680,7 +680,7 @@ export const ExpirationAlerts: React.FC = () => {
                         account: item.account,
                       })
                     }
-                    className="w-full py-2 px-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm shadow-purple-600/20 transition-all cursor-pointer"
+                    className="w-full py-2 px-3 rounded-xl bg-[#c9c918] hover:bg-[#b5b514] active:bg-[#a1a110] text-slate-950 text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm shadow-[#c9c918]/20 transition-all cursor-pointer"
                     title={t("suppliers.renewAccount")}
                   >
                     <RotateCw className="w-3.5 h-3.5 shrink-0" />
