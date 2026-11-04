@@ -3,6 +3,7 @@ import { useAuthStore } from './store/authStore';
 import { AuthScreen } from './components/Auth/AuthScreen';
 import { FullScreenAppLoader } from './components/common/LoadingSpinners';
 import { ThemeController } from './components/ThemeController';
+import { OfflineIndicator } from './components/common/OfflineIndicator';
 
 // Lazily load the authenticated application so the unauthenticated view loads instantly
 const AuthenticatedApp = lazy(() =>
@@ -38,6 +39,7 @@ export default function App() {
   return (
     <ThemeController>
       <MainApp />
+      <OfflineIndicator />
     </ThemeController>
   );
 }

@@ -9,6 +9,7 @@ import { PlatformIcon } from './common/PlatformIcon';
 import { ProfilePopover } from './Auth/ProfilePopover';
 import { NotificationsPopover } from './Notifications/NotificationsPopover';
 import { LogoutConfirmModal } from './Auth/LogoutConfirmModal';
+import { PWAInstallButton } from './common/PWAInstallButton';
 import { useAuthStore } from '../store/authStore';
 import { useDataStore } from '../store/dataStore';
 import { useTranslation } from '../utils/translations';
@@ -195,6 +196,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </button>
               )}
             </div>
+
+            {/* PWA In-App Install Button */}
+            <PWAInstallButton variant="navbar" />
 
             {/* Expiration Alerts Button with Popover */}
             <div className="relative shrink-0 flex items-center justify-center">

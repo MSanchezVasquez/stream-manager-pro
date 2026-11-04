@@ -13,6 +13,7 @@ import {
 
 import { useDataStore } from '../store/dataStore';
 import { useTranslation } from '../utils/translations';
+import { PWAInstallButton } from './common/PWAInstallButton';
 
 interface SidebarProps {
   activeTab: string;
@@ -204,6 +205,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
               );
             })}
           </nav>
+
+          {/* Botón de instalación PWA para escritorio */}
+          <div className="pt-2">
+            <PWAInstallButton variant="sidebar" />
+          </div>
         </div>
       </div>
     </aside>

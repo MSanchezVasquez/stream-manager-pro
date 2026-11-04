@@ -14,6 +14,7 @@ import { LogoutConfirmModal } from "./LogoutConfirmModal";
 import { LANGUAGES } from "../../utils/languages";
 import { useTranslation } from "../../utils/translations";
 import { LanguageFlag } from "../common/LanguageFlag";
+import { PWAInstallButton } from "../common/PWAInstallButton";
 
 interface ProfilePopoverProps {
   isOpen: boolean;
@@ -294,6 +295,8 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
 
       {/*  Options & Logout Section */}
       <div className="py-0">
+        <PWAInstallButton variant="popover" />
+
         <button
           onClick={() => {
             if (onOpenSettings) onOpenSettings();
