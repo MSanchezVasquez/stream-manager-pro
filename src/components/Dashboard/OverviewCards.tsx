@@ -86,9 +86,9 @@ export const OverviewCards: React.FC<{
       title: t('dash.registeredSuppliersTitle'),
       value: totalSuppliers,
       icon: Truck,
-      color: 'from-purple-500/20 to-pink-500/5 text-purple-500',
-      borderColor: 'border-purple-500/30',
-      iconBg: 'bg-purple-500/10 text-purple-600 dark:text-purple-400',
+      color: 'from-[#c9c918]/25 to-[#c9c918]/5 text-[#c9c918]',
+      borderColor: 'border-[#c9c918]/30',
+      iconBg: 'bg-[#c9c918]/15 text-[#7a7a08] dark:text-[#dada28]',
       tab: 'suppliers',
     },
     {

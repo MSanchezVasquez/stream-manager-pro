@@ -43,6 +43,11 @@ const MessageTemplatesView = lazy(() =>
     default: m.MessageTemplatesView,
   })),
 );
+const StreamingHub3DView = lazy(() =>
+  import('./ThreeScene/StreamingHub3DView').then((m) => ({
+    default: m.StreamingHub3DView,
+  })),
+);
 const UserProfile = lazy(() =>
   import('./Profiles/UserProfile').then((m) => ({
     default: m.UserProfile,
@@ -248,6 +253,10 @@ export const AuthenticatedApp: React.FC = () => {
               {activeTab === 'templates' && <MessageTemplatesView />}
 
               {activeTab === 'links' && <QuickLinksView />}
+
+              {activeTab === 'hub_3d' && (
+                <StreamingHub3DView onNavigateTab={(tab) => setActiveTab(tab)} />
+              )}
             </Suspense>
           </div>
         </div>

@@ -9,6 +9,7 @@ import {
   MessageSquareText,
   ExternalLink,
   PlusCircle,
+  Box,
 } from 'lucide-react';
 
 import { useDataStore } from '../store/dataStore';
@@ -127,6 +128,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
       badge: null,
       badgeColor: '',
     },
+    {
+      id: 'hub_3d',
+      label: resolvedLanguage === 'en' ? '3D Visualizer' : 'Centro 3D',
+      icon: Box,
+      badge: '3D',
+      badgeColor: 'bg-indigo-500/15 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-400 font-bold',
+    },
   ];
 
   return (
@@ -190,7 +198,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     <span className="truncate">{item.label}</span>
                   </div>
 
-                  {item.badge !== null && item.badge > 0 && (
+                  {item.badge !== null && (typeof item.badge === 'number' ? item.badge > 0 : Boolean(item.badge)) && (
                     <span
                       className={`px-2 py-0.5 text-[11px] font-bold rounded-full shrink-0 transition-colors ${
                         isActive

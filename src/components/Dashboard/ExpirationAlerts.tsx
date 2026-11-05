@@ -680,7 +680,7 @@ export const ExpirationAlerts: React.FC = () => {
                         account: item.account,
                       })
                     }
-                    className="w-full py-2 px-3 rounded-xl bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm shadow-purple-600/20 transition-all cursor-pointer"
+                    className="w-full py-2 px-3 rounded-xl bg-[#c9c918] hover:bg-[#b5b514] active:bg-[#a1a110] text-slate-950 text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm shadow-[#c9c918]/20 transition-all cursor-pointer"
                     title={t("suppliers.renewAccount")}
                   >
                     <RotateCw className="w-3.5 h-3.5 shrink-0" />
