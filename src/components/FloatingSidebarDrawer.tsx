@@ -10,7 +10,6 @@ import {
   ExternalLink,
   PlusCircle,
   X,
-  Box,
 } from "lucide-react";
 import { useDataStore } from "../store/dataStore";
 import { AppLogo } from "./AppLogo";
@@ -119,13 +118,6 @@ export const FloatingSidebarDrawer: React.FC<FloatingSidebarDrawerProps> = ({
       icon: ExternalLink,
       badge: null,
       badgeColor: "",
-    },
-    {
-      id: "hub_3d",
-      label: resolvedLanguage === "en" ? "3D Visualizer" : "Centro 3D",
-      icon: Box,
-      badge: "3D",
-      badgeColor: "bg-indigo-500/15 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-400 font-bold",
     },
   ];
 
