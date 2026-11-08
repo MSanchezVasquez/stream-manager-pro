@@ -381,6 +381,20 @@ export const useMessageTemplateStore = create<MessageTemplateState>()(
               return item;
             })
             .join("\n\n");
+        } else if (data.serviceName) {
+          // Fallback en caso de usar {lista_servicios} con datos de una sola suscripción
+          const platform =
+            getPlatformDisplayName(data.serviceName) || data.serviceName;
+          let item = `📺 *${platform}*`;
+          if (data.cutDate) item += `\n📅 *Corte:* ${data.cutDate}`;
+          if (data.email) item += `\n📧 *Correo:* ${data.email}`;
+          if (data.password) item += `\n🔑 *Contraseña:* ${data.password}`;
+          if (data.profileName) item += `\n👤 *Perfil:* ${data.profileName}`;
+          if (data.pin) item += `\n🔒 *PIN:* ${data.pin}`;
+          if (typeof data.price === "number" && data.price > 0) {
+            item += `\n💰 *Monto:* S/ ${data.price.toFixed(2)}`;
+          }
+          servicesList = item;
         }
 
         // Reemplazo de variables

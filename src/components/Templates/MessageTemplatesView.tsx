@@ -71,6 +71,22 @@ export const MessageTemplatesView: React.FC = () => {
         price: 15.0,
         phone: "+51987654321",
         lang: resolvedLanguage as "es" | "en",
+        renewedSubs: [
+          {
+            id: "sub-netflix",
+            clientId: "c-1",
+            clientName: "Carlos Mendoza",
+            serviceName: "Netflix Premium",
+            hireDate: "28/09/2026",
+            cutDate: "28/10/2026",
+            email: "carlos.stream@gmail.com",
+            password: "Pass2026Netflix*",
+            profileName: "Perfil 1 (Carlos)",
+            pin: "4321",
+            price: 15.0,
+            status: "active",
+          },
+        ],
       },
       disney: {
         clientName: "Lucía Fernández",
@@ -83,6 +99,22 @@ export const MessageTemplatesView: React.FC = () => {
         price: 18.5,
         phone: "+51912345678",
         lang: resolvedLanguage as "es" | "en",
+        renewedSubs: [
+          {
+            id: "sub-disney",
+            clientId: "c-2",
+            clientName: "Lucía Fernández",
+            serviceName: "Disney+ Premium",
+            hireDate: "30/09/2026",
+            cutDate: "30/10/2026",
+            email: "lucia.disney@fam.net",
+            password: "MagicDisney2026",
+            profileName: "Lucía Kids",
+            pin: "8899",
+            price: 18.5,
+            status: "active",
+          },
+        ],
       },
       combo: {
         clientName: "Diego Ramos",
@@ -462,7 +494,12 @@ export const MessageTemplatesView: React.FC = () => {
             <button
               key={tab.id}
               type="button"
-              onClick={() => setActiveType(tab.id)}
+              onClick={() => {
+                setActiveType(tab.id);
+                if (tab.id === "multi_renewal") {
+                  setTestPreset("combo");
+                }
+              }}
               className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-2.5 ${
                 isActive
                   ? "bg-indigo-500/10 border-indigo-500/40 shadow-xs dark:bg-indigo-500/15"
