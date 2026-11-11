@@ -303,13 +303,17 @@ html.theme-transitioning *::after {
 }
 
 /* Barra de búsqueda de cuentas y clientes: sin animación ni focus */
-.navbar-search-input,
-.navbar-search-input:focus,
-.navbar-search-input:focus-visible,
-.navbar-search-input:active {
+input.navbar-search-input,
+input.navbar-search-input:focus,
+input.navbar-search-input:focus-visible,
+input.navbar-search-input:active,
+.dark input.navbar-search-input,
+.dark input.navbar-search-input:focus,
+.dark input.navbar-search-input:focus-visible,
+.dark input.navbar-search-input:active {
   outline: none !important;
   box-shadow: none !important;
-  border-color: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
   transition: none !important;
   animation: none !important;
 }

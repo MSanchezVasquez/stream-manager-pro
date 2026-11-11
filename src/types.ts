@@ -82,6 +82,8 @@ export interface SupplierAccount {
 export interface Supplier {
   id: string;
   name: string;
+  phone?: string;
+  email?: string;
   contactInfo?: string;
   notes?: string;
   accounts: SupplierAccount[];

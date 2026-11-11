@@ -28,6 +28,9 @@ import {
   Coins,
   ChevronDown,
   ChevronUp,
+  Phone,
+  FileText,
+  User,
 } from "lucide-react";
 import { Supplier, SupplierAccount } from "../../types";
 import { SupplierModal } from "./SupplierModal";
@@ -51,9 +54,13 @@ export const SupplierList: React.FC = () => {
   );
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
-  // New Supplier Inline Form state
-  const [isNewSupplierFormOpen, setIsNewSupplierFormOpen] = useState(false);
-  const [newSupplierName, setNewSupplierName] = useState("");
+  // Supplier Form state (New or Edit)
+  const [isSupplierFormOpen, setIsSupplierFormOpen] = useState(false);
+  const [editingSupplierId, setEditingSupplierId] = useState<string | null>(null);
+  const [supplierFormName, setSupplierFormName] = useState("");
+  const [supplierFormPhone, setSupplierFormPhone] = useState("");
+  const [supplierFormEmail, setSupplierFormEmail] = useState("");
+  const [supplierFormNotes, setSupplierFormNotes] = useState("");
 
   // Delete Supplier Confirmation Modal state
   const [supplierToDelete, setSupplierToDelete] = useState<Supplier | null>(
@@ -134,18 +141,66 @@ export const SupplierList: React.FC = () => {
     deleteSupplier(targetId);
   };
 
-  const handleAddNewSupplierSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newSupplierName.trim()) return;
+  const handleOpenNewSupplier = () => {
+    if (isSupplierFormOpen && !editingSupplierId) {
+      setIsSupplierFormOpen(false);
+    } else {
+      setEditingSupplierId(null);
+      setSupplierFormName("");
+      setSupplierFormPhone("");
+      setSupplierFormEmail("");
+      setSupplierFormNotes("");
+      setIsSupplierFormOpen(true);
+    }
+  };
 
-    const newSup: Supplier = {
-      id: `sup-${Date.now()}`,
-      name: newSupplierName.trim(),
-      accounts: [],
-    };
-    await saveSupplier(newSup);
-    setNewSupplierName("");
-    setIsNewSupplierFormOpen(false);
+  const handleOpenEditSupplier = (supplier: Supplier) => {
+    setEditingSupplierId(supplier.id);
+    setSupplierFormName(supplier.name);
+    setSupplierFormPhone(supplier.phone || supplier.contactInfo || "");
+    setSupplierFormEmail(supplier.email || "");
+    setSupplierFormNotes(supplier.notes || "");
+    setIsSupplierFormOpen(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleCloseSupplierForm = () => {
+    setIsSupplierFormOpen(false);
+    setEditingSupplierId(null);
+    setSupplierFormName("");
+    setSupplierFormPhone("");
+    setSupplierFormEmail("");
+    setSupplierFormNotes("");
+  };
+
+  const handleSaveSupplierForm = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!supplierFormName.trim()) return;
+
+    if (editingSupplierId) {
+      const existing = suppliers.find((s) => s.id === editingSupplierId);
+      if (existing) {
+        await saveSupplier({
+          ...existing,
+          name: supplierFormName.trim(),
+          phone: supplierFormPhone.trim() || undefined,
+          email: supplierFormEmail.trim() || undefined,
+          notes: supplierFormNotes.trim() || undefined,
+        });
+      }
+    } else {
+      const newSup: Supplier = {
+        id: `sup-${Date.now()}`,
+        name: supplierFormName.trim(),
+        phone: supplierFormPhone.trim() || undefined,
+        email: supplierFormEmail.trim() || undefined,
+        notes: supplierFormNotes.trim() || undefined,
+        accounts: [],
+      };
+      await saveSupplier(newSup);
+    }
+
+    handleCloseSupplierForm();
   };
 
   return (
@@ -200,47 +255,126 @@ export const SupplierList: React.FC = () => {
           )}
 
           <button
-            onClick={() => setIsNewSupplierFormOpen(!isNewSupplierFormOpen)}
+            onClick={handleOpenNewSupplier}
             className="px-3.5 py-1.5 rounded-xl bg-[#c9c918] hover:bg-[#b5b514] active:bg-[#a1a110] text-slate-950 text-xs font-bold flex items-center gap-1.5 shadow-md shadow-[#c9c918]/20 transition-all shrink-0 cursor-pointer"
           >
-            <Plus className="w-4 h-4" />
-            <span>
-              {isNewSupplierFormOpen
-                ? t("suppliers.close")
-                : t("suppliers.newSupplier")}
-            </span>
+            {isSupplierFormOpen && !editingSupplierId ? (
+              <>
+                <X className="w-4 h-4" />
+                <span>{t("suppliers.close")}</span>
+              </>
+            ) : (
+              <>
+                <Plus className="w-4 h-4" />
+                <span>{t("suppliers.newSupplier")}</span>
+              </>
+            )}
           </button>
         </div>
       </div>
 
-      {/* Inline New Supplier Creation Form */}
-      {isNewSupplierFormOpen && (
+      {/* Inline New / Edit Supplier Form */}
+      {isSupplierFormOpen && (
         <form
-          onSubmit={handleAddNewSupplierSubmit}
-          className="p-4 rounded-xl bg-[#c9c918]/5 dark:bg-[#181810] border border-[#c9c918]/30 shadow-sm flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 animate-fade-in"
+          onSubmit={handleSaveSupplierForm}
+          className="p-5 rounded-xl bg-white dark:bg-[#141418] border border-[#c9c918]/40 shadow-sm space-y-4 animate-fade-in"
         >
-          <div className="flex items-center gap-3 flex-1">
-            <div className="p-2 rounded-xl bg-[#c9c918]/15 text-[#7a7a08] dark:text-[#dada28] shrink-0 border border-[#c9c918]/30">
-              <Truck className="w-4 h-4" />
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-[#222228]">
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 rounded-xl bg-[#c9c918]/15 text-[#7a7a08] dark:text-[#dada28] border border-[#c9c918]/30">
+                <Truck className="w-4 h-4" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-slate-900 dark:text-[#E4E4E7]">
+                  {editingSupplierId
+                    ? t("suppliers.editSupplierTitle")
+                    : t("suppliers.newSupplierTitle")}
+                </h3>
+                <p className="text-[11px] text-slate-500 dark:text-[#94949E]">
+                  {editingSupplierId
+                    ? "Actualiza el teléfono, correo y notas de este proveedor."
+                    : "Ingresa el nombre, número de teléfono/WhatsApp y datos de contacto."}
+                </p>
+              </div>
             </div>
-            <input
-              type="text"
-              required
-              autoFocus
-              placeholder={t("suppliers.search")}
-              value={newSupplierName}
-              onChange={(e) => setNewSupplierName(e.target.value)}
-              className="w-full px-3 py-2 rounded-xl border border-[#c9c918]/30 bg-white dark:bg-[#1A1A1E] text-slate-900 dark:text-[#E4E4E7] text-xs font-medium focus:outline-none focus:border-[#c9c918] focus:ring-0 transition-colors"
-            />
-          </div>
 
-          <div className="flex items-center justify-end gap-2 shrink-0">
             <button
               type="button"
-              onClick={() => {
-                setIsNewSupplierFormOpen(false);
-                setNewSupplierName("");
-              }}
+              onClick={handleCloseSupplierForm}
+              className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors cursor-pointer"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+            {/* Nombre del Proveedor */}
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                <User className="w-3.5 h-3.5 text-[#7a7a08] dark:text-[#dada28]" />
+                <span>{t("suppliers.supplierName")}</span>
+              </label>
+              <input
+                type="text"
+                required
+                autoFocus
+                placeholder={t("suppliers.supplierNamePlaceholder")}
+                value={supplierFormName}
+                onChange={(e) => setSupplierFormName(e.target.value)}
+                className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-slate-50 dark:bg-[#1A1A1E] text-slate-900 dark:text-[#E4E4E7] focus:outline-none focus:border-[#c9c918] focus:ring-0 transition-colors"
+              />
+            </div>
+
+            {/* Teléfono / WhatsApp */}
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                <Phone className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                <span>{t("suppliers.supplierPhone")}</span>
+              </label>
+              <input
+                type="text"
+                placeholder={t("suppliers.supplierPhonePlaceholder")}
+                value={supplierFormPhone}
+                onChange={(e) => setSupplierFormPhone(e.target.value)}
+                className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-slate-50 dark:bg-[#1A1A1E] text-slate-900 dark:text-[#E4E4E7] focus:outline-none focus:border-[#c9c918] focus:ring-0 transition-colors font-mono"
+              />
+            </div>
+
+            {/* Correo Electrónico */}
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                <Mail className="w-3.5 h-3.5 text-[#94949E]" />
+                <span>{t("suppliers.supplierEmail")}</span>
+              </label>
+              <input
+                type="email"
+                placeholder={t("suppliers.supplierEmailPlaceholder")}
+                value={supplierFormEmail}
+                onChange={(e) => setSupplierFormEmail(e.target.value)}
+                className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-slate-50 dark:bg-[#1A1A1E] text-slate-900 dark:text-[#E4E4E7] focus:outline-none focus:border-[#c9c918] focus:ring-0 transition-colors font-mono"
+              />
+            </div>
+
+            {/* Notas / Canal de Soporte */}
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                <FileText className="w-3.5 h-3.5 text-[#94949E]" />
+                <span>{t("suppliers.supplierNotes")}</span>
+              </label>
+              <input
+                type="text"
+                placeholder={t("suppliers.supplierNotesPlaceholder")}
+                value={supplierFormNotes}
+                onChange={(e) => setSupplierFormNotes(e.target.value)}
+                className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-slate-50 dark:bg-[#1A1A1E] text-slate-900 dark:text-[#E4E4E7] focus:outline-none focus:border-[#c9c918] focus:ring-0 transition-colors"
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-slate-100 dark:border-[#222228]">
+            <button
+              type="button"
+              onClick={handleCloseSupplierForm}
               className="px-3.5 py-2 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1F1F24] text-xs font-semibold transition-colors cursor-pointer"
             >
               {t("suppliers.cancel")}
@@ -249,7 +383,7 @@ export const SupplierList: React.FC = () => {
               type="submit"
               className="px-4 py-2 rounded-xl bg-[#c9c918] hover:bg-[#b5b514] active:bg-[#a1a110] text-slate-950 text-xs font-bold shadow-md shadow-[#c9c918]/20 transition-all flex items-center gap-1.5 cursor-pointer"
             >
-              <Plus className="w-3.5 h-3.5" />
+              <Check className="w-3.5 h-3.5" />
               <span>{t("suppliers.saveSupplier")}</span>
             </button>
           </div>
@@ -289,22 +423,48 @@ export const SupplierList: React.FC = () => {
               className="p-6 rounded-xl bg-white dark:bg-[#141418] border border-slate-200 dark:border-[#1F1F23] shadow-sm space-y-4"
             >
               {/* Supplier Header */}
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-[#1F1F23]">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#c9c918]/15 text-[#7a7a08] dark:text-[#dada28] font-bold flex items-center justify-center text-sm border border-[#c9c918]/30">
+              <div className="flex items-start sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-[#1F1F23]">
+                <div className="flex items-start sm:items-center gap-3 min-w-0 flex-1">
+                  <div className="w-10 h-10 rounded-xl bg-[#c9c918]/15 text-[#7a7a08] dark:text-[#dada28] font-bold flex items-center justify-center text-sm border border-[#c9c918]/30 shrink-0 mt-0.5 sm:mt-0">
                     <Truck className="w-5 h-5" />
                   </div>
-                  <div>
-                    <h3 className="font-bold text-base text-slate-900 dark:text-[#E4E4E7]">
-                      {supplier.name}
-                    </h3>
-                    <p className="text-xs text-slate-500 dark:text-[#94949E]">
-                      {t("suppliers.accountsCount", { count: supplier.accounts.length })}
-                    </p>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h3 className="font-bold text-base text-slate-900 dark:text-[#E4E4E7]">
+                        {supplier.name}
+                      </h3>
+                      {(supplier.phone || supplier.contactInfo) && (
+                        <a
+                          href={`https://wa.me/${(supplier.phone || supplier.contactInfo || "").replace(/[^0-9]/g, "")}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-xs font-semibold bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 transition-colors shadow-2xs"
+                          title={`Enviar WhatsApp a ${supplier.name} (${supplier.phone || supplier.contactInfo})`}
+                        >
+                          <Phone className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+                          <span className="font-mono text-[11px]">{supplier.phone || supplier.contactInfo}</span>
+                        </a>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-3 mt-0.5 text-xs text-slate-500 dark:text-[#94949E] flex-wrap">
+                      <span>{t("suppliers.accountsCount", { count: supplier.accounts.length })}</span>
+                      {supplier.email && (
+                        <span className="inline-flex items-center gap-1 text-slate-600 dark:text-slate-400 font-mono text-[11px]">
+                          <Mail className="w-3 h-3 shrink-0" />
+                          <span className="truncate max-w-[200px]">{supplier.email}</span>
+                        </span>
+                      )}
+                      {supplier.notes && (
+                        <span className="inline-flex items-center gap-1 text-slate-500 dark:text-slate-400 text-[11px] italic">
+                          <FileText className="w-3 h-3 text-[#7a7a08] dark:text-[#dada28] shrink-0" />
+                          <span className="truncate max-w-[240px]">{supplier.notes}</span>
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                   {/* Botón representativo para colapsar cuentas (icono simple con animación) */}
                   {isCollapsible && (
                     <button
@@ -336,6 +496,15 @@ export const SupplierList: React.FC = () => {
                     </button>
                   )}
 
+                  {/* Editar datos del proveedor */}
+                  <button
+                    onClick={() => handleOpenEditSupplier(supplier)}
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-[#7a7a08] dark:hover:text-[#dada28] hover:bg-[#c9c918]/10 transition-colors cursor-pointer"
+                    title={t("suppliers.editSupplier")}
+                  >
+                    <Edit2 className="w-4 h-4" />
+                  </button>
+
                   <button
                     onClick={() => {
                       setSelectedSupplier(supplier);
@@ -345,7 +514,7 @@ export const SupplierList: React.FC = () => {
                     className="px-3 py-1.5 rounded-xl bg-[#c9c918]/15 hover:bg-[#c9c918]/25 text-slate-900 dark:text-[#dada28] text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer border border-[#c9c918]/30"
                   >
                     <Plus className="w-3.5 h-3.5" />
-                    <span>{t("suppliers.addAccount")}</span>
+                    <span className="hidden sm:inline">{t("suppliers.addAccount")}</span>
                   </button>
 
                   <button

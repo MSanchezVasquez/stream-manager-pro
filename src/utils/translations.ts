@@ -251,6 +251,17 @@ export interface TranslationDictionary {
   "suppliers.newSupplier": string;
   "suppliers.close": string;
   "suppliers.add": string;
+  "suppliers.supplierName": string;
+  "suppliers.supplierNamePlaceholder": string;
+  "suppliers.supplierPhone": string;
+  "suppliers.supplierPhonePlaceholder": string;
+  "suppliers.supplierEmail": string;
+  "suppliers.supplierEmailPlaceholder": string;
+  "suppliers.supplierNotes": string;
+  "suppliers.supplierNotesPlaceholder": string;
+  "suppliers.editSupplier": string;
+  "suppliers.editSupplierTitle": string;
+  "suppliers.newSupplierTitle": string;
   "suppliers.addAccount": string;
   "suppliers.noSuppliers": string;
   "suppliers.noSuppliersDesc": string;
@@ -675,6 +686,17 @@ export const TRANSLATIONS: Record<SupportedLanguage, TranslationDictionary> = {
     "suppliers.newSupplier": "Nuevo Proveedor",
     "suppliers.close": "Cerrar",
     "suppliers.add": "Añadir Proveedor",
+    "suppliers.supplierName": "Nombre del Proveedor *",
+    "suppliers.supplierNamePlaceholder": "Ej. Axel Molina, Moschino...",
+    "suppliers.supplierPhone": "Número de Teléfono / WhatsApp",
+    "suppliers.supplierPhonePlaceholder": "Ej. +51 987 654 321",
+    "suppliers.supplierEmail": "Correo Electrónico de Contacto",
+    "suppliers.supplierEmailPlaceholder": "Ej. proveedor@servicio.com",
+    "suppliers.supplierNotes": "Notas / Canal de Soporte",
+    "suppliers.supplierNotesPlaceholder": "Ej. Horario de atención, enlace a Telegram, etc.",
+    "suppliers.editSupplier": "Editar Proveedor",
+    "suppliers.editSupplierTitle": "Editar Información del Proveedor",
+    "suppliers.newSupplierTitle": "Registrar Nuevo Proveedor",
     "suppliers.addAccount": "Añadir Cuenta",
     "suppliers.noSuppliers": "No se encontraron proveedores",
     "suppliers.noSuppliersDesc":
@@ -1104,6 +1126,17 @@ export const TRANSLATIONS: Record<SupportedLanguage, TranslationDictionary> = {
     "suppliers.newSupplier": "New Supplier",
     "suppliers.close": "Close",
     "suppliers.add": "Add Supplier",
+    "suppliers.supplierName": "Supplier Name *",
+    "suppliers.supplierNamePlaceholder": "e.g. Axel Molina, Moschino...",
+    "suppliers.supplierPhone": "Phone Number / WhatsApp",
+    "suppliers.supplierPhonePlaceholder": "e.g. +51 987 654 321",
+    "suppliers.supplierEmail": "Contact Email Address",
+    "suppliers.supplierEmailPlaceholder": "e.g. supplier@service.com",
+    "suppliers.supplierNotes": "Notes / Support Channel",
+    "suppliers.supplierNotesPlaceholder": "e.g. Hours of operation, Telegram link...",
+    "suppliers.editSupplier": "Edit Supplier",
+    "suppliers.editSupplierTitle": "Edit Supplier Information",
+    "suppliers.newSupplierTitle": "Register New Supplier",
     "suppliers.addAccount": "Add Account",
     "suppliers.noSuppliers": "No suppliers found",
     "suppliers.noSuppliersDesc":
