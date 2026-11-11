@@ -200,7 +200,7 @@ export const AuthenticatedApp: React.FC = () => {
           {/* Tab Views with CSS GPU-accelerated fade-in */}
           <div
             key={activeTab}
-            className="flex-1 min-w-0 w-full flex flex-col animate-fade-in"
+            className={`flex-1 min-w-0 w-full flex flex-col ${searchQuery.trim() ? '' : 'animate-fade-in'}`}
           >
             <Suspense
               fallback={

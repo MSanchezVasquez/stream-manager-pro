@@ -302,3 +302,16 @@ html.theme-transitioning *::after {
   transition: none !important;
 }
 
+/* Barra de búsqueda de cuentas y clientes: sin animación ni focus */
+.navbar-search-input,
+.navbar-search-input:focus,
+.navbar-search-input:focus-visible,
+.navbar-search-input:active {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+

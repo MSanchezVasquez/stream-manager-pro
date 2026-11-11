@@ -184,7 +184,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 value={searchQuery}
                 onChange={(e) => handleSearchChange(e.target.value)}
                 onKeyDown={handleSearchKeyDown}
-                className="w-full pl-9 pr-8 py-2 text-xs rounded-xl bg-white/10 dark:bg-white/5 text-white placeholder:text-white/60 dark:placeholder:text-white/40 border border-white/10 dark:border-white/10 outline-none focus:outline-none focus:ring-0 focus:border-white/30 dark:focus:border-white/20 transition-colors"
+                className="navbar-search-input w-full pl-9 pr-8 py-2 text-xs rounded-xl bg-white/10 dark:bg-white/5 text-white placeholder:text-white/60 dark:placeholder:text-white/40 border border-white/10 dark:border-white/10 outline-none focus:outline-none focus:ring-0 focus:ring-transparent focus:border-white/10 dark:focus:border-white/10 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-transparent focus-visible:border-white/10 shadow-none focus:shadow-none transition-none"
               />
               {searchQuery && (
                 <button
@@ -292,7 +292,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               value={searchQuery}
               onChange={(e) => handleSearchChange(e.target.value)}
               onKeyDown={handleSearchKeyDown}
-              className="w-full pl-9 pr-8 py-2 text-xs rounded-xl bg-white/10 dark:bg-white/5 text-white placeholder:text-white/60 dark:placeholder:text-white/40 border border-white/10 dark:border-white/10 outline-none focus:outline-none focus:ring-0 focus:border-white/30 dark:focus:border-white/20 transition-colors"
+              className="navbar-search-input w-full pl-9 pr-8 py-2 text-xs rounded-xl bg-white/10 dark:bg-white/5 text-white placeholder:text-white/60 dark:placeholder:text-white/40 border border-white/10 dark:border-white/10 outline-none focus:outline-none focus:ring-0 focus:ring-transparent focus:border-white/10 dark:focus:border-white/10 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-transparent focus-visible:border-white/10 shadow-none focus:shadow-none transition-none"
             />
             {searchQuery && (
               <button
