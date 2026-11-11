@@ -258,6 +258,11 @@ export interface TranslationDictionary {
   "suppliers.saveSupplier": string;
   "suppliers.cancel": string;
   "suppliers.accountsCount": string;
+  "suppliers.collapseAccounts": string;
+  "suppliers.expandAccounts": string;
+  "suppliers.accountsHidden": string;
+  "suppliers.collapseAll": string;
+  "suppliers.expandAll": string;
   "suppliers.deleteSupplierTitle": string;
   "suppliers.deleteSupplierDesc": string;
   "suppliers.deleteAccountTitle": string;
@@ -678,6 +683,11 @@ export const TRANSLATIONS: Record<SupportedLanguage, TranslationDictionary> = {
     "suppliers.saveSupplier": "Guardar Proveedor",
     "suppliers.cancel": "Cancelar",
     "suppliers.accountsCount": "{count} cuenta(s) registradas",
+    "suppliers.collapseAccounts": "Colapsar cuentas",
+    "suppliers.expandAccounts": "Ver cuentas ({count})",
+    "suppliers.accountsHidden": "{count} cuentas plegadas",
+    "suppliers.collapseAll": "Colapsar todos",
+    "suppliers.expandAll": "Expandir todos",
     "suppliers.deleteSupplierTitle": "¿Eliminar Proveedor?",
     "suppliers.deleteSupplierDesc": "¿Deseas borrar al proveedor {name} y todas sus cuentas asociadas?",
     "suppliers.deleteAccountTitle": "¿Eliminar Cuenta?",
@@ -1102,6 +1112,11 @@ export const TRANSLATIONS: Record<SupportedLanguage, TranslationDictionary> = {
     "suppliers.saveSupplier": "Save Supplier",
     "suppliers.cancel": "Cancel",
     "suppliers.accountsCount": "{count} account(s) registered",
+    "suppliers.collapseAccounts": "Collapse accounts",
+    "suppliers.expandAccounts": "View accounts ({count})",
+    "suppliers.accountsHidden": "{count} accounts collapsed",
+    "suppliers.collapseAll": "Collapse all",
+    "suppliers.expandAll": "Expand all",
     "suppliers.deleteSupplierTitle": "Delete Supplier?",
     "suppliers.deleteSupplierDesc": "Are you sure you want to delete supplier {name} and all associated accounts?",
     "suppliers.deleteAccountTitle": "Delete Account?",

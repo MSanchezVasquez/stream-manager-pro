@@ -26,6 +26,8 @@ import {
   X,
   RotateCw,
   Coins,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { Supplier, SupplierAccount } from "../../types";
 import { SupplierModal } from "./SupplierModal";
@@ -71,6 +73,38 @@ export const SupplierList: React.FC = () => {
   } | null>(null);
 
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Umbral mínimo de cuentas para mostrar el botón de colapsar.
+  // Si un proveedor tiene 3 o menos cuentas ("pocas cuentas"), caben en una sola fila y no es necesario colapsarlas.
+  const MIN_ACCOUNTS_TO_COLLAPSE = 4;
+  const [collapsedSupplierIds, setCollapsedSupplierIds] = useState<Record<string, boolean>>({});
+
+  const toggleSupplierCollapse = (supplierId: string) => {
+    setCollapsedSupplierIds((prev) => ({
+      ...prev,
+      [supplierId]: !prev[supplierId],
+    }));
+  };
+
+  const collapsibleSuppliers = suppliers.filter(
+    (s) => (s.accounts || []).length >= MIN_ACCOUNTS_TO_COLLAPSE
+  );
+  const hasCollapsibleSuppliers = collapsibleSuppliers.length > 0;
+  const areAllCollapsed =
+    hasCollapsibleSuppliers &&
+    collapsibleSuppliers.every((s) => !!collapsedSupplierIds[s.id]);
+
+  const toggleAllSuppliers = () => {
+    if (areAllCollapsed) {
+      setCollapsedSupplierIds({});
+    } else {
+      const next: Record<string, boolean> = {};
+      collapsibleSuppliers.forEach((s) => {
+        next[s.id] = true;
+      });
+      setCollapsedSupplierIds(next);
+    }
+  };
 
   const togglePassword = (accId: string) => {
     setShowPasswords((prev) => ({ ...prev, [accId]: !prev[accId] }));
@@ -144,6 +178,27 @@ export const SupplierList: React.FC = () => {
             />
           </div>
 
+          {hasCollapsibleSuppliers && (
+            <button
+              type="button"
+              onClick={toggleAllSuppliers}
+              className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-white dark:bg-[#1A1A1E] border border-slate-200 dark:border-[#2D2D33] hover:bg-slate-50 dark:hover:bg-[#222228] text-slate-700 dark:text-slate-300 flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs shrink-0"
+              title={areAllCollapsed ? t("suppliers.expandAll") : t("suppliers.collapseAll")}
+            >
+              {areAllCollapsed ? (
+                <>
+                  <ChevronDown className="w-3.5 h-3.5 text-[#7a7a08] dark:text-[#dada28]" />
+                  <span className="hidden sm:inline">{t("suppliers.expandAll")}</span>
+                </>
+              ) : (
+                <>
+                  <ChevronUp className="w-3.5 h-3.5 text-slate-500" />
+                  <span className="hidden sm:inline">{t("suppliers.collapseAll")}</span>
+                </>
+              )}
+            </button>
+          )}
+
           <button
             onClick={() => setIsNewSupplierFormOpen(!isNewSupplierFormOpen)}
             className="px-3.5 py-1.5 rounded-xl bg-[#c9c918] hover:bg-[#b5b514] active:bg-[#a1a110] text-slate-950 text-xs font-bold flex items-center gap-1.5 shadow-md shadow-[#c9c918]/20 transition-all shrink-0 cursor-pointer"
@@ -215,6 +270,19 @@ export const SupplierList: React.FC = () => {
             );
           });
 
+          const isCollapsible = (supplier.accounts || []).length >= MIN_ACCOUNTS_TO_COLLAPSE;
+          const isCollapsed = isCollapsible && !search.trim() && !!collapsedSupplierIds[supplier.id];
+
+          // Plataformas únicas para el preview resumido cuando está colapsado
+          const platformCounts = (supplier.accounts || []).reduce<Record<string, number>>((acc, a) => {
+            acc[a.serviceName] = (acc[a.serviceName] || 0) + 1;
+            return acc;
+          }, {});
+          const uniquePlatforms = Object.entries(platformCounts).map(([platform, count]) => ({
+            platform,
+            count,
+          }));
+
           return (
             <div
               key={supplier.id}
@@ -222,14 +290,41 @@ export const SupplierList: React.FC = () => {
             >
               {/* Supplier Header */}
               <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-[#1F1F23]">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#c9c918]/15 text-[#7a7a08] dark:text-[#dada28] font-bold flex items-center justify-center text-sm border border-[#c9c918]/30">
+                <div
+                  className={`flex items-center gap-3 ${
+                    isCollapsible ? "cursor-pointer select-none group" : ""
+                  }`}
+                  onClick={isCollapsible ? () => toggleSupplierCollapse(supplier.id) : undefined}
+                  title={
+                    isCollapsible
+                      ? isCollapsed
+                        ? t("suppliers.expandAccounts", { count: supplier.accounts.length })
+                        : t("suppliers.collapseAccounts")
+                      : undefined
+                  }
+                >
+                  <div className="w-10 h-10 rounded-xl bg-[#c9c918]/15 text-[#7a7a08] dark:text-[#dada28] font-bold flex items-center justify-center text-sm border border-[#c9c918]/30 group-hover:scale-105 transition-transform">
                     <Truck className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-base text-slate-900 dark:text-[#E4E4E7]">
-                      {supplier.name}
-                    </h3>
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-bold text-base text-slate-900 dark:text-[#E4E4E7]">
+                        {supplier.name}
+                      </h3>
+                      {isCollapsible && (
+                        <span
+                          className={`text-[10px] font-bold px-2 py-0.5 rounded-full transition-colors ${
+                            isCollapsed
+                              ? "bg-[#c9c918]/20 text-[#7a7a08] dark:text-[#dada28] border border-[#c9c918]/40"
+                              : "bg-slate-100 dark:bg-[#1E1E26] text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-[#2D2D35]"
+                          }`}
+                        >
+                          {isCollapsed
+                            ? t("suppliers.accountsHidden", { count: supplier.accounts.length })
+                            : t("suppliers.accountsCount", { count: supplier.accounts.length })}
+                        </span>
+                      )}
+                    </div>
                     <p className="text-xs text-slate-500 dark:text-[#94949E]">
                       {t("suppliers.accountsCount", { count: supplier.accounts.length })}
                     </p>
@@ -237,6 +332,37 @@ export const SupplierList: React.FC = () => {
                 </div>
 
                 <div className="flex items-center gap-2">
+                  {/* Botón representativo para colapsar cuentas (solo si el proveedor tiene muchas cuentas, >= 4) */}
+                  {isCollapsible && (
+                    <button
+                      type="button"
+                      onClick={() => toggleSupplierCollapse(supplier.id)}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer border ${
+                        isCollapsed
+                          ? "bg-[#c9c918] hover:bg-[#b5b514] active:bg-[#a1a110] text-slate-950 border-[#c9c918] shadow-xs shadow-[#c9c918]/25"
+                          : "bg-slate-100 hover:bg-slate-200 dark:bg-[#1E1E26] dark:hover:bg-[#282834] text-slate-700 dark:text-slate-300 border-slate-200 dark:border-[#2D2D35]"
+                      }`}
+                      title={
+                        isCollapsed
+                          ? t("suppliers.expandAccounts", { count: supplier.accounts.length })
+                          : t("suppliers.collapseAccounts")
+                      }
+                    >
+                      {isCollapsed ? (
+                        <>
+                          <ChevronDown className="w-3.5 h-3.5 shrink-0" />
+                          <span>{t("suppliers.expandAccounts", { count: supplier.accounts.length })}</span>
+                        </>
+                      ) : (
+                        <>
+                          <ChevronUp className="w-3.5 h-3.5 shrink-0" />
+                          <span className="hidden sm:inline">{t("suppliers.collapseAccounts")}</span>
+                          <span className="sm:hidden">Colapsar</span>
+                        </>
+                      )}
+                    </button>
+                  )}
+
                   <button
                     onClick={() => {
                       setSelectedSupplier(supplier);
@@ -259,8 +385,49 @@ export const SupplierList: React.FC = () => {
                 </div>
               </div>
 
-              {/* Accounts list */}
-              {filteredAccounts.length === 0 ? (
+              {/* Accounts list / Collapsed summary */}
+              {isCollapsed ? (
+                <div
+                  onClick={() => toggleSupplierCollapse(supplier.id)}
+                  className="p-4 rounded-xl bg-slate-50/80 dark:bg-[#18181E] border border-dashed border-slate-200 dark:border-[#26262E] hover:border-[#c9c918]/50 dark:hover:border-[#c9c918]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer transition-all group select-none animate-fade-in"
+                  title={t("suppliers.expandAccounts", { count: supplier.accounts.length })}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-slate-200/70 dark:bg-[#252530] text-slate-700 dark:text-slate-300 flex items-center justify-center shrink-0 group-hover:bg-[#c9c918]/20 group-hover:text-slate-900 dark:group-hover:text-[#dada28] transition-colors">
+                      <ChevronDown className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold text-slate-800 dark:text-[#E4E4E7]">
+                          {t("suppliers.accountsHidden", { count: supplier.accounts.length })}
+                        </span>
+                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[#c9c918]/15 text-[#7a7a08] dark:text-[#dada28]">
+                          {supplier.accounts.length}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-500 dark:text-[#94949E] mt-0.5">
+                        Haz clic para expandir y ver todas las cuentas registradas.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Badges resumidos de plataformas */}
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    {uniquePlatforms.map(({ platform, count }) => (
+                      <span
+                        key={platform}
+                        className="text-[11px] px-2.5 py-1 rounded-lg bg-white dark:bg-[#121216] border border-slate-200 dark:border-[#2A2A33] text-slate-700 dark:text-slate-300 font-medium flex items-center gap-1.5 shadow-2xs"
+                      >
+                        <PlatformIcon platform={platform} className="w-3.5 h-3.5" />
+                        <span>{getPlatformDisplayName(platform)}</span>
+                        <span className="font-cascadia font-bold text-[10px] text-slate-400 dark:text-slate-500">
+                          ({count})
+                        </span>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ) : filteredAccounts.length === 0 ? (
                 <p className="text-xs text-[#94949E] italic py-2">
                   {t("suppliers.noAccounts")}
                 </p>
