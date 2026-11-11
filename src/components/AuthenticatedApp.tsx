@@ -73,6 +73,11 @@ const SetAccountPasswordModal = lazy(() =>
     default: m.SetAccountPasswordModal,
   })),
 );
+const AIAssistantModal = lazy(() =>
+  import('./AIAssistant/AIAssistantModal').then((m) => ({
+    default: m.AIAssistantModal,
+  })),
+);
 
 function useDelayedLoading(isLoading: boolean, delay = 400): boolean {
   const [showLoader, setShowLoader] = useState(false);
@@ -263,6 +268,18 @@ export const AuthenticatedApp: React.FC = () => {
 
       {/* Footer */}
       <Footer onNavigateTab={(tab) => setActiveTab(tab)} />
+
+      {/* AI Voice & Chatbot Assistant (Bottom Right) */}
+      <Suspense fallback={null}>
+        <AIAssistantModal
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          onOpenAddClientModal={() => setIsClientModalOpen(true)}
+          onOpenSettingsModal={() => setIsSettingsModalOpen(true)}
+        />
+      </Suspense>
 
       {/* Modals with Suspense */}
       <Suspense fallback={null}>
