@@ -362,43 +362,21 @@ export const SupplierList: React.FC = () => {
               {isCollapsed ? (
                 <div
                   onClick={() => toggleSupplierCollapse(supplier.id)}
-                  className="p-4 rounded-xl bg-slate-50/80 dark:bg-[#18181E] border border-dashed border-slate-200 dark:border-[#26262E] hover:border-[#c9c918]/50 dark:hover:border-[#c9c918]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer transition-all group select-none animate-fade-in"
+                  className="p-3 sm:p-3.5 rounded-xl bg-slate-50/70 dark:bg-[#18181E] border border-dashed border-slate-200 dark:border-[#26262E] hover:border-[#c9c918]/50 dark:hover:border-[#c9c918]/40 flex items-center gap-2 flex-wrap cursor-pointer transition-all select-none animate-fade-in group"
                   title={t("suppliers.expandAccounts", { count: supplier.accounts.length })}
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-slate-200/70 dark:bg-[#252530] text-slate-700 dark:text-slate-300 flex items-center justify-center shrink-0 group-hover:bg-[#c9c918]/20 group-hover:text-slate-900 dark:group-hover:text-[#dada28] transition-colors">
-                      <ChevronDown className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-slate-800 dark:text-[#E4E4E7]">
-                          {t("suppliers.accountsHidden", { count: supplier.accounts.length })}
-                        </span>
-                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[#c9c918]/15 text-[#7a7a08] dark:text-[#dada28]">
-                          {supplier.accounts.length}
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-slate-500 dark:text-[#94949E] mt-0.5">
-                        Haz clic para expandir y ver todas las cuentas registradas.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Badges resumidos de plataformas */}
-                  <div className="flex items-center gap-1.5 flex-wrap">
-                    {uniquePlatforms.map(({ platform, count }) => (
-                      <span
-                        key={platform}
-                        className="text-[11px] px-2.5 py-1 rounded-lg bg-white dark:bg-[#121216] border border-slate-200 dark:border-[#2A2A33] text-slate-700 dark:text-slate-300 font-medium flex items-center gap-1.5 shadow-2xs"
-                      >
-                        <PlatformIcon platform={platform} className="w-3.5 h-3.5" />
-                        <span>{getPlatformDisplayName(platform)}</span>
-                        <span className="font-cascadia font-bold text-[10px] text-slate-400 dark:text-slate-500">
-                          ({count})
-                        </span>
+                  {uniquePlatforms.map(({ platform, count }) => (
+                    <span
+                      key={platform}
+                      className="text-[11.5px] px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#121216] border border-slate-200 dark:border-[#2A2A33] text-slate-700 dark:text-slate-300 font-medium flex items-center gap-1.5 shadow-2xs group-hover:border-slate-300 dark:group-hover:border-[#383844] transition-colors"
+                    >
+                      <PlatformIcon platform={platform} className="w-3.5 h-3.5 shrink-0" />
+                      <span>{getPlatformDisplayName(platform)}</span>
+                      <span className="font-cascadia font-bold text-[10px] text-slate-400 dark:text-slate-500">
+                        ({count})
                       </span>
-                    ))}
-                  </div>
+                    </span>
+                  ))}
                 </div>
               ) : filteredAccounts.length === 0 ? (
                 <p className="text-xs text-[#94949E] italic py-2">
