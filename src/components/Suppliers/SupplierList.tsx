@@ -290,41 +290,14 @@ export const SupplierList: React.FC = () => {
             >
               {/* Supplier Header */}
               <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-[#1F1F23]">
-                <div
-                  className={`flex items-center gap-3 ${
-                    isCollapsible ? "cursor-pointer select-none group" : ""
-                  }`}
-                  onClick={isCollapsible ? () => toggleSupplierCollapse(supplier.id) : undefined}
-                  title={
-                    isCollapsible
-                      ? isCollapsed
-                        ? t("suppliers.expandAccounts", { count: supplier.accounts.length })
-                        : t("suppliers.collapseAccounts")
-                      : undefined
-                  }
-                >
-                  <div className="w-10 h-10 rounded-xl bg-[#c9c918]/15 text-[#7a7a08] dark:text-[#dada28] font-bold flex items-center justify-center text-sm border border-[#c9c918]/30 group-hover:scale-105 transition-transform">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-[#c9c918]/15 text-[#7a7a08] dark:text-[#dada28] font-bold flex items-center justify-center text-sm border border-[#c9c918]/30">
                     <Truck className="w-5 h-5" />
                   </div>
                   <div>
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-bold text-base text-slate-900 dark:text-[#E4E4E7]">
-                        {supplier.name}
-                      </h3>
-                      {isCollapsible && (
-                        <span
-                          className={`text-[10px] font-bold px-2 py-0.5 rounded-full transition-colors ${
-                            isCollapsed
-                              ? "bg-[#c9c918]/20 text-[#7a7a08] dark:text-[#dada28] border border-[#c9c918]/40"
-                              : "bg-slate-100 dark:bg-[#1E1E26] text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-[#2D2D35]"
-                          }`}
-                        >
-                          {isCollapsed
-                            ? t("suppliers.accountsHidden", { count: supplier.accounts.length })
-                            : t("suppliers.accountsCount", { count: supplier.accounts.length })}
-                        </span>
-                      )}
-                    </div>
+                    <h3 className="font-bold text-base text-slate-900 dark:text-[#E4E4E7]">
+                      {supplier.name}
+                    </h3>
                     <p className="text-xs text-slate-500 dark:text-[#94949E]">
                       {t("suppliers.accountsCount", { count: supplier.accounts.length })}
                     </p>
@@ -332,34 +305,34 @@ export const SupplierList: React.FC = () => {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  {/* Botón representativo para colapsar cuentas (solo si el proveedor tiene muchas cuentas, >= 4) */}
+                  {/* Botón representativo para colapsar cuentas (icono simple con animación) */}
                   {isCollapsible && (
                     <button
                       type="button"
                       onClick={() => toggleSupplierCollapse(supplier.id)}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer border ${
+                      className={`w-8 h-8 rounded-xl border flex items-center justify-center transition-all duration-200 cursor-pointer shrink-0 ${
                         isCollapsed
-                          ? "bg-[#c9c918] hover:bg-[#b5b514] active:bg-[#a1a110] text-slate-950 border-[#c9c918] shadow-xs shadow-[#c9c918]/25"
-                          : "bg-slate-100 hover:bg-slate-200 dark:bg-[#1E1E26] dark:hover:bg-[#282834] text-slate-700 dark:text-slate-300 border-slate-200 dark:border-[#2D2D35]"
+                          ? "bg-[#c9c918]/20 hover:bg-[#c9c918]/30 text-slate-950 dark:text-[#dada28] border-[#c9c918]/50 shadow-xs"
+                          : "bg-slate-100 hover:bg-slate-200 dark:bg-[#1E1E26] dark:hover:bg-[#282834] text-slate-600 dark:text-slate-300 border-slate-200 dark:border-[#2D2D35]"
                       }`}
                       title={
                         isCollapsed
                           ? t("suppliers.expandAccounts", { count: supplier.accounts.length })
                           : t("suppliers.collapseAccounts")
                       }
+                      aria-label={
+                        isCollapsed
+                          ? t("suppliers.expandAccounts", { count: supplier.accounts.length })
+                          : t("suppliers.collapseAccounts")
+                      }
                     >
-                      {isCollapsed ? (
-                        <>
-                          <ChevronDown className="w-3.5 h-3.5 shrink-0" />
-                          <span>{t("suppliers.expandAccounts", { count: supplier.accounts.length })}</span>
-                        </>
-                      ) : (
-                        <>
-                          <ChevronUp className="w-3.5 h-3.5 shrink-0" />
-                          <span className="hidden sm:inline">{t("suppliers.collapseAccounts")}</span>
-                          <span className="sm:hidden">Colapsar</span>
-                        </>
-                      )}
+                      <ChevronDown
+                        className={`w-4 h-4 transition-transform duration-300 ease-in-out ${
+                          isCollapsed
+                            ? "rotate-0 text-[#7a7a08] dark:text-[#dada28]"
+                            : "rotate-180 text-slate-600 dark:text-slate-300"
+                        }`}
+                      />
                     </button>
                   )}
 
