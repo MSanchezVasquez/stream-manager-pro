@@ -27,7 +27,6 @@ import {
   RotateCw,
   Coins,
   ChevronDown,
-  ChevronUp,
   Phone,
   FileText,
   User,
@@ -93,25 +92,6 @@ export const SupplierList: React.FC = () => {
     }));
   };
 
-  const collapsibleSuppliers = suppliers.filter(
-    (s) => (s.accounts || []).length >= MIN_ACCOUNTS_TO_COLLAPSE
-  );
-  const hasCollapsibleSuppliers = collapsibleSuppliers.length > 0;
-  const areAllCollapsed =
-    hasCollapsibleSuppliers &&
-    collapsibleSuppliers.every((s) => !!collapsedSupplierIds[s.id]);
-
-  const toggleAllSuppliers = () => {
-    if (areAllCollapsed) {
-      setCollapsedSupplierIds({});
-    } else {
-      const next: Record<string, boolean> = {};
-      collapsibleSuppliers.forEach((s) => {
-        next[s.id] = true;
-      });
-      setCollapsedSupplierIds(next);
-    }
-  };
 
   const togglePassword = (accId: string) => {
     setShowPasswords((prev) => ({ ...prev, [accId]: !prev[accId] }));
@@ -232,27 +212,6 @@ export const SupplierList: React.FC = () => {
               className="pl-8 pr-3 py-1.5 text-xs rounded-xl border border-slate-200 dark:border-[#2D2D33] bg-slate-50 dark:bg-[#1A1A1E] text-slate-900 dark:text-[#E4E4E7]"
             />
           </div>
-
-          {hasCollapsibleSuppliers && (
-            <button
-              type="button"
-              onClick={toggleAllSuppliers}
-              className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-white dark:bg-[#1A1A1E] border border-slate-200 dark:border-[#2D2D33] hover:bg-slate-50 dark:hover:bg-[#222228] text-slate-700 dark:text-slate-300 flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs shrink-0"
-              title={areAllCollapsed ? t("suppliers.expandAll") : t("suppliers.collapseAll")}
-            >
-              {areAllCollapsed ? (
-                <>
-                  <ChevronDown className="w-3.5 h-3.5 text-[#7a7a08] dark:text-[#dada28]" />
-                  <span className="hidden sm:inline">{t("suppliers.expandAll")}</span>
-                </>
-              ) : (
-                <>
-                  <ChevronUp className="w-3.5 h-3.5 text-slate-500" />
-                  <span className="hidden sm:inline">{t("suppliers.collapseAll")}</span>
-                </>
-              )}
-            </button>
-          )}
 
           <button
             onClick={handleOpenNewSupplier}
