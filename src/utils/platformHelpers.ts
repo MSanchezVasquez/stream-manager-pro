@@ -279,13 +279,21 @@ export function parseDateString(dateStr: string): Date | null {
   if (dateStr.includes("/")) {
     const parts = dateStr.split("/");
     if (parts.length === 3) {
-      let day = parseInt(parts[0], 10);
-      let month = parseInt(parts[1], 10) - 1;
+      const day = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10) - 1;
       let year = parseInt(parts[2], 10);
       if (year < 100) year += 2000;
       const d = new Date(year, month, day);
       return isNaN(d.getTime()) ? null : d;
     }
+  }
+  const isoMatch = dateStr.trim().match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (isoMatch) {
+    const year = parseInt(isoMatch[1], 10);
+    const month = parseInt(isoMatch[2], 10) - 1;
+    const day = parseInt(isoMatch[3], 10);
+    const d = new Date(year, month, day);
+    return isNaN(d.getTime()) ? null : d;
   }
   const d = new Date(dateStr);
   return isNaN(d.getTime()) ? null : d;
@@ -402,31 +410,15 @@ export function getDaysDifference(startDateStr: string, endDateStr: string): num
 export function getDaysRemaining(dateStr: string): number {
   if (!dateStr || dateStr === "–/–/–" || dateStr === "//") return 999;
 
-  let targetDate: Date;
-
-  if (dateStr.includes("/")) {
-    const parts = dateStr.split("/");
-    if (parts.length === 3) {
-      let day = parseInt(parts[0], 10);
-      let month = parseInt(parts[1], 10) - 1;
-      let year = parseInt(parts[2], 10);
-      if (year < 100) year += 2000;
-      targetDate = new Date(year, month, day);
-    } else {
-      targetDate = new Date(dateStr);
-    }
-  } else {
-    targetDate = new Date(dateStr);
-  }
-
-  if (isNaN(targetDate.getTime())) return 999;
+  const targetDate = parseDateString(dateStr);
+  if (!targetDate) return 999;
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   targetDate.setHours(0, 0, 0, 0);
 
   const diffTime = targetDate.getTime() - today.getTime();
-  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  return Math.round(diffTime / (1000 * 60 * 60 * 24));
 }
 
 export function formatCutDateStatus(
@@ -529,9 +521,9 @@ export function generateWhatsAppMessage(
     if (days < 0) {
       timeAlert = `your *${serviceName}* service *EXPIRED* on ${cutDate}.`;
     } else if (days === 0) {
-      timeAlert = `your *${serviceName}* service expires *TODAY* (${cutDate}).`;
+      timeAlert = `your *${serviceName}* service expires *TODAY* (Cutoff date: ${cutDate}).`;
     } else {
-      timeAlert = `your *${serviceName}* service expires in *${days} days* (Cut date: ${cutDate}).`;
+      timeAlert = `your *${serviceName}* service expires in *${days} day${days === 1 ? "" : "s"}* (Cutoff date: ${cutDate}).`;
     }
 
     let credentialsText = "";
@@ -547,9 +539,9 @@ export function generateWhatsAppMessage(
   if (days < 0) {
     timeAlert = `su servicio *${serviceName}* ha *VENCIDO* el ${cutDate}.`;
   } else if (days === 0) {
-    timeAlert = `su servicio *${serviceName}* vence *HOY* (${cutDate}).`;
+    timeAlert = `su servicio *${serviceName}* vence *HOY* (Fecha de corte: ${cutDate}).`;
   } else {
-    timeAlert = `su servicio *${serviceName}* vence en *${days} días* (Fecha de corte: ${cutDate}).`;
+    timeAlert = `su servicio *${serviceName}* vence en *${days} día${days === 1 ? "" : "s"}* (Fecha de corte: ${cutDate}).`;
   }
 
   let credentialsText = "";

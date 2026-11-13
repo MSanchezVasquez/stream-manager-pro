@@ -339,10 +339,15 @@ export const useMessageTemplateStore = create<MessageTemplateState>()(
             : DEFAULT_TEMPLATES_ES[type]);
 
         const days = data.cutDate ? getDaysRemaining(data.cutDate) : 0;
+        const absDays = Math.abs(days);
+        const isEn = data.lang === "en";
         let daysRemainingText = "";
-        if (data.lang === "en") {
+
+        if (days === 999) {
+          daysRemainingText = isEn ? "No cutoff date" : "Sin fecha de corte";
+        } else if (isEn) {
           if (days < 0) {
-            daysRemainingText = `EXPIRED (${Math.abs(days)} days ago)`;
+            daysRemainingText = `EXPIRED (${absDays} day${absDays === 1 ? "" : "s"} ago)`;
           } else if (days === 0) {
             daysRemainingText = "TODAY";
           } else {
@@ -350,11 +355,58 @@ export const useMessageTemplateStore = create<MessageTemplateState>()(
           }
         } else {
           if (days < 0) {
-            daysRemainingText = `VENCIDO (hace ${Math.abs(days)} días)`;
+            daysRemainingText = `VENCIDO (hace ${absDays} día${absDays === 1 ? "" : "s"})`;
           } else if (days === 0) {
             daysRemainingText = "HOY";
           } else {
             daysRemainingText = `${days} día${days === 1 ? "" : "s"}`;
+          }
+        }
+
+        // Normalización gramatical inteligente para evitar incongruencias como
+        // "está próximo a vencer en *HOY*" o "está próximo a vencer en *VENCIDO (hace 2 días)*"
+        let normalizedTemplate = rawTemplate;
+        if (days !== 999) {
+          if (isEn) {
+            if (days === 0) {
+              normalizedTemplate = normalizedTemplate
+                .replace(
+                  /(?:is\s+expiring|is\s+about\s+to\s+expire|will\s+expire|expires)\s+in\s+(\*?)\{dias_restantes\}(\*?)/gi,
+                  "expires $1TODAY$2",
+                )
+                .replace(/\bin\s+(\*?)\{dias_restantes\}(\*?)/gi, "$1TODAY$2");
+            } else if (days < 0) {
+              const expiredPhrase = `has $1EXPIRED$2 (${absDays} day${absDays === 1 ? "" : "s"} ago)`;
+              normalizedTemplate = normalizedTemplate
+                .replace(
+                  /(?:is\s+expiring|is\s+about\s+to\s+expire|will\s+expire|expires)\s+in\s+(\*?)\{dias_restantes\}(\*?)/gi,
+                  expiredPhrase,
+                )
+                .replace(
+                  /\bin\s+(\*?)\{dias_restantes\}(\*?)/gi,
+                  `$1EXPIRED (${absDays} day${absDays === 1 ? "" : "s"} ago)$2`,
+                );
+            }
+          } else {
+            if (days === 0) {
+              normalizedTemplate = normalizedTemplate
+                .replace(
+                  /(?:est[aá]\s+(?:pr[oó]ximo\s+a\s+|por\s+)?vencer|pr[oó]ximo\s+a\s+vencer|vencer[aá]|vence)\s+en\s+(\*?)\{dias_restantes\}(\*?)/gi,
+                  "vence $1HOY$2",
+                )
+                .replace(/\ben\s+(\*?)\{dias_restantes\}(\*?)/gi, "$1HOY$2");
+            } else if (days < 0) {
+              const expiredPhrase = `ha $1VENCIDO$2 (hace ${absDays} día${absDays === 1 ? "" : "s"})`;
+              normalizedTemplate = normalizedTemplate
+                .replace(
+                  /(?:est[aá]\s+(?:pr[oó]ximo\s+a\s+|por\s+)?vencer|pr[oó]ximo\s+a\s+vencer|vencer[aá]|vence)\s+en\s+(\*?)\{dias_restantes\}(\*?)/gi,
+                  expiredPhrase,
+                )
+                .replace(
+                  /\ben\s+(\*?)\{dias_restantes\}(\*?)/gi,
+                  `$1VENCIDO (hace ${absDays} día${absDays === 1 ? "" : "s"})$2`,
+                );
+            }
           }
         }
 
@@ -398,7 +450,7 @@ export const useMessageTemplateStore = create<MessageTemplateState>()(
         }
 
         // Reemplazo de variables
-        let result = rawTemplate
+        let result = normalizedTemplate
           .replace(/{cliente}/g, data.clientName || "Cliente")
           .replace(/{servicio}/g, data.serviceName || "Servicio Streaming")
           .replace(/{vencimiento}/g, data.cutDate || "")

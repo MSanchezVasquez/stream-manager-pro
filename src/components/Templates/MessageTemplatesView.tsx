@@ -28,6 +28,10 @@ import {
   MessageData,
 } from "../../store/messageTemplateStore";
 import { useTranslation } from "../../utils/translations";
+import {
+  formatDateToString,
+  addDaysToDateString,
+} from "../../utils/platformHelpers";
 
 export const MessageTemplatesView: React.FC = () => {
   const { resolvedLanguage } = useTranslation();
@@ -59,106 +63,118 @@ export const MessageTemplatesView: React.FC = () => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const sampleData: Record<"netflix" | "disney" | "combo", MessageData> = useMemo(
-    () => ({
-      netflix: {
-        clientName: "Carlos Mendoza",
-        serviceName: "Netflix Premium",
-        cutDate: "28/10/2026",
-        email: "carlos.stream@gmail.com",
-        password: "Pass2026Netflix*",
-        profileName: "Perfil 1 (Carlos)",
-        pin: "4321",
-        price: 15.0,
-        phone: "+51987654321",
-        lang: resolvedLanguage as "es" | "en",
-        renewedSubs: [
-          {
-            id: "sub-netflix",
-            clientId: "c-1",
-            clientName: "Carlos Mendoza",
-            serviceName: "Netflix Premium",
-            hireDate: "28/09/2026",
-            cutDate: "28/10/2026",
-            email: "carlos.stream@gmail.com",
-            password: "Pass2026Netflix*",
-            profileName: "Perfil 1 (Carlos)",
-            pin: "4321",
-            price: 15.0,
-            status: "active",
-          },
-        ],
-      },
-      disney: {
-        clientName: "Lucía Fernández",
-        serviceName: "Disney+ Premium",
-        cutDate: "30/10/2026",
-        email: "lucia.disney@fam.net",
-        password: "MagicDisney2026",
-        profileName: "Lucía Kids",
-        pin: "8899",
-        price: 18.5,
-        phone: "+51912345678",
-        lang: resolvedLanguage as "es" | "en",
-        renewedSubs: [
-          {
-            id: "sub-disney",
-            clientId: "c-2",
-            clientName: "Lucía Fernández",
-            serviceName: "Disney+ Premium",
-            hireDate: "30/09/2026",
-            cutDate: "30/10/2026",
-            email: "lucia.disney@fam.net",
-            password: "MagicDisney2026",
-            profileName: "Lucía Kids",
-            pin: "8899",
-            price: 18.5,
-            status: "active",
-          },
-        ],
-      },
-      combo: {
-        clientName: "Diego Ramos",
-        serviceName: "Combo Netflix + Max",
-        cutDate: "05/11/2026",
-        email: "diego.ramos@combo.com",
-        password: "StreamCombo#99",
-        profileName: "Diego R.",
-        price: 32.0,
-        phone: "+51999888777",
-        lang: resolvedLanguage as "es" | "en",
-        renewedSubs: [
-          {
-            id: "sub-1",
-            clientId: "c-1",
-            clientName: "Diego Ramos",
-            serviceName: "Netflix Premium",
-            hireDate: "05/10/2026",
-            cutDate: "05/11/2026",
-            email: "diego.ramos@combo.com",
-            password: "NetflixPass2026*",
-            profileName: "Perfil 1",
-            pin: "1122",
-            price: 16.0,
-            status: "active",
-          },
-          {
-            id: "sub-2",
-            clientId: "c-1",
-            clientName: "Diego Ramos",
-            serviceName: "HBO Max Platino",
-            hireDate: "05/10/2026",
-            cutDate: "05/11/2026",
-            email: "diego.ramos@combo.com",
-            password: "MaxPass2026*",
-            profileName: "Perfil 2",
-            pin: "3344",
-            price: 16.0,
-            status: "active",
-          },
-        ],
-      },
-    }),
-    [resolvedLanguage],
+    () => {
+      const todayStr = formatDateToString(new Date());
+      const in3Days = addDaysToDateString(todayStr, 3);
+      const in5Days = addDaysToDateString(todayStr, 5);
+      const minus27Days = addDaysToDateString(todayStr, -27);
+      const past2Days = addDaysToDateString(todayStr, -2);
+
+      const netflixCut = activeType === "expired" ? past2Days : in3Days;
+      const disneyCut = activeType === "expired" ? past2Days : todayStr;
+      const comboCut = activeType === "expired" ? past2Days : in5Days;
+
+      return {
+        netflix: {
+          clientName: "Carlos Mendoza",
+          serviceName: "Netflix Premium",
+          cutDate: netflixCut,
+          email: "carlos.stream@gmail.com",
+          password: "Pass2026Netflix*",
+          profileName: "Perfil 1 (Carlos)",
+          pin: "4321",
+          price: 15.0,
+          phone: "+51987654321",
+          lang: resolvedLanguage as "es" | "en",
+          renewedSubs: [
+            {
+              id: "sub-netflix",
+              clientId: "c-1",
+              clientName: "Carlos Mendoza",
+              serviceName: "Netflix Premium",
+              hireDate: minus27Days,
+              cutDate: netflixCut,
+              email: "carlos.stream@gmail.com",
+              password: "Pass2026Netflix*",
+              profileName: "Perfil 1 (Carlos)",
+              pin: "4321",
+              price: 15.0,
+              status: "active",
+            },
+          ],
+        },
+        disney: {
+          clientName: "Lucía Fernández",
+          serviceName: "Disney+ Premium",
+          cutDate: disneyCut,
+          email: "lucia.disney@fam.net",
+          password: "MagicDisney2026",
+          profileName: "Lucía Kids",
+          pin: "8899",
+          price: 18.5,
+          phone: "+51912345678",
+          lang: resolvedLanguage as "es" | "en",
+          renewedSubs: [
+            {
+              id: "sub-disney",
+              clientId: "c-2",
+              clientName: "Lucía Fernández",
+              serviceName: "Disney+ Premium",
+              hireDate: minus27Days,
+              cutDate: disneyCut,
+              email: "lucia.disney@fam.net",
+              password: "MagicDisney2026",
+              profileName: "Lucía Kids",
+              pin: "8899",
+              price: 18.5,
+              status: "active",
+            },
+          ],
+        },
+        combo: {
+          clientName: "Diego Ramos",
+          serviceName: "Combo Netflix + Max",
+          cutDate: comboCut,
+          email: "diego.ramos@combo.com",
+          password: "StreamCombo#99",
+          profileName: "Diego R.",
+          price: 32.0,
+          phone: "+51999888777",
+          lang: resolvedLanguage as "es" | "en",
+          renewedSubs: [
+            {
+              id: "sub-1",
+              clientId: "c-1",
+              clientName: "Diego Ramos",
+              serviceName: "Netflix Premium",
+              hireDate: minus27Days,
+              cutDate: comboCut,
+              email: "diego.ramos@combo.com",
+              password: "NetflixPass2026*",
+              profileName: "Perfil 1",
+              pin: "1122",
+              price: 16.0,
+              status: "active",
+            },
+            {
+              id: "sub-2",
+              clientId: "c-1",
+              clientName: "Diego Ramos",
+              serviceName: "HBO Max Platino",
+              hireDate: minus27Days,
+              cutDate: comboCut,
+              email: "diego.ramos@combo.com",
+              password: "MaxPass2026*",
+              profileName: "Perfil 2",
+              pin: "3344",
+              price: 16.0,
+              status: "active",
+            },
+          ],
+        },
+      };
+    },
+    [resolvedLanguage, activeType],
   );
 
   const templateTabs: {

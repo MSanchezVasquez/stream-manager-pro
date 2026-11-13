@@ -413,7 +413,7 @@ Mantén tus respuestas directas y fáciles de escuchar si se reproducen por voz.
     });
   } else {
     const vite = await createViteServer({
-      server: { middlewareMode: true },
+      server: { middlewareMode: true, hmr: false },
       appType: "spa",
     });
     app.use(vite.middlewares);
