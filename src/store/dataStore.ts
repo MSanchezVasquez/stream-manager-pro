@@ -579,17 +579,46 @@ export const useDataStore = create<DataState>((set, get) => {
         const vaultKey = getVaultKey();
         const previousSuppliers = get().suppliers;
         const previousProfiles = get().freeProfiles;
+        const previousClients = get().clients;
         const oldSupplier = previousSuppliers.find((s) => s?.id === supplier.id);
 
-        // Detectar y sincronizar perfiles libres asociados a las cuentas de este proveedor
+        const normStr = (v?: string) => (v || "").toLowerCase().trim();
+        const getPlatformFamily = (serviceName?: string): string => {
+          const s = normStr(serviceName);
+          if (s.startsWith("netflix")) return "netflix";
+          if (s.startsWith("disney")) return "disney";
+          if (s.startsWith("hbo max") || s === "max") return "hbomax";
+          if (s.startsWith("prime")) return "prime";
+          if (s.startsWith("youtube")) return "youtube";
+          if (s.startsWith("paramount")) return "paramount";
+          if (s.startsWith("spotify")) return "spotify";
+          if (s.startsWith("crunchyroll")) return "crunchyroll";
+          return s;
+        };
+
+        // Detectar y sincronizar perfiles libres y suscripciones de clientes asociados
         let nextProfiles = [...previousProfiles];
         const changedProfilesMap = new Map<string, FreeProfile>();
+        const accSyncTargets: Array<{
+          newAcc: SupplierAccount;
+          oldAcc?: SupplierAccount;
+          matchedProfileIds: Set<string>;
+        }> = [];
 
         for (const newAcc of supplier.accounts || []) {
           const oldAcc = oldSupplier?.accounts?.find((a) => a.id === newAcc.id);
+          const matchedProfileIds = new Set<string>();
+
+          const oldAccService = normStr(oldAcc?.serviceName);
+          const oldAccEmail = normStr(oldAcc?.email);
+          const newAccService = normStr(newAcc.serviceName);
+          const newAccEmail = normStr(newAcc.email);
 
           nextProfiles = nextProfiles.map((fp) => {
             if (!fp) return fp;
+
+            const fpService = normStr(fp.serviceName);
+            const fpEmail = normStr(fp.email);
 
             // Coincidencia 1: ID directo de cuenta de proveedor
             const isDirectMatch = Boolean(
@@ -601,27 +630,23 @@ export const useDataStore = create<DataState>((set, get) => {
               fp.supplierId &&
                 fp.supplierId === supplier.id &&
                 ((oldAcc &&
-                  fp.serviceName?.toLowerCase().trim() ===
-                    oldAcc.serviceName?.toLowerCase().trim() &&
-                  fp.email?.toLowerCase().trim() ===
-                    oldAcc.email?.toLowerCase().trim()) ||
-                  (fp.serviceName?.toLowerCase().trim() ===
-                    newAcc.serviceName?.toLowerCase().trim() &&
-                    fp.email?.toLowerCase().trim() ===
-                      newAcc.email?.toLowerCase().trim())),
+                  oldAccEmail &&
+                  fpService === oldAccService &&
+                  fpEmail === oldAccEmail) ||
+                  (newAccEmail &&
+                    fpService === newAccService &&
+                    fpEmail === newAccEmail)),
             );
 
             // Coincidencia 3: Mismo correo y misma plataforma (incluso si no se había guardado supplierId antes)
             const isPlatformAndEmailMatch = Boolean(
               (oldAcc &&
-                fp.serviceName?.toLowerCase().trim() ===
-                  oldAcc.serviceName?.toLowerCase().trim() &&
-                fp.email?.toLowerCase().trim() ===
-                  oldAcc.email?.toLowerCase().trim()) ||
-                (fp.serviceName?.toLowerCase().trim() ===
-                  newAcc.serviceName?.toLowerCase().trim() &&
-                  fp.email?.toLowerCase().trim() ===
-                    newAcc.email?.toLowerCase().trim()),
+                oldAccEmail &&
+                fpService === oldAccService &&
+                fpEmail === oldAccEmail) ||
+                (newAccEmail &&
+                  fpService === newAccService &&
+                  fpEmail === newAccEmail),
             );
 
             if (
@@ -631,6 +656,8 @@ export const useDataStore = create<DataState>((set, get) => {
             ) {
               return fp;
             }
+
+            matchedProfileIds.add(fp.id);
 
             const updatedFp: FreeProfile = {
               ...fp,
@@ -661,7 +688,154 @@ export const useDataStore = create<DataState>((set, get) => {
 
             return fp;
           });
+
+          accSyncTargets.push({ newAcc, oldAcc, matchedProfileIds });
         }
+
+        // Sincronizar clientes (activos e inactivos) vinculados a estas cuentas de proveedor
+        const changedClientsMap = new Map<string, Client>();
+        const newSupNameNorm = normStr(supplier.name);
+        const oldSupNameNorm = normStr(oldSupplier?.name);
+
+        const findMatchingTargetForSub = (sub: ClientSubscription) => {
+          const subProfileId = sub.freeProfileId || sub.freeProfileSnapshot?.id;
+          const subSupNorm = normStr(sub.supplierName);
+          const subEmailNorm = normStr(sub.email);
+          const snapEmailNorm = normStr(sub.freeProfileSnapshot?.email);
+          const subServiceNorm = normStr(sub.serviceName);
+          const snapServiceNorm = normStr(sub.freeProfileSnapshot?.serviceName);
+          const subFamily = getPlatformFamily(sub.serviceName);
+
+          // 1. Coincidencia directa por freeProfileId vinculado a una cuenta del proveedor
+          if (subProfileId) {
+            const byProfileId = accSyncTargets.find((t) =>
+              t.matchedProfileIds.has(subProfileId),
+            );
+            if (byProfileId) return byProfileId;
+          }
+
+          // Si la suscripción especifica explícitamente otro proveedor distinto, no sobrescribir
+          const belongsToDifferentSupplier = Boolean(
+            subSupNorm &&
+              subSupNorm !== newSupNameNorm &&
+              (!oldSupNameNorm || subSupNorm !== oldSupNameNorm),
+          );
+          if (belongsToDifferentSupplier) return undefined;
+
+          // 2. Coincidencia exacta de correo + plataforma exacta (anterior o actual)
+          const exactMatch = accSyncTargets.find(({ newAcc, oldAcc }) => {
+            const oldEmail = normStr(oldAcc?.email);
+            const newEmail = normStr(newAcc.email);
+            const oldService = normStr(oldAcc?.serviceName);
+            const newService = normStr(newAcc.serviceName);
+
+            const emailMatches = Boolean(
+              (oldEmail && (subEmailNorm === oldEmail || snapEmailNorm === oldEmail)) ||
+                (newEmail && (subEmailNorm === newEmail || snapEmailNorm === newEmail)),
+            );
+            if (!emailMatches) return false;
+
+            return Boolean(
+              (oldService && (subServiceNorm === oldService || snapServiceNorm === oldService)) ||
+                (newService && (subServiceNorm === newService || snapServiceNorm === newService)),
+            );
+          });
+          if (exactMatch) return exactMatch;
+
+          // 3. Coincidencia por correo exacto + misma familia de plataforma
+          // (ej. proveedor "Netflix Premium" <-> cliente "Netflix Perfil Privado")
+          return accSyncTargets.find(({ newAcc, oldAcc }) => {
+            const oldEmail = normStr(oldAcc?.email);
+            const newEmail = normStr(newAcc.email);
+            const targetFamily = getPlatformFamily(
+              oldAcc?.serviceName || newAcc.serviceName,
+            );
+
+            const emailMatches = Boolean(
+              (oldEmail && (subEmailNorm === oldEmail || snapEmailNorm === oldEmail)) ||
+                (newEmail && (subEmailNorm === newEmail || snapEmailNorm === newEmail)),
+            );
+            return emailMatches && Boolean(targetFamily) && subFamily === targetFamily;
+          });
+        };
+
+        const nextClients = previousClients.map((client) => {
+          if (!client || !Array.isArray(client.subscriptions)) return client;
+
+          let clientModified = false;
+          const nextSubs = client.subscriptions.map((sub) => {
+            if (!sub) return sub;
+            const match = findMatchingTargetForSub(sub);
+            if (!match) return sub;
+
+            const { newAcc, oldAcc } = match;
+            const oldServiceNorm = normStr(oldAcc?.serviceName);
+            const subServiceNorm = normStr(sub.serviceName);
+
+            const nextServiceName =
+              oldAcc && subServiceNorm === oldServiceNorm
+                ? newAcc.serviceName
+                : sub.serviceName;
+
+            const nextSupplierName =
+              sub.supplierName || sub.isFromFreeProfile || sub.freeProfileId
+                ? supplier.name
+                : sub.supplierName;
+
+            let nextSnapshot = sub.freeProfileSnapshot;
+            let snapshotChanged = false;
+            if (sub.freeProfileSnapshot) {
+              const snapServiceNorm = normStr(sub.freeProfileSnapshot.serviceName);
+              const updatedSnapshot = {
+                ...sub.freeProfileSnapshot,
+                serviceName:
+                  oldAcc && snapServiceNorm === oldServiceNorm
+                    ? newAcc.serviceName
+                    : sub.freeProfileSnapshot.serviceName,
+                email: newAcc.email,
+                password: newAcc.password,
+                browser: newAcc.browser || sub.freeProfileSnapshot.browser,
+                supplierName: supplier.name,
+              };
+              snapshotChanged =
+                sub.freeProfileSnapshot.serviceName !== updatedSnapshot.serviceName ||
+                sub.freeProfileSnapshot.email !== updatedSnapshot.email ||
+                sub.freeProfileSnapshot.password !== updatedSnapshot.password ||
+                sub.freeProfileSnapshot.browser !== updatedSnapshot.browser ||
+                sub.freeProfileSnapshot.supplierName !== updatedSnapshot.supplierName;
+              nextSnapshot = updatedSnapshot;
+            }
+
+            const hasSubChanges =
+              sub.password !== newAcc.password ||
+              sub.email !== newAcc.email ||
+              sub.serviceName !== nextServiceName ||
+              sub.supplierName !== nextSupplierName ||
+              snapshotChanged;
+
+            if (!hasSubChanges) return sub;
+
+            clientModified = true;
+            const updatedSub: ClientSubscription = {
+              ...sub,
+              serviceName: nextServiceName,
+              email: newAcc.email,
+              password: newAcc.password,
+              ...(nextSupplierName !== undefined ? { supplierName: nextSupplierName } : {}),
+              ...(nextSnapshot ? { freeProfileSnapshot: nextSnapshot } : {}),
+            };
+            return updatedSub;
+          });
+
+          if (!clientModified) return client;
+
+          const updatedClient: Client = {
+            ...client,
+            subscriptions: nextSubs,
+          };
+          changedClientsMap.set(updatedClient.id, updatedClient);
+          return updatedClient;
+        });
 
         // Actualizar optimísticamente en el estado local de Zustand
         set((state) => {
@@ -674,6 +848,7 @@ export const useDataStore = create<DataState>((set, get) => {
           return {
             suppliers: newSuppliers,
             freeProfiles: nextProfiles,
+            clients: nextClients,
           };
         });
 
@@ -689,32 +864,66 @@ export const useDataStore = create<DataState>((set, get) => {
           set({
             suppliers: previousSuppliers,
             freeProfiles: previousProfiles,
+            clients: previousClients,
           });
           return false;
         }
 
-        // Persistir los perfiles libres actualizados en Firestore
+        // Persistir los perfiles libres y clientes actualizados en Firestore en paralelo
+        const persistenceTasks: Promise<void>[] = [];
+
         if (changedProfilesMap.size > 0) {
-          await Promise.all(
-            Array.from(changedProfilesMap.values()).map(async (changedFp) => {
-              try {
-                const profileToPersist = await encryptFreeProfile(
-                  changedFp,
-                  vaultKey,
-                );
-                await saveUserDocument(
-                  uid,
-                  COLLECTIONS.FREE_PROFILES,
-                  profileToPersist,
-                );
-              } catch (err) {
-                console.error(
-                  "Error al persistir perfil libre sincronizado con proveedor:",
-                  err,
-                );
-              }
-            }),
-          );
+          for (const changedFp of changedProfilesMap.values()) {
+            persistenceTasks.push(
+              (async () => {
+                try {
+                  const profileToPersist = await encryptFreeProfile(
+                    changedFp,
+                    vaultKey,
+                  );
+                  await saveUserDocument(
+                    uid,
+                    COLLECTIONS.FREE_PROFILES,
+                    profileToPersist,
+                  );
+                } catch (err) {
+                  console.error(
+                    "Error al persistir perfil libre sincronizado con proveedor:",
+                    err,
+                  );
+                }
+              })(),
+            );
+          }
+        }
+
+        if (changedClientsMap.size > 0) {
+          for (const changedClient of changedClientsMap.values()) {
+            persistenceTasks.push(
+              (async () => {
+                try {
+                  const clientToPersist = await encryptClient(
+                    changedClient,
+                    vaultKey,
+                  );
+                  await saveUserDocument(
+                    uid,
+                    COLLECTIONS.CLIENTS,
+                    clientToPersist,
+                  );
+                } catch (err) {
+                  console.error(
+                    "Error al persistir cliente sincronizado con proveedor:",
+                    err,
+                  );
+                }
+              })(),
+            );
+          }
+        }
+
+        if (persistenceTasks.length > 0) {
+          await Promise.all(persistenceTasks);
         }
 
         return success;

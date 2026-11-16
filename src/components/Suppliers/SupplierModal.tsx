@@ -152,8 +152,8 @@ export const SupplierModal: React.FC<SupplierModalProps> = ({
                 <Sparkles className="w-3 h-3 shrink-0" />
                 <span>
                   {resolvedLanguage === "en"
-                    ? "Changes will automatically update linked free profiles."
-                    : "Los cambios se actualizarán automáticamente en tus perfiles libres."}
+                    ? "Changes will automatically update linked free profiles and clients."
+                    : "Los cambios se actualizarán automáticamente en perfiles libres y clientes vinculados."}
                 </span>
               </p>
             )}
