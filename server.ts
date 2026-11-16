@@ -254,7 +254,7 @@ async function startServer() {
       p.includes("total") ||
       p.includes("estado")
     ) {
-      reply = `Actualmente tienes ${context?.totalActiveClients ?? 0} clientes activos, ${context?.totalSuppliers ?? 0} proveedores y ${context?.totalFreeProfiles ?? 0} perfiles libres en inventario.`;
+      reply = `Actualmente tienes ${context?.totalActiveClients ?? 0} clientes activos (${context?.totalActiveSubscriptions ?? 0} suscripciones), ${context?.totalSuppliers ?? 0} proveedores y ${context?.totalFreeSlots ?? context?.totalFreeProfiles ?? 0} perfiles libres en inventario.`;
     } else {
       reply =
         "Hola, soy StreamBot. Puedes pedirme por voz cosas como: 'Ir a clientes activos', 'Ver proveedores', 'Crear nuevo cliente', 'Buscar Disney' o 'Ver alertas'.";
@@ -331,7 +331,7 @@ ACTION_JSON:{"type":"OPEN_MODAL","modal":"new_client"}"
 ACTION_JSON:{"type":"SEARCH","query":"Carlos"}"
 
 - Usuario: "¿Cuántos clientes activos tengo?"
-  Respuesta: "Actualmente tienes ${context?.totalActiveClients ?? 25} clientes activos registrados en el sistema."
+  Respuesta: "Actualmente tienes ${context?.totalActiveClients ?? 0} clientes activos registrados en el sistema."
 
 Mantén tus respuestas directas y fáciles de escuchar si se reproducen por voz.
 `;
@@ -342,7 +342,7 @@ Mantén tus respuestas directas y fáciles de escuchar si se reproducen por voz.
           }));
 
           const response = await ai.models.generateContent({
-            model: "gemini-3.8-flash",
+            model: "gemini-4-hydrogen",
             contents,
             config: {
               systemInstruction,
@@ -477,11 +477,19 @@ export { ErrorOverlay, createHotContext, injectQuery, removeStyle, updateStyle }
 `);
     });
 
-    const vite = await createViteServer({
+    const vitePromise = createViteServer({
       server: { middlewareMode: true, hmr: false, ws: false },
       appType: "spa",
     });
-    app.use(vite.middlewares);
+
+    app.use(async (req, res, next) => {
+      try {
+        const vite = await vitePromise;
+        vite.middlewares(req, res, next);
+      } catch (err) {
+        next(err);
+      }
+    });
   }
 
   app.listen(PORT, "0.0.0.0", () => {

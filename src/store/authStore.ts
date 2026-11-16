@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import {
   auth,
+  ensureLocalPersistence,
   onAuthStateChanged,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -46,22 +47,98 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   loading: true,
 
   initAuth: () => {
+    let isDisposed = false;
+    let lastTokenRefreshAt = Date.now();
+
+    // Ensure durable persistence is configured immediately
+    ensureLocalPersistence();
+
+    const refreshSessionToken = async (force = false) => {
+      const currentUser = auth.currentUser;
+      if (!currentUser) return;
+      try {
+        await currentUser.getIdToken(force);
+        lastTokenRefreshAt = Date.now();
+      } catch (err: any) {
+        // Only transient/offline errors should be ignored; Firebase will sign out itself if refresh token was revoked
+        if (err?.code !== "auth/network-request-failed") {
+          console.warn("Aviso al refrescar token de sesión:", err?.code || err);
+        }
+      }
+    };
+
     const unsubscribe = onAuthStateChanged(
       auth,
       (currentUser) => {
+        if (isDisposed) return;
         set({ user: currentUser, loading: false });
+        if (currentUser) {
+          lastTokenRefreshAt = Date.now();
+        }
       },
       (error) => {
         console.error("Error en el listener de autenticación:", error);
-        set({ loading: false, user: null });
+        if (isDisposed) return;
+        // Preserve active user on transient auth listener errors instead of forcing logout
+        set({ loading: false, user: auth.currentUser ?? get().user });
       },
     );
-    return unsubscribe;
+
+    // Wait for initial persistence hydration so authLoading settles cleanly
+    if (typeof (auth as any).authStateReady === "function") {
+      (auth as any)
+        .authStateReady()
+        .then(() => {
+          if (!isDisposed && get().loading) {
+            set({ user: auth.currentUser, loading: false });
+          }
+        })
+        .catch(() => {
+          if (!isDisposed && get().loading) {
+            set({ loading: false });
+          }
+        });
+    }
+
+    // Proactive silent token refresh every 40 minutes (ID tokens expire at 60m)
+    const refreshInterval = window.setInterval(() => {
+      if (auth.currentUser && navigator.onLine !== false) {
+        refreshSessionToken(true);
+      }
+    }, 40 * 60 * 1000);
+
+    // Refresh token cleanly when returning to the app after device sleep / backgrounding
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible" && auth.currentUser) {
+        const elapsedMs = Date.now() - lastTokenRefreshAt;
+        if (elapsedMs > 25 * 60 * 1000) {
+          refreshSessionToken(true);
+        }
+      }
+    };
+
+    const handleOnline = () => {
+      if (auth.currentUser) {
+        refreshSessionToken(false);
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("online", handleOnline);
+
+    return () => {
+      isDisposed = true;
+      unsubscribe();
+      window.clearInterval(refreshInterval);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("online", handleOnline);
+    };
   },
 
   loginWithEmail: async (email, pass) => {
     set({ loading: true });
     try {
+      await ensureLocalPersistence();
       await signInWithEmailAndPassword(auth, email, pass);
       return { success: true };
     } catch (err: any) {
@@ -96,6 +173,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   registerWithEmail: async (email, pass, name) => {
     set({ loading: true });
     try {
+      await ensureLocalPersistence();
       const res = await createUserWithEmailAndPassword(auth, email, pass);
       if (res.user && name) {
         await updateProfile(res.user, { displayName: name });
@@ -119,6 +197,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   loginWithGoogle: async () => {
     set({ loading: true });
     try {
+      await ensureLocalPersistence();
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
       return { success: true };
@@ -156,6 +235,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   loginAsGuest: async () => {
     set({ loading: true });
     try {
+      await ensureLocalPersistence();
       await signInAnonymously(auth);
       return { success: true };
     } catch (err: any) {

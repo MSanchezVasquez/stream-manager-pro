@@ -16,6 +16,11 @@ import {
   ChevronDown,
 } from 'lucide-react';
 import { useDataStore } from '../../store/dataStore';
+import {
+  AssistantAction,
+  buildAssistantServerContext,
+  runLocalAssistant,
+} from '../../utils/assistantEngine';
 
 interface ChatMessage {
   id: string;
@@ -23,12 +28,7 @@ interface ChatMessage {
   text: string;
   timestamp: string;
   isVoice?: boolean;
-  action?: {
-    type: string;
-    tab?: string;
-    query?: string;
-    modal?: string;
-  };
+  action?: AssistantAction;
 }
 
 interface AIAssistantModalProps {
@@ -62,11 +62,17 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [transcriptPreview, setTranscriptPreview] = useState('');
+  const [voiceError, setVoiceError] = useState<string | null>(null);
   const [isSpeechSynthesisEnabled, setIsSpeechSynthesisEnabled] = useState(true);
   const [voiceSupported, setVoiceSupported] = useState(true);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
+  const latestTranscriptRef = useRef('');
+  const finalSubmittedRef = useRef(false);
+  const handleSendMessageRef = useRef<(textToSend?: string, isVoice?: boolean) => Promise<void>>(
+    async () => {},
+  );
 
   // Auto-scroll to bottom of chat
   const scrollToBottom = () => {
@@ -79,76 +85,14 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
     }
   }, [messages, isOpen, isLoading]);
 
-  // Initialize Speech Recognition if supported
-  useEffect(() => {
-    const SpeechRecognition =
-      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-
-    if (!SpeechRecognition) {
-      setVoiceSupported(false);
+  // Text to speech helper
+  const speakText = (text: string) => {
+    if (!isSpeechSynthesisEnabled || typeof window === 'undefined' || !window.speechSynthesis) {
       return;
     }
 
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'es-ES';
-    recognition.continuous = false;
-    recognition.interimResults = true;
-
-    recognition.onstart = () => {
-      setIsListening(true);
-      setTranscriptPreview('');
-    };
-
-    recognition.onresult = (event: any) => {
-      let interim = '';
-      let final = '';
-
-      for (let i = event.resultIndex; i < event.results.length; ++i) {
-        if (event.results[i].isFinal) {
-          final += event.results[i][0].transcript;
-        } else {
-          interim += event.results[i][0].transcript;
-        }
-      }
-
-      const text = final || interim;
-      setTranscriptPreview(text);
-
-      if (final.trim().length > 0) {
-        setIsListening(false);
-        handleSendMessage(final.trim(), true);
-      }
-    };
-
-    recognition.onerror = (event: any) => {
-      console.warn('Speech recognition error:', event?.error);
-      setIsListening(false);
-    };
-
-    recognition.onend = () => {
-      setIsListening(false);
-    };
-
-    recognitionRef.current = recognition;
-
-    return () => {
-      if (recognitionRef.current) {
-        try {
-          recognitionRef.current.abort();
-        } catch {
-          // ignore
-        }
-      }
-    };
-  }, []);
-
-  // Text to speech helper
-  const speakText = (text: string) => {
-    if (!isSpeechSynthesisEnabled || !window.speechSynthesis) return;
-
     try {
       window.speechSynthesis.cancel();
-      // Clean up text from special characters or action json
       const clean = text.replace(/[*#_`]/g, '').trim();
       const utterance = new SpeechSynthesisUtterance(clean);
       utterance.lang = 'es-ES';
@@ -156,31 +100,6 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
       window.speechSynthesis.speak(utterance);
     } catch (e) {
       console.warn('Speech synthesis error:', e);
-    }
-  };
-
-  // Toggle voice recognition
-  const toggleListening = () => {
-    if (!voiceSupported) {
-      alert('Tu navegador no soporta reconocimiento de voz nativo. Puedes usar el campo de texto.');
-      return;
-    }
-
-    if (isListening) {
-      try {
-        recognitionRef.current?.stop();
-      } catch {
-        // ignore
-      }
-      setIsListening(false);
-    } else {
-      try {
-        // Stop any running speech synthesis
-        window.speechSynthesis?.cancel();
-        recognitionRef.current?.start();
-      } catch (err) {
-        console.warn('Could not start recognition:', err);
-      }
     }
   };
 
@@ -213,6 +132,7 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
 
     setInputValue('');
     setTranscriptPreview('');
+    setVoiceError(null);
 
     const userMsg: ChatMessage = {
       id: `user-${Date.now()}`,
@@ -226,19 +146,16 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
     setMessages(newMessages);
     setIsLoading(true);
 
-    // Build context
-    const activeClientsCount = clients.filter((c) => c.status === 'active').length;
-    const inactiveClientsCount = clients.filter((c) => c.status === 'inactive').length;
-    const suppliersNames = suppliers.map((s) => s.name);
-
-    const context = {
+    const dataContext = {
       activeTab,
-      totalActiveClients: activeClientsCount,
-      totalInactiveClients: inactiveClientsCount,
-      totalSuppliers: suppliers.length,
-      suppliers: suppliersNames,
-      totalFreeProfiles: freeProfiles.length,
+      clients,
+      suppliers,
+      freeProfiles,
     };
+    const context = buildAssistantServerContext(dataContext);
+
+    let replyText = '';
+    let action: AssistantAction | undefined;
 
     try {
       const payloadMessages = newMessages.map((m) => ({
@@ -255,38 +172,159 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
         }),
       });
 
-      const data = await res.json();
-      const replyText = data.reply || 'Disculpa, no pude entender ese comando.';
-      const action = data.action;
+      const contentType = res.headers.get('content-type') || '';
+      if (res.ok && contentType.includes('application/json')) {
+        const data = await res.json();
+        if (data && typeof data.reply === 'string' && data.reply.trim().length > 0) {
+          replyText = data.reply;
+          action = data.action || undefined;
+        }
+      }
+    } catch {
+      // Network error or static deployment without /api backend -> handled cleanly by local engine below
+    }
 
-      const botMsg: ChatMessage = {
-        id: `assistant-${Date.now()}`,
-        role: 'assistant',
-        text: replyText,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        action,
-      };
+    // Fallback to client-side engine when deployed statically (e.g. Firebase Hosting) or backend unavailable
+    if (!replyText) {
+      const localResult = runLocalAssistant(text, dataContext);
+      replyText = localResult.reply;
+      action = localResult.action;
+    }
 
-      setMessages((prev) => [...prev, botMsg]);
+    const botMsg: ChatMessage = {
+      id: `assistant-${Date.now()}`,
+      role: 'assistant',
+      text: replyText,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      action,
+    };
 
-      // Automatically execute action if present
-      if (action) {
-        executeAction(action);
+    setMessages((prev) => [...prev, botMsg]);
+
+    if (action) {
+      executeAction(action);
+    }
+
+    speakText(replyText);
+    setIsLoading(false);
+  };
+
+  // Always keep latest handleSendMessage in ref so SpeechRecognition callbacks never read stale state
+  handleSendMessageRef.current = handleSendMessage;
+
+  // Initialize Speech Recognition once if supported
+  useEffect(() => {
+    const SpeechRecognition =
+      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      setVoiceSupported(false);
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'es-ES';
+    recognition.continuous = false;
+    recognition.interimResults = true;
+
+    recognition.onstart = () => {
+      latestTranscriptRef.current = '';
+      finalSubmittedRef.current = false;
+      setVoiceError(null);
+      setIsListening(true);
+      setTranscriptPreview('');
+    };
+
+    recognition.onresult = (event: any) => {
+      let interim = '';
+      let final = '';
+
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          final += event.results[i][0].transcript;
+        } else {
+          interim += event.results[i][0].transcript;
+        }
       }
 
-      // Speak response if speech is on
-      speakText(replyText);
-    } catch (err) {
-      console.error('Error calling /api/gemini/chat:', err);
-      const errorMsg: ChatMessage = {
-        id: `assistant-${Date.now()}`,
-        role: 'assistant',
-        text: 'Ocurrió un error al conectar con el asistente de voz. Por favor intenta de nuevo.',
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      };
-      setMessages((prev) => [...prev, errorMsg]);
-    } finally {
-      setIsLoading(false);
+      const text = (final || interim).trim();
+      latestTranscriptRef.current = text;
+      setTranscriptPreview(text);
+
+      if (final.trim().length > 0) {
+        finalSubmittedRef.current = true;
+        setIsListening(false);
+        handleSendMessageRef.current(final.trim(), true);
+      }
+    };
+
+    recognition.onerror = (event: any) => {
+      const code = event?.error;
+      console.warn('Speech recognition error:', code);
+      setIsListening(false);
+
+      if (code === 'not-allowed' || code === 'service-not-allowed') {
+        setVoiceError(
+          'Permiso de micrófono denegado. Habilita el micrófono en tu navegador o escribe tu comando abajo.',
+        );
+      } else if (code === 'audio-capture') {
+        setVoiceError('No se detectó ningún micrófono disponible en este dispositivo.');
+      } else if (code === 'no-speech') {
+        setVoiceError('No se detectó voz. Intenta hablar más cerca del micrófono.');
+      } else if (code === 'network') {
+        setVoiceError(
+          'El servicio de reconocimiento de voz del navegador falló por red. Puedes escribir tu comando abajo.',
+        );
+      }
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+      const pending = latestTranscriptRef.current.trim();
+      if (pending && !finalSubmittedRef.current) {
+        finalSubmittedRef.current = true;
+        handleSendMessageRef.current(pending, true);
+      }
+    };
+
+    recognitionRef.current = recognition;
+
+    return () => {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.abort();
+        } catch {
+          // ignore
+        }
+      }
+    };
+  }, []);
+
+  // Toggle voice recognition
+  const toggleListening = () => {
+    setVoiceError(null);
+
+    if (!voiceSupported) {
+      setVoiceError(
+        'Tu navegador no soporta reconocimiento de voz nativo. Puedes usar el campo de texto.',
+      );
+      return;
+    }
+
+    if (isListening) {
+      try {
+        recognitionRef.current?.stop();
+      } catch {
+        setIsListening(false);
+      }
+    } else {
+      try {
+        window.speechSynthesis?.cancel();
+        recognitionRef.current?.start();
+      } catch (err) {
+        console.warn('Could not start recognition:', err);
+        setVoiceError('No se pudo iniciar el micrófono. Verifica los permisos del navegador.');
+      }
     }
   };
 
@@ -536,6 +574,21 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
                 className="px-2 py-1 rounded-lg bg-emerald-600 text-white font-bold text-[10px] hover:bg-emerald-700 transition-colors shrink-0 cursor-pointer"
               >
                 Detener
+              </button>
+            </div>
+          )}
+
+          {/* Voice Error Banner */}
+          {voiceError && !isListening && (
+            <div className="px-4 py-2 bg-amber-500/10 dark:bg-amber-950/30 border-t border-amber-500/30 flex items-center justify-between gap-2 text-[11px] text-amber-800 dark:text-amber-300 animate-fade-in shrink-0">
+              <span className="flex-1">{voiceError}</span>
+              <button
+                type="button"
+                onClick={() => setVoiceError(null)}
+                className="p-1 rounded hover:bg-amber-500/20 cursor-pointer shrink-0"
+                aria-label="Cerrar aviso de micrófono"
+              >
+                <X className="w-3.5 h-3.5" />
               </button>
             </div>
           )}

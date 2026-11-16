@@ -11,6 +11,11 @@ import {
 } from "firebase/firestore";
 import {
   getAuth,
+  initializeAuth,
+  indexedDBLocalPersistence,
+  browserLocalPersistence,
+  browserPopupRedirectResolver,
+  setPersistence,
   signInAnonymously,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -42,10 +47,38 @@ const firebaseConfig = {
 // Initialize Firebase App lazily
 const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 
-// Initialize Firestore with specific database ID if configured
-// Nota: quitamos la referencia a firebaseConfig.firestoreDatabaseId porque ya no viene del JSON
+// Initialize Firestore
 export const db = getFirestore(app);
-export const auth = getAuth(app);
+
+// Initialize Auth with explicit persistent storage (IndexedDB -> localStorage fallback)
+function initFirebaseAuth() {
+  try {
+    return initializeAuth(app, {
+      persistence: [indexedDBLocalPersistence, browserLocalPersistence],
+      popupRedirectResolver: browserPopupRedirectResolver,
+    });
+  } catch {
+    return getAuth(app);
+  }
+}
+
+export const auth = initFirebaseAuth();
+
+/**
+ * Ensures Firebase Auth uses durable local persistence (IndexedDB or localStorage fallback)
+ * so user sessions survive browser restarts, tab suspends, and PWA updates.
+ */
+export async function ensureLocalPersistence(): Promise<void> {
+  try {
+    await setPersistence(auth, indexedDBLocalPersistence);
+  } catch {
+    try {
+      await setPersistence(auth, browserLocalPersistence);
+    } catch (err) {
+      console.warn("No se pudo establecer persistencia local de Auth:", err);
+    }
+  }
+}
 
 // Collection Names
 export const COLLECTIONS = {
